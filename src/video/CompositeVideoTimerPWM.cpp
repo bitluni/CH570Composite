@@ -17,11 +17,11 @@ constexpr int pixelsBack = pixelsPerLine - pixelsSync - pixelsFront - xres;
 constexpr int linesTotal = 312;
 constexpr int linesBlankFront = 20;
 constexpr int linesSync = 8;
-constexpr int linesBlankBack = linesTotal - linesSync - linesBlankFront - yres;
+//constexpr int linesBlankBack = linesTotal - linesSync - linesBlankFront - yres;
 
 constexpr int levelSync = 0;
 constexpr int levelBlack = 4;
-constexpr int levelGrey = 10;
+//constexpr int levelGrey = 10;
 constexpr int levelWhite = 16;
 
 __attribute__((aligned(4))) uint32_t vram[2][pixelsPerLine];

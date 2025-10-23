@@ -93,61 +93,20 @@ UINT8 TAB_CDC_LINE_CODING[ ]  =
 	0x08    /* no. of bits 8*/
 };
 
-
-#define DEF_IC_PRG_VER                 0x31
-/* 7523 */
-/* �豸������ *///0x00, DEF_IC_PRG_VER, //BCD �豸�汾��
-const UINT8 TAB_USB_VEN_DEV_DES[] =
-{
-	0x12,
-	0x01,
-	0x10, 0x01,
-	0xff, 0x00, 0x02, 0x40,//0x40,
-	0x86, 0x1a, 0x23, 0x75,
-	0x00, DEF_IC_PRG_VER,
-
-	0x01,                 //�����ߵ��ַ���������������ֵ
-	0x02,                 //��Ʒ���ַ���������������ֵ
-	0x03,                 //��ŵ��ַ���������������ֵ
-
-	0x01
-};
-
-const UINT8 TAB_USB_VEN_CFG_DES[39] =
-{
-	0x09, 0x02, 0x27, 0x00, 0x01, 0x01, 0x00, 0x80, 0x30,   //����������
-	0x09, 0x04, 0x00, 0x00, 0x03, 0xff, 0x01, 0x02, 0x00,   //�ӿ�
-	0x07, 0x05, 0x82, 0x02, 0x20, 0x00, 0x00,               //�˵� IN2   ����
-	0x07, 0x05, 0x02, 0x02, 0x20, 0x00, 0x00,               //�˵� OUT2  ����
-	0x07, 0x05, 0x81, 0x03, 0x08, 0x00, 0x01        //�˵� IN1   �ж�
-};
-
-// ����������
 const UINT8 TAB_USB_LID_STR_DES[ ] = { 0x04, 0x03, 0x09, 0x04 };
-// ������Ϣ
-//const UINT8 TAB_USB_VEN_STR_DES[ ] = { 0x0E, 0x03, 'w', 0, 'c', 0, 'h', 0, '.', 0, 'c', 0, 'n', 0 };
-//const UINT8 TAB_USB_PRD_STR_DES[ ] = {
-//  0x1e,0x03,0x55,0x00,0x53,0x00,0x42,0x00,0x20,0x00,0x43,0x00,0x44,0x00,0x43,0x00,
-//  0x2d,0x00,0x53,0x00,0x65,0x00,0x72,0x00,0x69,0x00,0x61,0x00,0x6c,0x00
-//};
-
 
 const UINT8 USB_DEV_PARA_CDC_SERIAL_STR[]=     "videoshnipsel";
 const UINT8 USB_DEV_PARA_CDC_PRODUCT_STR[]=    "bitluni's CDC";
 const UINT8 USB_DEV_PARA_CDC_MANUFACTURE_STR[]= "bituni";
-const UINT8 USB_DEV_PARA_VEN_SERIAL_STR[]=     "WCH454545TS2";
-const UINT8 USB_DEV_PARA_VEN_PRODUCT_STR[]=   "USB2.0 To Serial Port";
-const UINT8 USB_DEV_PARA_VEN_MANUFACTURE_STR[]= "wch.cn";
-
 
 typedef struct DevInfo
 {
-	UINT8 UsbConfig;      // USB���ñ�־
-	UINT8 UsbAddress;     // USB�豸��ַ
-	UINT8 gSetupReq;        /* USB���ƴ��������� */
-	UINT8 gSetupLen;          /* USB���ƴ��䴫�䳤�� */
-	UINT8 gUsbInterCfg;       /* USB�豸�ӿ����� */
-	UINT8 gUsbFlag;       /* USB�豸���ֲ�����־,λ0=���߸�λ,λ1=��ȡ�豸������,λ2=���õ�ַ,λ3=��ȡ����������,λ4=�������� */
+	UINT8 UsbConfig;
+	UINT8 UsbAddress;
+	UINT8 gSetupReq;
+	UINT8 gSetupLen;
+	UINT8 gUsbInterCfg;
+	UINT8 gUsbFlag;
 }DevInfo_Parm;
 
 /* �豸��Ϣ */
@@ -1031,142 +990,68 @@ void USB_IRQProcessHandler( void )   /* USB�жϷ������ */
 									{
 										case 1: // �豸������
 										{
-											/*if(usb_work_mode == USB_VENDOR_MODE) 
-											{
-												memcpy(ep0_send_buf,
-															&TAB_USB_VEN_DEV_DES[0],
-															sizeof( TAB_USB_VEN_DEV_DES ));
-												pDescr = ep0_send_buf;
-												len = sizeof( TAB_USB_VEN_DEV_DES );
-											}
-											else */
-											{
-												memcpy(ep0_send_buf,
-															&TAB_USB_CDC_DEV_DES[0],
-															sizeof( TAB_USB_CDC_DEV_DES ));
+											memcpy(ep0_send_buf,
+														&TAB_USB_CDC_DEV_DES[0],
+														sizeof( TAB_USB_CDC_DEV_DES ));
 
-												pDescr = ep0_send_buf;
-												len = sizeof( TAB_USB_CDC_DEV_DES );
-											}
+											pDescr = ep0_send_buf;
+											len = sizeof( TAB_USB_CDC_DEV_DES );
 											break;
 										}
 										case 2:  // ����������
 										{
-											/*if(usb_work_mode == USB_VENDOR_MODE)  //����ģʽ
-											{
-												memcpy(ep0_send_buf,
-															&TAB_USB_VEN_CFG_DES[0],
-															sizeof( TAB_USB_VEN_CFG_DES ));
-												pDescr = ep0_send_buf;
-												len = sizeof( TAB_USB_VEN_CFG_DES );
-											}
-											else                    //CDC��*/
-											{
-												memcpy(ep0_send_buf,
-															&TAB_USB_CDC_CFG_DES[0],
-															sizeof( TAB_USB_CDC_CFG_DES ));
-												pDescr = ep0_send_buf;
-												len = sizeof( TAB_USB_CDC_CFG_DES );
-											}
+											memcpy(ep0_send_buf,
+														&TAB_USB_CDC_CFG_DES[0],
+														sizeof( TAB_USB_CDC_CFG_DES ));
+											pDescr = ep0_send_buf;
+											len = sizeof( TAB_USB_CDC_CFG_DES );
 											break;
 										}
 										case 3:  // �ַ���������
 										{
-											dg_log("str %d\r\n",UsbSetupBuf->wValueL);
-											/*if(usb_work_mode == USB_VENDOR_MODE)  //����ģʽ
+											switch(UsbSetupBuf->wValueL)
 											{
-												dg_log("str %d\r\n",UsbSetupBuf->wValueL);
-												switch(UsbSetupBuf->wValueL)
+												case 0:  //����������
 												{
-													case 0:  //����������
-													{
-														pDescr = (PUINT8)( &TAB_USB_LID_STR_DES[0] );
-														len = sizeof( TAB_USB_LID_STR_DES );
+													pDescr = (PUINT8)( &TAB_USB_LID_STR_DES[0] );
+													len = sizeof( TAB_USB_LID_STR_DES );
 
-														break;
-													}
-													case 1:  //iManufacturer
-													case 2:   //iProduct
-													case 3:   //iSerialNumber
-													{
-														UINT8 ep0_str_len;
-														UINT8 *p_send;
-														UINT8 *manu_str;
-														UINT8 tmp;
-
-														if(UsbSetupBuf->wValueL == 1)
-															manu_str = (UINT8 *)USB_DEV_PARA_VEN_MANUFACTURE_STR;
-														else if(UsbSetupBuf->wValueL == 2)
-															manu_str = (UINT8 *)USB_DEV_PARA_VEN_PRODUCT_STR;
-														else if(UsbSetupBuf->wValueL == 3)
-															manu_str = (UINT8 *)USB_DEV_PARA_VEN_SERIAL_STR;
-
-														ep0_str_len = (UINT8)strlen((char *)manu_str);
-														p_send = ep0_send_buf;
-														*p_send++ = ep0_str_len*2 + 2;
-														*p_send++ = 0x03;
-														for(tmp = 0; tmp<ep0_str_len; tmp++)
-														{
-															*p_send++ = manu_str[tmp];
-															*p_send++ = 0x00;
-														}
-
-														pDescr = ep0_send_buf;
-														len = ep0_send_buf[0];
-														break;
-													}
-													default:
-														len = 0xFF;    // ��֧�ֵ�����������
-														break;
+													break;
 												}
-											}
-											else*/
-											{
-												dg_log("str %d\r\n",UsbSetupBuf->wValueL);
-												switch(UsbSetupBuf->wValueL)
+												case 1:  //iManufacturer
+												case 2:   //iProduct
+												case 3:   //iSerialNumber
 												{
-													case 0:  //����������
+													UINT8 ep0_str_len;
+													UINT8 *p_send;
+													UINT8 *manu_str;
+													UINT8 tmp;
+
+													/* ȡ���� */
+													if(UsbSetupBuf->wValueL == 1)
+														manu_str = (UINT8 *)USB_DEV_PARA_CDC_MANUFACTURE_STR;
+													else if(UsbSetupBuf->wValueL == 2)
+														manu_str = (UINT8 *)USB_DEV_PARA_CDC_PRODUCT_STR;
+													else if(UsbSetupBuf->wValueL == 3)
+														manu_str = (UINT8 *)USB_DEV_PARA_CDC_SERIAL_STR;
+													ep0_str_len = (UINT8)strlen((char *)manu_str);
+													p_send = ep0_send_buf;
+													*p_send++ = ep0_str_len*2 + 2;
+													*p_send++ = 0x03;
+													for(tmp = 0; tmp<ep0_str_len; tmp++)
 													{
-														pDescr = (PUINT8)( &TAB_USB_LID_STR_DES[0] );
-														len = sizeof( TAB_USB_LID_STR_DES );
-
-														break;
+														*p_send++ = manu_str[tmp];
+														*p_send++ = 0x00;
 													}
-													case 1:  //iManufacturer
-													case 2:   //iProduct
-													case 3:   //iSerialNumber
-													{
-														UINT8 ep0_str_len;
-														UINT8 *p_send;
-														UINT8 *manu_str;
-														UINT8 tmp;
 
-														/* ȡ���� */
-														if(UsbSetupBuf->wValueL == 1)
-															manu_str = (UINT8 *)USB_DEV_PARA_CDC_MANUFACTURE_STR;
-														else if(UsbSetupBuf->wValueL == 2)
-															manu_str = (UINT8 *)USB_DEV_PARA_CDC_PRODUCT_STR;
-														else if(UsbSetupBuf->wValueL == 3)
-															manu_str = (UINT8 *)USB_DEV_PARA_CDC_SERIAL_STR;
-														ep0_str_len = (UINT8)strlen((char *)manu_str);
-														p_send = ep0_send_buf;
-														*p_send++ = ep0_str_len*2 + 2;
-														*p_send++ = 0x03;
-														for(tmp = 0; tmp<ep0_str_len; tmp++)
-														{
-															*p_send++ = manu_str[tmp];
-															*p_send++ = 0x00;
-														}
+													pDescr = ep0_send_buf;
+													len = ep0_send_buf[0];
 
-														pDescr = ep0_send_buf;
-														len = ep0_send_buf[0];
-
-														break;
-													}
-													default:
-														len = 0xFF;    // ��֧�ֵ�����������
-														break;
+													break;
 												}
+												default:
+													len = 0xFF;    // ��֧�ֵ�����������
+													break;
 											}
 											break;
 										}
@@ -1611,20 +1496,11 @@ void USB_IRQProcessHandler( void )   /* USB�жϷ������ */
 
 	if ( R8_USB_INT_FG & RB_UIF_BUS_RST )  // USB���߸�λ
 	{
-		/*if(usb_work_mode == USB_VENDOR_MODE)
-		{
-			R8_UEP0_CTRL = UEP_R_RES_NAK | UEP_T_RES_NAK;
-			R8_UEP1_CTRL = UEP_R_RES_ACK | UEP_T_RES_NAK;
-			R8_UEP2_CTRL = UEP_R_RES_ACK | UEP_T_RES_NAK;
-		}
-		else*/
-		{
-			R8_UEP0_CTRL = UEP_R_RES_NAK | UEP_T_RES_NAK;
-			R8_UEP1_CTRL = UEP_R_RES_ACK | UEP_T_RES_NAK;
-			R8_UEP2_CTRL = UEP_R_RES_ACK | UEP_T_RES_NAK;
-			R8_UEP3_CTRL = UEP_T_RES_NAK;
-			R8_UEP4_CTRL = UEP_T_RES_NAK;
-		}
+		R8_UEP0_CTRL = UEP_R_RES_NAK | UEP_T_RES_NAK;
+		R8_UEP1_CTRL = UEP_R_RES_ACK | UEP_T_RES_NAK;
+		R8_UEP2_CTRL = UEP_R_RES_ACK | UEP_T_RES_NAK;
+		R8_UEP3_CTRL = UEP_T_RES_NAK;
+		R8_UEP4_CTRL = UEP_T_RES_NAK;
 
 		cdc_uart_sta_trans_step = 0;
 		ven_ep1_trans_step = 0;
@@ -1638,14 +1514,7 @@ void USB_IRQProcessHandler( void )   /* USB�жϷ������ */
 	{
 		if ( R8_USB_MIS_ST & RB_UMS_SUSPEND )    //����
 		{
-			/*if(usb_work_mode == USB_VENDOR_MODE)
-			{
-				VENSer0ParaChange = 1;
-			}
-			else*/
-			{
-				CDCSer0ParaChange = 1;
-			}
+			CDCSer0ParaChange = 1;
 
 			Ep1DataINFlag = 0;
 			Ep2DataINFlag = 0;
@@ -1789,68 +1658,6 @@ void InitCDCDevice(void)
 }
 
 /*******************************************************************************
-* Function Name  : InitVendorDevice
-* Description    : ��ʼ������USB�豸
-* Input          : None
-* Output         : None
-* Return         : None
-*******************************************************************************/
-void InitVendorDevice(void)
-{
-	/* ��ʼ������ */
-	USBParaInit();
-
-	R8_USB_CTRL = 0x00;                                                 // ���趨ģʽ
-
-//  1.�˵���䣺
-//  �˵�0
-//  �˵�1��IN��OUT  �����ýӿڣ�
-//  �˵�2��IN��OUT  �����ݽӿڣ�
-
-	/* �� 64 �ֽڽ��ջ�����(OUT)���� 64 �ֽڷ��ͻ�������IN�� */
-	R8_UEP4_1_MOD = RB_UEP1_TX_EN | RB_UEP1_RX_EN;
-
-	/* �� 64 �ֽڽ��ջ�����(OUT)���� 64 �ֽڷ��ͻ�������IN�� */
-	R8_UEP2_3_MOD = RB_UEP2_RX_EN | RB_UEP2_TX_EN;
-
-	R16_UEP0_DMA = (UINT32)&Ep0Buffer[0];
-	R16_UEP1_DMA = (UINT32)&Ep1Buffer[0];
-	R16_UEP2_DMA = (UINT32)&Ep2Buffer[0];
-
-	/* �˵�0״̬��OUT--ACK IN--NAK */
-	R8_UEP0_CTRL = UEP_R_RES_NAK | UEP_T_RES_NAK;
-
-	/* �˵�1״̬��OUT--ACK IN--NAK �Զ���ת */
-	R8_UEP1_CTRL = UEP_R_RES_ACK | UEP_T_RES_NAK;
-
-	/* �˵�2״̬��OUT--ACK IN--NAK �Զ���ת */
-	R8_UEP2_CTRL =  UEP_R_RES_ACK | UEP_T_RES_NAK;
-
-	/* �豸��ַ */
-	R8_USB_DEV_AD = 0x00;
-
-	//��ֹDP/DM��������s
-	R8_UDEV_CTRL = RB_UD_PD_DIS;
-
-	//����USB�豸��DMA�����ж��ڼ��жϱ�־δ���ǰ�Զ�����NAK
-	R8_USB_CTRL = RB_UC_DEV_PU_EN | RB_UC_INT_BUSY | RB_UC_DMA_EN;
-
-	//���жϱ�־
-	R8_USB_INT_FG = 0xFF;
-
-	//�����ж�          ����            �������         ���߸�λ
-	//R8_USB_INT_EN = RB_UIE_SUSPEND | RB_UIE_TRANSFER | RB_UIE_BUS_RST;
-	R8_USB_INT_EN = RB_UIE_TRANSFER ;
-	PFIC_EnableIRQ(USB_IRQn);
-
-	//ʹ��USB�˿�
-	R8_UDEV_CTRL |= RB_UD_PORT_EN;
-
-	devinf.UsbConfig = 0;
-	devinf.UsbAddress = 0;
-}
-
-/*******************************************************************************
 * Function Name  : InitUSBDevPara
 * Description    : USB��صı�����ʼ��
 * Input          : None
@@ -1892,20 +1699,6 @@ void InitUSBDevPara(void)
 	}
 }
 
-/*******************************************************************************
-* Function Name  : InitUSBDevice
-* Description    : ��ʼ��USB
-* Input          : None
-* Output         : None
-* Return         : None
-*******************************************************************************/
-void InitUSBDevice(void)
-{
-	/*if(usb_work_mode == USB_VENDOR_MODE) 
-		InitVendorDevice();
-	else  */                               
-		InitCDCDevice();
-}
 
 void sendCDCData(const uint8_t *data, uint16_t len)
 {
@@ -1921,7 +1714,7 @@ void sendCDCData(const uint8_t *data, uint16_t len)
 void initCDC()
 {
 	InitUSBDevPara();
-	InitUSBDevice();
+	InitCDCDevice();
 	PFIC_EnableIRQ( USB_IRQn );
 }
 void processCDC()
