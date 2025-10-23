@@ -3,7 +3,7 @@
 #include "CompositeVideoTimerPWM.h"
 
 constexpr int textCols = 37;
-constexpr int textRows = 25; //34
+constexpr int textRows = 34;
 //296x272
 constexpr int xres = 300;
 constexpr int yres = textRows * 8;
