@@ -1,20 +1,18 @@
 #include "cdc.h"
 
 /********************************** (C) COPYRIGHT *******************************
- * File Name          : Main.c
- * Author             : WCH
- * Version            : V1.0
- * Date               : 2020/08/06
- * Description        : ×Ô¶¨ÒåUSBÉè±¸£¨CH372Éè±¸£©£¬Ìá¹©8¸ö·Ç0Í¨µÀ(ÉÏ´«+ÏÂ´«)£¬ÊµÏÖÊý¾ÝÏÈÏÂ´«£¬È»ºóÊý¾ÝÄÚÈÝÈ¡·´ÉÏ´«
- *********************************************************************************
- * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
- * Attention: This software (modified or not) and binary are used for 
- * microcontroller manufactured by Nanjing Qinheng Microelectronics.
- *******************************************************************************/
+* File Name          : Main.c
+* Author             : WCH
+* Version            : V1.0
+* Date               : 2020/08/06
+* Description        : ï¿½Ô¶ï¿½ï¿½ï¿½USBï¿½è±¸ï¿½ï¿½CH372ï¿½è±¸ï¿½ï¿½ï¿½ï¿½ï¿½á¹©8ï¿½ï¿½ï¿½ï¿½0Í¨ï¿½ï¿½(ï¿½Ï´ï¿½+ï¿½Â´ï¿½)ï¿½ï¿½Êµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â´ï¿½ï¿½ï¿½È»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¡ï¿½ï¿½ï¿½Ï´ï¿½
+*********************************************************************************
+* Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
+* Attention: This software (modified or not) and binary are used for 
+* microcontroller manufactured by Nanjing Qinheng Microelectronics.
+*******************************************************************************/
 
 #include "CH57x_common.h"
-
-UINT8 SendUSBData(const UINT8 *p_send_dat,UINT16 send_len);
 
 //#define dg_log(){} printf
 #define dg_log(...){}
@@ -25,113 +23,113 @@ UINT8 SendUSBData(const UINT8 *p_send_dat,UINT16 send_len);
 #define USB_CDC_MODE      1
 #define USB_VENDOR_MODE   0
 
-/* USB¹¤×÷Ä£Ê½ */
+/* USBï¿½ï¿½ï¿½ï¿½Ä£Ê½ */
 UINT8 usb_work_mode = USB_CDC_MODE; //USB_VENDOR_MODE;
 
 #if (PRINTF_EN)
-UINT8 usb_work_change = 1;  //²âÊÔ
+UINT8 usb_work_change = 1;  //ï¿½ï¿½ï¿½ï¿½
 #endif
 
-/* USBÊý¾ÝÉÏ´«Ê¹ÄÜ--ÐèÒªµÄ»°ÔÙÆôÓÃ¸Ã²ÎÊý */
-UINT8 usb_cdc_mode_trans_en = 0;   //cdcÄ£Ê½ÏÂÊý¾ÝÉÏ´«Ê¹ÄÜ
-UINT8 usb_ven_mode_trans_en = 0;   //³§ÉÌÄ£Ê½ÏÂÊý¾ÝÉÏ´«Ê¹ÄÜ
+/* USBï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½Ê¹ï¿½ï¿½--ï¿½ï¿½Òªï¿½Ä»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã¸Ã²ï¿½ï¿½ï¿½ */
+UINT8 usb_cdc_mode_trans_en = 0;   //cdcÄ£Ê½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½Ê¹ï¿½ï¿½
+UINT8 usb_ven_mode_trans_en = 0;   //ï¿½ï¿½ï¿½ï¿½Ä£Ê½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½Ê¹ï¿½ï¿½
 
 
-/* CDCÏà¹Ø²ÎÊý */
-/* Éè±¸ÃèÊö·û */
+/* CDCï¿½ï¿½Ø²ï¿½ï¿½ï¿½ */
+/* ï¿½è±¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
 const UINT8 TAB_USB_CDC_DEV_DES[18] =
 {
-  0x12,
-  0x01,
-  0x10,
-  0x01,
-  0x02,
-  0x00,
-  0x00,
-  0x40,
-  0x86, 0x1a,
-  0x40, 0x80,
-  0x00, 0x30,
-  0x01,                 //ÖÆÔìÕßµÄ×Ö·û´®ÃèÊö·ûµÄË÷ÒýÖµ
-  0x02,                 //²úÆ·µÄ×Ö·û´®ÃèÊö·ûµÄË÷ÒýÖµ
-  0x03,                 //ÐòºÅµÄ×Ö·û´®ÃèÊö·ûµÄË÷ÒýÖµ
-  0x01                  //¿ÉÄÜÅäÖÃµÄÊýÄ¿
+	0x12,
+	0x01,
+	0x10,
+	0x01,
+	0x02,
+	0x00,
+	0x00,
+	0x40,
+	0x86, 0x1a,
+	0x40, 0x80,
+	0x00, 0x30,
+	0x01,                 //ï¿½ï¿½ï¿½ï¿½ï¿½ßµï¿½ï¿½Ö·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Öµ
+	0x02,                 //ï¿½ï¿½Æ·ï¿½ï¿½ï¿½Ö·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Öµ
+	0x03,                 //ï¿½ï¿½Åµï¿½ï¿½Ö·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Öµ
+	0x01                  //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ãµï¿½ï¿½ï¿½Ä¿
 };
 
 
-/* ÅäÖÃÃèÊö·û */
+/* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
 const UINT8 TAB_USB_CDC_CFG_DES[ ] =
 {
-  0x09,0x02,0x43,0x00,0x02,0x01,0x00,0x80,0x30,
+	0x09,0x02,0x43,0x00,0x02,0x01,0x00,0x80,0x30,
 
-  //ÒÔÏÂÎª½Ó¿Ú0£¨CDC½Ó¿Ú£©ÃèÊö·û
-  0x09, 0x04,0x00,0x00,0x01,0x02,0x02,0x01,0x00,
+	//ï¿½ï¿½ï¿½ï¿½Îªï¿½Ó¿ï¿½0ï¿½ï¿½CDCï¿½Ó¿Ú£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	0x09, 0x04,0x00,0x00,0x01,0x02,0x02,0x01,0x00,
 
-  0x05,0x24,0x00,0x10,0x01,
-  0x04,0x24,0x02,0x02,
-  0x05,0x24,0x06,0x00,0x01,
-  0x05,0x24,0x01,0x01,0x00,
+	0x05,0x24,0x00,0x10,0x01,
+	0x04,0x24,0x02,0x02,
+	0x05,0x24,0x06,0x00,0x01,
+	0x05,0x24,0x01,0x01,0x00,
 
-  0x07,0x05,0x84,0x03,0x08,0x00,0x01,                       //ÖÐ¶ÏÉÏ´«¶ËµãÃèÊö·û
+	0x07,0x05,0x84,0x03,0x08,0x00,0x01,                       //ï¿½Ð¶ï¿½ï¿½Ï´ï¿½ï¿½Ëµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
-  //ÒÔÏÂÎª½Ó¿Ú1£¨Êý¾Ý½Ó¿Ú£©ÃèÊö·û
-  0x09,0x04,0x01,0x00,0x02,0x0a,0x00,0x00,0x00,
+	//ï¿½ï¿½ï¿½ï¿½Îªï¿½Ó¿ï¿½1ï¿½ï¿½ï¿½ï¿½ï¿½Ý½Ó¿Ú£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	0x09,0x04,0x01,0x00,0x02,0x0a,0x00,0x00,0x00,
 
-  0x07,0x05,0x01,0x02,0x40,0x00,0x00,                       //¶ËµãÃèÊö·û
-  0x07,0x05,0x81,0x02,0x40,0x00,0x00,                       //¶ËµãÃèÊö·û
+	0x07,0x05,0x01,0x02,0x40,0x00,0x00,                       //ï¿½Ëµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	0x07,0x05,0x81,0x02,0x40,0x00,0x00,                       //ï¿½Ëµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 };
 
-/* Éè±¸ÏÞ¶¨ÃèÊö·û */
+/* ï¿½è±¸ï¿½Þ¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
 const UINT8 My_QueDescr[ ] = { 0x0A, 0x06, 0x00, 0x02, 0xFF, 0x00, 0xFF, 0x40, 0x01, 0x00 };
 
 UINT8 TAB_CDC_LINE_CODING[ ]  =
 {
-  0x85, /* baud rate*/
-  0x20,
-  0x00,
-  0x00,
-  0x00,   /* stop bits-1*/
-  0x00,   /* parity - none*/
-  0x08    /* no. of bits 8*/
+	0x85, /* baud rate*/
+	0x20,
+	0x00,
+	0x00,
+	0x00,   /* stop bits-1*/
+	0x00,   /* parity - none*/
+	0x08    /* no. of bits 8*/
 };
 
 
 #define DEF_IC_PRG_VER                 0x31
 /* 7523 */
-/* Éè±¸ÃèÊö·û *///0x00, DEF_IC_PRG_VER, //BCD Éè±¸°æ±¾ºÅ
+/* ï¿½è±¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ *///0x00, DEF_IC_PRG_VER, //BCD ï¿½è±¸ï¿½æ±¾ï¿½ï¿½
 const UINT8 TAB_USB_VEN_DEV_DES[] =
 {
-  0x12,
-  0x01,
-  0x10, 0x01,
-  0xff, 0x00, 0x02, 0x40,//0x40,
-  0x86, 0x1a, 0x23, 0x75,
-  0x00, DEF_IC_PRG_VER,
+	0x12,
+	0x01,
+	0x10, 0x01,
+	0xff, 0x00, 0x02, 0x40,//0x40,
+	0x86, 0x1a, 0x23, 0x75,
+	0x00, DEF_IC_PRG_VER,
 
-  0x01,                 //ÖÆÔìÕßµÄ×Ö·û´®ÃèÊö·ûµÄË÷ÒýÖµ
-  0x02,                 //²úÆ·µÄ×Ö·û´®ÃèÊö·ûµÄË÷ÒýÖµ
-  0x03,                 //ÐòºÅµÄ×Ö·û´®ÃèÊö·ûµÄË÷ÒýÖµ
+	0x01,                 //ï¿½ï¿½ï¿½ï¿½ï¿½ßµï¿½ï¿½Ö·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Öµ
+	0x02,                 //ï¿½ï¿½Æ·ï¿½ï¿½ï¿½Ö·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Öµ
+	0x03,                 //ï¿½ï¿½Åµï¿½ï¿½Ö·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Öµ
 
-  0x01
+	0x01
 };
 
 const UINT8 TAB_USB_VEN_CFG_DES[39] =
 {
-  0x09, 0x02, 0x27, 0x00, 0x01, 0x01, 0x00, 0x80, 0x30,   //ÅäÖÃÃèÊö·û
-  0x09, 0x04, 0x00, 0x00, 0x03, 0xff, 0x01, 0x02, 0x00,   //½Ó¿Ú
-  0x07, 0x05, 0x82, 0x02, 0x20, 0x00, 0x00,               //¶Ëµã IN2   ÅúÁ¿
-  0x07, 0x05, 0x02, 0x02, 0x20, 0x00, 0x00,               //¶Ëµã OUT2  ÅúÁ¿
-  0x07, 0x05, 0x81, 0x03, 0x08, 0x00, 0x01        //¶Ëµã IN1   ÖÐ¶Ï
+	0x09, 0x02, 0x27, 0x00, 0x01, 0x01, 0x00, 0x80, 0x30,   //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	0x09, 0x04, 0x00, 0x00, 0x03, 0xff, 0x01, 0x02, 0x00,   //ï¿½Ó¿ï¿½
+	0x07, 0x05, 0x82, 0x02, 0x20, 0x00, 0x00,               //ï¿½Ëµï¿½ IN2   ï¿½ï¿½ï¿½ï¿½
+	0x07, 0x05, 0x02, 0x02, 0x20, 0x00, 0x00,               //ï¿½Ëµï¿½ OUT2  ï¿½ï¿½ï¿½ï¿½
+	0x07, 0x05, 0x81, 0x03, 0x08, 0x00, 0x01        //ï¿½Ëµï¿½ IN1   ï¿½Ð¶ï¿½
 };
 
-// ÓïÑÔÃèÊö·û
+// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 const UINT8 TAB_USB_LID_STR_DES[ ] = { 0x04, 0x03, 0x09, 0x04 };
-// ³§¼ÒÐÅÏ¢
-const UINT8 TAB_USB_VEN_STR_DES[ ] = { 0x0E, 0x03, 'w', 0, 'c', 0, 'h', 0, '.', 0, 'c', 0, 'n', 0 };
-const UINT8 TAB_USB_PRD_STR_DES[ ] = {
-  0x1e,0x03,0x55,0x00,0x53,0x00,0x42,0x00,0x20,0x00,0x43,0x00,0x44,0x00,0x43,0x00,
-  0x2d,0x00,0x53,0x00,0x65,0x00,0x72,0x00,0x69,0x00,0x61,0x00,0x6c,0x00
-};
+// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï¢
+//const UINT8 TAB_USB_VEN_STR_DES[ ] = { 0x0E, 0x03, 'w', 0, 'c', 0, 'h', 0, '.', 0, 'c', 0, 'n', 0 };
+//const UINT8 TAB_USB_PRD_STR_DES[ ] = {
+//  0x1e,0x03,0x55,0x00,0x53,0x00,0x42,0x00,0x20,0x00,0x43,0x00,0x44,0x00,0x43,0x00,
+//  0x2d,0x00,0x53,0x00,0x65,0x00,0x72,0x00,0x69,0x00,0x61,0x00,0x6c,0x00
+//};
 
 
 const UINT8 USB_DEV_PARA_CDC_SERIAL_STR[]=     "videoshnipsel";
@@ -144,36 +142,36 @@ const UINT8 USB_DEV_PARA_VEN_MANUFACTURE_STR[]= "wch.cn";
 
 typedef struct DevInfo
 {
-  UINT8 UsbConfig;      // USBÅäÖÃ±êÖ¾
-  UINT8 UsbAddress;     // USBÉè±¸µØÖ·
-  UINT8 gSetupReq;        /* USB¿ØÖÆ´«ÊäÃüÁîÂë */
-  UINT8 gSetupLen;          /* USB¿ØÖÆ´«Êä´«Êä³¤¶È */
-  UINT8 gUsbInterCfg;       /* USBÉè±¸½Ó¿ÚÅäÖÃ */
-  UINT8 gUsbFlag;       /* USBÉè±¸¸÷ÖÖ²Ù×÷±êÖ¾,Î»0=×ÜÏß¸´Î»,Î»1=»ñÈ¡Éè±¸ÃèÊö·û,Î»2=ÉèÖÃµØÖ·,Î»3=»ñÈ¡ÅäÖÃÃèÊö·û,Î»4=ÉèÖÃÅäÖÃ */
+	UINT8 UsbConfig;      // USBï¿½ï¿½ï¿½Ã±ï¿½Ö¾
+	UINT8 UsbAddress;     // USBï¿½è±¸ï¿½ï¿½Ö·
+	UINT8 gSetupReq;        /* USBï¿½ï¿½ï¿½Æ´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
+	UINT8 gSetupLen;          /* USBï¿½ï¿½ï¿½Æ´ï¿½ï¿½ä´«ï¿½ä³¤ï¿½ï¿½ */
+	UINT8 gUsbInterCfg;       /* USBï¿½è±¸ï¿½Ó¿ï¿½ï¿½ï¿½ï¿½ï¿½ */
+	UINT8 gUsbFlag;       /* USBï¿½è±¸ï¿½ï¿½ï¿½Ö²ï¿½ï¿½ï¿½ï¿½ï¿½Ö¾,Î»0=ï¿½ï¿½ï¿½ß¸ï¿½Î»,Î»1=ï¿½ï¿½È¡ï¿½è±¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½,Î»2=ï¿½ï¿½ï¿½Ãµï¿½Ö·,Î»3=ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½,Î»4=ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
 }DevInfo_Parm;
 
-/* Éè±¸ÐÅÏ¢ */
+/* ï¿½è±¸ï¿½ï¿½Ï¢ */
 DevInfo_Parm  devinf;
 UINT8 SetupReqCode, SetupLen;
 
-/* ¶ËµãÓ²¼þºÍÈí¼þ²Ù×÷µÄ»º´æÇø */
-__aligned(4) UINT8  Ep0Buffer[MAX_PACKET_SIZE];     //¶Ëµã0 ÊÕ·¢¹²ÓÃ  ¶Ëµã4 OUT & IN
+/* ï¿½Ëµï¿½Ó²ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä»ï¿½ï¿½ï¿½ï¿½ï¿½ */
+__aligned(4) UINT8  Ep0Buffer[MAX_PACKET_SIZE];     //ï¿½Ëµï¿½0 ï¿½Õ·ï¿½ï¿½ï¿½ï¿½ï¿½  ï¿½Ëµï¿½4 OUT & IN
 
-//¶Ëµã4µÄÉÏ´«µØÖ·
+//ï¿½Ëµï¿½4ï¿½ï¿½ï¿½Ï´ï¿½ï¿½ï¿½Ö·
 __aligned(4) UINT8  Ep1Buffer[MAX_PACKET_SIZE];     //IN
 __aligned(4) UINT8  Ep2Buffer[2*MAX_PACKET_SIZE];   //OUT & IN
 __aligned(4) UINT8  Ep3Buffer[2*MAX_PACKET_SIZE];   //OUT & IN
 
-//Line Code½á¹¹
- typedef struct __PACKED _LINE_CODE
+//Line Codeï¿½á¹¹
+typedef struct __PACKED _LINE_CODE
 {
-  UINT32  BaudRate;   /* ²¨ÌØÂÊ */
-  UINT8 StopBits;   /* Í£Ö¹Î»¼ÆÊý£¬0£º1Í£Ö¹Î»£¬1£º1.5Í£Ö¹Î»£¬2£º2Í£Ö¹Î» */
-  UINT8 ParityType;   /* Ð£ÑéÎ»£¬0£ºNone£¬1£ºOdd£¬2£ºEven£¬3£ºMark£¬4£ºSpace */
-  UINT8 DataBits;   /* Êý¾ÝÎ»¼ÆÊý£º5£¬6£¬7£¬8£¬16 */
+	UINT32  BaudRate;   /* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
+	UINT8 StopBits;   /* Í£Ö¹Î»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½0ï¿½ï¿½1Í£Ö¹Î»ï¿½ï¿½1ï¿½ï¿½1.5Í£Ö¹Î»ï¿½ï¿½2ï¿½ï¿½2Í£Ö¹Î» */
+	UINT8 ParityType;   /* Ð£ï¿½ï¿½Î»ï¿½ï¿½0ï¿½ï¿½Noneï¿½ï¿½1ï¿½ï¿½Oddï¿½ï¿½2ï¿½ï¿½Evenï¿½ï¿½3ï¿½ï¿½Markï¿½ï¿½4ï¿½ï¿½Space */
+	UINT8 DataBits;   /* ï¿½ï¿½ï¿½ï¿½Î»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½5ï¿½ï¿½6ï¿½ï¿½7ï¿½ï¿½8ï¿½ï¿½16 */
 }LINE_CODE, *PLINE_CODE;
 
-/* Á½¸ö´®¿ÚÏà¹ØÊý¾Ý */
+/* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
 LINE_CODE Uart0Para;
 
 #define CH341_REG_NUM     10
@@ -181,16 +179,16 @@ UINT8 CH341_Reg_Add[CH341_REG_NUM];
 UINT8 CH341_Reg_val[CH341_REG_NUM];
 
 
-/* ³§ÉÌÄ£Ê½ÏÂ´®¿Ú²ÎÊý±ä»¯ */
+/* ï¿½ï¿½ï¿½ï¿½Ä£Ê½ï¿½Â´ï¿½ï¿½Ú²ï¿½ï¿½ï¿½ï¿½ä»¯ */
 UINT8 VENSer0ParaChange = 0;
 
-/* ³§ÉÌÄ£Ê½ÏÂ´®¿Ú·¢ËÍÊý¾Ý±êÖ¾ */
+/* ï¿½ï¿½ï¿½ï¿½Ä£Ê½ï¿½Â´ï¿½ï¿½Ú·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý±ï¿½Ö¾ */
 UINT8 VENSer0SendFlag = 0;
 
-/* ³§ÉÌÄ£Ê½ÏÂmodemÐÅºÅ¼ì²â */
-UINT8 UART0_RTS_Val = 0; //Êä³ö ±íÊ¾DTEÇëÇóDCE·¢ËÍÊý¾Ý
-UINT8 UART0_DTR_Val = 0; //Êä³ö Êý¾ÝÖÕ¶Ë¾ÍÐ÷
-UINT8 UART0_OUT_Val = 0; //×Ô¶¨ÒåmodemÐÅºÅ£¨CH340ÊÖ²á£©
+/* ï¿½ï¿½ï¿½ï¿½Ä£Ê½ï¿½ï¿½modemï¿½ÅºÅ¼ï¿½ï¿½ */
+UINT8 UART0_RTS_Val = 0; //ï¿½ï¿½ï¿½ ï¿½ï¿½Ê¾DTEï¿½ï¿½ï¿½ï¿½DCEï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+UINT8 UART0_DTR_Val = 0; //ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Õ¶Ë¾ï¿½ï¿½ï¿½
+UINT8 UART0_OUT_Val = 0; //ï¿½Ô¶ï¿½ï¿½ï¿½modemï¿½ÅºÅ£ï¿½CH340ï¿½Ö²á£©
 
 UINT8 UART0_DCD_Val = 0;
 UINT8 UART0_DCD_Change = 0;
@@ -204,41 +202,41 @@ UINT8 UART0_DSR_Change = 0;
 UINT8 UART0_CTS_Val = 0;
 UINT8 UART0_CTS_Change = 0;
 
-/* CDCÉèÖÃµÄ´®¿Ú */
+/* CDCï¿½ï¿½ï¿½ÃµÄ´ï¿½ï¿½ï¿½ */
 UINT8 CDCSetSerIdx = 0;
 UINT8 CDCSer0ParaChange = 0;
 
 typedef struct _USB_SETUP_REQ_ {
-    UINT8 bRequestType;
-    UINT8 bRequest;
-    UINT8 wValueL;
-    UINT8 wValueH;
-    UINT8 wIndexL;
-    UINT8 wIndexH;
-    UINT8 wLengthL;
-    UINT8 wLengthH;
+		UINT8 bRequestType;
+		UINT8 bRequest;
+		UINT8 wValueL;
+		UINT8 wValueH;
+		UINT8 wIndexL;
+		UINT8 wIndexH;
+		UINT8 wLengthL;
+		UINT8 wLengthH;
 } USB_SETUP_REQ_t;
 
 #define UsbSetupBuf     ((USB_SETUP_REQ_t *)Ep0Buffer) //USB_SETUP_REQ_t USB_SETUP_REQ_t
 
-/* USB»º´æ¶¨Òå£¬ËùÓÐ¶ËµãÈ«²¿¶¨Òå */
-/* ¶Ëµã1 -- IN×´Ì¬ */
+/* USBï¿½ï¿½ï¿½æ¶¨ï¿½å£¬ï¿½ï¿½ï¿½Ð¶Ëµï¿½È«ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
+/* ï¿½Ëµï¿½1 -- IN×´Ì¬ */
 UINT8 Ep1DataINFlag = 0;
 
-/* ¶Ëµã1ÏÂ´«Êý¾Ý */
+/* ï¿½Ëµï¿½1ï¿½Â´ï¿½ï¿½ï¿½ï¿½ï¿½ */
 UINT8 Ep1DataOUTFlag = 0;
 UINT8 Ep1DataOUTLen = 0;
 __aligned(4) UINT8 Ep1OUTDataBuf[MAX_PACKET_SIZE];
 
-/* ¶Ëµã2 -- IN×´Ì¬ */
+/* ï¿½Ëµï¿½2 -- IN×´Ì¬ */
 UINT8 Ep2DataINFlag = 0;
 
-/* ¶Ëµã2ÏÂ´«Êý¾Ý */
+/* ï¿½Ëµï¿½2ï¿½Â´ï¿½ï¿½ï¿½ï¿½ï¿½ */
 UINT8 Ep2DataOUTFlag = 0;
 UINT8 Ep2DataOUTLen = 0;
 __aligned(4) UINT8 Ep2OUTDataBuf[MAX_PACKET_SIZE];
 
-/* ±£´æUSBÖÐ¶ÏµÄ×´Ì¬ ->¸Ä³É¼¸×éµÄ²Ù×÷·½Ê½ */
+/* ï¿½ï¿½ï¿½ï¿½USBï¿½Ð¶Ïµï¿½×´Ì¬ ->ï¿½Ä³É¼ï¿½ï¿½ï¿½Ä²ï¿½ï¿½ï¿½ï¿½ï¿½Ê½ */
 #define USB_IRQ_FLAG_NUM     4
 
 UINT8 usb_irq_w_idx = 0;
@@ -251,7 +249,7 @@ volatile UINT8 usb_irq_flag[USB_IRQ_FLAG_NUM];
 UINT8 cdc_uart_sta_trans_step = 0;
 UINT8 ven_ep1_trans_step = 0;
 
-/* ¶Ëµã0Ã¶¾ÙÉÏ´«Ö¡´¦Àí */
+/* ï¿½Ëµï¿½0Ã¶ï¿½ï¿½ï¿½Ï´ï¿½Ö¡ï¿½ï¿½ï¿½ï¿½ */
 UINT8 ep0_send_buf[256];
 
 /**********************************************************/
@@ -271,173 +269,172 @@ const UINT8 *pDescr;
 #define HAL_UART_TWO_STOP_BITS               2
 
 /* Parity settings */
-#define HAL_UART_NO_PARITY                   0x00                              //ÎÞÐ£Ñé
-#define HAL_UART_ODD_PARITY                  0x01                              //ÆæÐ£Ñé
-#define HAL_UART_EVEN_PARITY                 0x02                              //Å¼Ð£Ñé
-#define HAL_UART_MARK_PARITY                 0x03                              //ÖÃ1 mark
-#define HAL_UART_SPACE_PARITY                0x04                              //¿Õ°×Î» space
+#define HAL_UART_NO_PARITY                   0x00                              //ï¿½ï¿½Ð£ï¿½ï¿½
+#define HAL_UART_ODD_PARITY                  0x01                              //ï¿½ï¿½Ð£ï¿½ï¿½
+#define HAL_UART_EVEN_PARITY                 0x02                              //Å¼Ð£ï¿½ï¿½
+#define HAL_UART_MARK_PARITY                 0x03                              //ï¿½ï¿½1 mark
+#define HAL_UART_SPACE_PARITY                0x04                              //ï¿½Õ°ï¿½Î» space
 
 
-/* ¶Ëµã×´Ì¬ÉèÖÃº¯Êý */
+/* ï¿½Ëµï¿½×´Ì¬ï¿½ï¿½ï¿½Ãºï¿½ï¿½ï¿½ */
 void USBDevEPnINSetStatus(UINT8 ep_num, UINT8 type, UINT8 sta);
 
 /*******************************************************************************
 * Function Name  : CH341RegWrite
-* Description    : Ð´Èë CH341µÄ¼Ä´æÆ÷
-* Input          : reg_add£ºÐ´Èë¼Ä´æÆ÷µØÖ·
-                   reg_val£ºÐ´Èë¼Ä´æÆ÷µÄÖµ
+* Description    : Ð´ï¿½ï¿½ CH341ï¿½Ä¼Ä´ï¿½ï¿½ï¿½
+* Input          : reg_addï¿½ï¿½Ð´ï¿½ï¿½Ä´ï¿½ï¿½ï¿½ï¿½ï¿½Ö·
+									reg_valï¿½ï¿½Ð´ï¿½ï¿½Ä´ï¿½ï¿½ï¿½ï¿½ï¿½Öµ
 * Output         : None
 * Return         : None
 *******************************************************************************/
 void CH341RegWrite(UINT8 reg_add,UINT8 reg_val)
 {
-  UINT8 find_idx;
-  UINT8 find_flag;
-  UINT8 i;
+	UINT8 find_idx;
+	UINT8 find_flag;
+	UINT8 i;
 
-  find_flag = 0;
-  find_idx = 0;
-  for(i=0; i<CH341_REG_NUM; i++)
-  {
-    if(CH341_Reg_Add[i] == reg_add)
-    {
-      find_flag = 1;
-      break;
-    }
-    if(CH341_Reg_Add[i] == 0xff)
-    {
-      find_flag = 0;
-      break;
-    }
-  }
-  find_idx = i;
-  if(find_flag)
-  {
-    CH341_Reg_val[find_idx] = reg_val;
-  }
-  else
-  {
-    CH341_Reg_Add[find_idx] = reg_add;
-    CH341_Reg_val[find_idx] = reg_val;
-  }
+	find_flag = 0;
+	find_idx = 0;
+	for(i=0; i<CH341_REG_NUM; i++)
+	{
+		if(CH341_Reg_Add[i] == reg_add)
+		{
+			find_flag = 1;
+			break;
+		}
+		if(CH341_Reg_Add[i] == 0xff)
+		{
+			find_flag = 0;
+			break;
+		}
+	}
+	find_idx = i;
+	if(find_flag)
+	{
+		CH341_Reg_val[find_idx] = reg_val;
+	}
+	else
+	{
+		CH341_Reg_Add[find_idx] = reg_add;
+		CH341_Reg_val[find_idx] = reg_val;
+	}
 
-  switch(reg_add)
-  {
-    case 0x06:break; //IO
-    case 0x07:break; //IO
-    case 0x18: //SFR_UART_CTRL -->´®¿ÚµÄ²ÎÊý¼Ä´æÆ÷
-    {
-      UINT8 reg_uart_ctrl;
-      UINT8 data_bit_val;
-      UINT8 stop_bit_val;
-      UINT8 parity_val;
-      UINT8 break_en;
+	switch(reg_add)
+	{
+		case 0x06:break; //IO
+		case 0x07:break; //IO
+		case 0x18: //SFR_UART_CTRL -->ï¿½ï¿½ï¿½ÚµÄ²ï¿½ï¿½ï¿½ï¿½Ä´ï¿½ï¿½ï¿½
+		{
+			UINT8 reg_uart_ctrl;
+			UINT8 data_bit_val;
+			UINT8 stop_bit_val;
+			UINT8 parity_val;
 
-      reg_uart_ctrl = reg_val;
-      /* breakÎ» */
-      break_en = (reg_uart_ctrl & 0x40)?(0):(1);
+			reg_uart_ctrl = reg_val;
+			/* breakÎ» */
+			//break_en = (reg_uart_ctrl & 0x40)?(0):(1);
 //      SetUART0BreakENStatus(break_en);
 
-      data_bit_val = reg_uart_ctrl & 0x03;
-      if   (data_bit_val == 0x00)   data_bit_val = HAL_UART_5_BITS_PER_CHAR;
-      else if(data_bit_val == 0x01) data_bit_val = HAL_UART_6_BITS_PER_CHAR;
-      else if(data_bit_val == 0x02) data_bit_val = HAL_UART_7_BITS_PER_CHAR;
-      else if(data_bit_val == 0x03) data_bit_val = HAL_UART_8_BITS_PER_CHAR;
+			data_bit_val = reg_uart_ctrl & 0x03;
+			if   (data_bit_val == 0x00)   data_bit_val = HAL_UART_5_BITS_PER_CHAR;
+			else if(data_bit_val == 0x01) data_bit_val = HAL_UART_6_BITS_PER_CHAR;
+			else if(data_bit_val == 0x02) data_bit_val = HAL_UART_7_BITS_PER_CHAR;
+			else if(data_bit_val == 0x03) data_bit_val = HAL_UART_8_BITS_PER_CHAR;
 
-      stop_bit_val = reg_uart_ctrl & 0x04;
-      if(stop_bit_val) stop_bit_val = HAL_UART_TWO_STOP_BITS;
-      else             stop_bit_val = HAL_UART_ONE_STOP_BIT;
+			stop_bit_val = reg_uart_ctrl & 0x04;
+			if(stop_bit_val) stop_bit_val = HAL_UART_TWO_STOP_BITS;
+			else             stop_bit_val = HAL_UART_ONE_STOP_BIT;
 
-      parity_val = reg_uart_ctrl & (0x38);
-      if(parity_val == 0x00)      parity_val = HAL_UART_NO_PARITY;
-      else if(parity_val == 0x08) parity_val = HAL_UART_ODD_PARITY;
-      else if(parity_val == 0x18) parity_val = HAL_UART_EVEN_PARITY;
-      else if(parity_val == 0x28) parity_val = HAL_UART_MARK_PARITY;
-      else if(parity_val == 0x38) parity_val = HAL_UART_SPACE_PARITY;
+			parity_val = reg_uart_ctrl & (0x38);
+			if(parity_val == 0x00)      parity_val = HAL_UART_NO_PARITY;
+			else if(parity_val == 0x08) parity_val = HAL_UART_ODD_PARITY;
+			else if(parity_val == 0x18) parity_val = HAL_UART_EVEN_PARITY;
+			else if(parity_val == 0x28) parity_val = HAL_UART_MARK_PARITY;
+			else if(parity_val == 0x38) parity_val = HAL_UART_SPACE_PARITY;
 
-      //Uart0Para.BaudRate;
-      Uart0Para.StopBits = stop_bit_val;
-      Uart0Para.ParityType = parity_val;
-      Uart0Para.DataBits = data_bit_val;
+			//Uart0Para.BaudRate;
+			Uart0Para.StopBits = stop_bit_val;
+			Uart0Para.ParityType = parity_val;
+			Uart0Para.DataBits = data_bit_val;
 
-      dg_log("CH341 set para:%d %d %d break:%02x\r\n",data_bit_val,(int)stop_bit_val,parity_val,break_en);
+			dg_log("CH341 set para:%d %d %d break:%02x\r\n",data_bit_val,(int)stop_bit_val,parity_val,break_en);
 
-      //Ö±½ÓÉèÖÃ¼Ä´æÆ÷
-      VENSer0ParaChange = 1;
-      break;
-    }
-    case 0x25: break;
-    case 0x27:
-    {
-      dg_log("modem set:%02x\r\n",reg_val);
+			//Ö±ï¿½ï¿½ï¿½ï¿½ï¿½Ã¼Ä´ï¿½ï¿½ï¿½
+			VENSer0ParaChange = 1;
+			break;
+		}
+		case 0x25: break;
+		case 0x27:
+		{
+			dg_log("modem set:%02x\r\n",reg_val);
 //      SetUART0ModemVendorSta(reg_val);
-      break;
-    }
-  }
+			break;
+		}
+	}
 }
 
 /*******************************************************************************
 * Function Name  : CH341RegRead
-* Description    : ¶ÁÈ¡ CH341µÄ¼Ä´æÆ÷
-* Input          : reg_add£º¶ÁÈ¡µÄ¼Ä´æÆ÷µØÖ·
-                   reg_val£º¶ÁÈ¡µÄ¼Ä´æÆ÷µÄÖµ´æ·ÅÖ¸Õë
+* Description    : ï¿½ï¿½È¡ CH341ï¿½Ä¼Ä´ï¿½ï¿½ï¿½
+* Input          : reg_addï¿½ï¿½ï¿½ï¿½È¡ï¿½Ä¼Ä´ï¿½ï¿½ï¿½ï¿½ï¿½Ö·
+									reg_valï¿½ï¿½ï¿½ï¿½È¡ï¿½Ä¼Ä´ï¿½ï¿½ï¿½ï¿½ï¿½Öµï¿½ï¿½ï¿½Ö¸ï¿½ï¿½
 * Output         : None
-* Return         : ¼Ä´æÆ÷´æÔÚ
+* Return         : ï¿½Ä´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 *******************************************************************************/
 UINT8 CH341RegRead(UINT8 reg_add,UINT8 *reg_val)
 {
-  UINT8 find_flag;
-  UINT8 i;
+	UINT8 find_flag;
+	UINT8 i;
 
-  find_flag = 0;
-  *reg_val = 0;
-  for(i=0; i<CH341_REG_NUM; i++)
-  {
-    if(CH341_Reg_Add[i] == reg_add)   //ÕÒµ½ÏàÍ¬µØÖ·µÄ¼Ä´æÆ÷
-    {
-      find_flag = 1;
-      *reg_val = CH341_Reg_val[i];
-      break;
-    }
-    if(CH341_Reg_Add[i] == 0xff)      //ÕÒµ½µ±Ç°µÚÒ»¸ö¿Õ
-    {
-      find_flag = 0;
-      *reg_val = 0x00;
-      break;
-    }
-  }
+	find_flag = 0;
+	*reg_val = 0;
+	for(i=0; i<CH341_REG_NUM; i++)
+	{
+		if(CH341_Reg_Add[i] == reg_add)   //ï¿½Òµï¿½ï¿½ï¿½Í¬ï¿½ï¿½Ö·ï¿½Ä¼Ä´ï¿½ï¿½ï¿½
+		{
+			find_flag = 1;
+			*reg_val = CH341_Reg_val[i];
+			break;
+		}
+		if(CH341_Reg_Add[i] == 0xff)      //ï¿½Òµï¿½ï¿½ï¿½Ç°ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½
+		{
+			find_flag = 0;
+			*reg_val = 0x00;
+			break;
+		}
+	}
 
-  switch(reg_add)
-  {
-    case 0x06:
-    {
-      UINT8  reg_pb_val = 0;
-      *reg_val = reg_pb_val;
-      break;
-    }
-    case 0x07:
-    {
-      UINT8  reg_pc_val = 0;
-      *reg_val = reg_pc_val;
-      break;
-    }
-    case 0x18:   //SFR_UART_CTRL -->´®¿ÚµÄ²ÎÊý¼Ä´æÆ÷
-    {
-      UINT8  reg_uart_ctrl_val;
-      UINT8  ram_uart_ctrl_val;
+	switch(reg_add)
+	{
+		case 0x06:
+		{
+			UINT8  reg_pb_val = 0;
+			*reg_val = reg_pb_val;
+			break;
+		}
+		case 0x07:
+		{
+			UINT8  reg_pc_val = 0;
+			*reg_val = reg_pc_val;
+			break;
+		}
+		case 0x18:   //SFR_UART_CTRL -->ï¿½ï¿½ï¿½ÚµÄ²ï¿½ï¿½ï¿½ï¿½Ä´ï¿½ï¿½ï¿½
+		{
+			UINT8  reg_uart_ctrl_val;
+			UINT8  ram_uart_ctrl_val;
 
-      reg_uart_ctrl_val = R8_UART_LCR;
-      //±£ÁôbreakÎ»
-      ram_uart_ctrl_val = *reg_val;
-      reg_uart_ctrl_val |= (ram_uart_ctrl_val & 0x40);
-      *reg_val = reg_uart_ctrl_val;
+			reg_uart_ctrl_val = R8_UART_LCR;
+			//ï¿½ï¿½ï¿½ï¿½breakÎ»
+			ram_uart_ctrl_val = *reg_val;
+			reg_uart_ctrl_val |= (ram_uart_ctrl_val & 0x40);
+			*reg_val = reg_uart_ctrl_val;
 
-      break;
-    }
-    case 0x25:  break;
-  }
+			break;
+		}
+		case 0x25:  break;
+	}
 
-  return find_flag;
+	return find_flag;
 }
 
 /* endpoints enumeration */
@@ -451,7 +448,7 @@ UINT8 CH341RegRead(UINT8 reg_add,UINT8 *reg_val)
 #define ENDP_TYPE_IN                    0x00                                    /* ENDP is IN Type */
 #define ENDP_TYPE_OUT                   0x01                                    /* ENDP is OUT Type */
 
-/* ¶ËµãÓ¦´ð×´Ì¬¶¨Òå */
+/* ï¿½Ëµï¿½Ó¦ï¿½ï¿½×´Ì¬ï¿½ï¿½ï¿½ï¿½ */
 /* OUT */
 #define OUT_ACK                         0
 #define OUT_TIMOUT                      1
@@ -463,95 +460,94 @@ UINT8 CH341RegRead(UINT8 reg_add,UINT8 *reg_val)
 #define IN_NAK                          2
 #define IN_STALL                        3
 
-/* USBÉè±¸¸÷ÖÖ±êÖ¾Î»¶¨Òå */
-#define DEF_BIT_USB_RESET               0x01                                    /* ×ÜÏß¸´Î»±êÖ¾ */
-#define DEF_BIT_USB_DEV_DESC            0x02                                    /* »ñÈ¡¹ýÉè±¸ÃèÊö·û±êÖ¾ */
-#define DEF_BIT_USB_ADDRESS             0x04                                    /* ÉèÖÃ¹ýµØÖ·±êÖ¾ */
-#define DEF_BIT_USB_CFG_DESC            0x08                                    /* »ñÈ¡¹ýÅäÖÃÃèÊö·û±êÖ¾ */
-#define DEF_BIT_USB_SET_CFG             0x10                                    /* ÉèÖÃ¹ýÅäÖÃÖµ±êÖ¾ */
-#define DEF_BIT_USB_WAKE                0x20                                    /* USB»½ÐÑ±êÖ¾ */
-#define DEF_BIT_USB_SUPD                0x40                                    /* USB×ÜÏß¹ÒÆð±êÖ¾ */
-#define DEF_BIT_USB_HS                  0x80                                    /* USB¸ßËÙ¡¢È«ËÙ±êÖ¾ */
+/* USBï¿½è±¸ï¿½ï¿½ï¿½Ö±ï¿½Ö¾Î»ï¿½ï¿½ï¿½ï¿½ */
+#define DEF_BIT_USB_RESET               0x01                                    /* ï¿½ï¿½ï¿½ß¸ï¿½Î»ï¿½ï¿½Ö¾ */
+#define DEF_BIT_USB_DEV_DESC            0x02                                    /* ï¿½ï¿½È¡ï¿½ï¿½ï¿½è±¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö¾ */
+#define DEF_BIT_USB_ADDRESS             0x04                                    /* ï¿½ï¿½ï¿½Ã¹ï¿½ï¿½ï¿½Ö·ï¿½ï¿½Ö¾ */
+#define DEF_BIT_USB_CFG_DESC            0x08                                    /* ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö¾ */
+#define DEF_BIT_USB_SET_CFG             0x10                                    /* ï¿½ï¿½ï¿½Ã¹ï¿½ï¿½ï¿½ï¿½ï¿½Öµï¿½ï¿½Ö¾ */
+#define DEF_BIT_USB_WAKE                0x20                                    /* USBï¿½ï¿½ï¿½Ñ±ï¿½Ö¾ */
+#define DEF_BIT_USB_SUPD                0x40                                    /* USBï¿½ï¿½ï¿½ß¹ï¿½ï¿½ï¿½ï¿½Ö¾ */
+#define DEF_BIT_USB_HS                  0x80                                    /* USBï¿½ï¿½ï¿½Ù¡ï¿½È«ï¿½Ù±ï¿½Ö¾ */
 
-/* ÖÐ¶Ï´¦Àíº¯Êý */
+/* ï¿½Ð¶Ï´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
 __attribute__((interrupt("WCH-Interrupt-fast")))
 __attribute__((section(".highcode")))
 void USB_IRQHandler(void)
 {
-  UINT8   i;
-  UINT8   j;
+	UINT8   j;
 
-  if(R8_USB_INT_FG & RB_UIF_TRANSFER)
-  {
-    /* ³ýsetup°ü´¦Àí */
-    if((R8_USB_INT_ST & MASK_UIS_TOKEN) != MASK_UIS_TOKEN){     // ·Ç¿ÕÏÐ
-      /* Ö±½ÓÐ´Èë */
-      usb_irq_flag[usb_irq_w_idx] = 1;
-      usb_irq_pid[usb_irq_w_idx]  = R8_USB_INT_ST;  //& 0x3f;//(0x30 | 0x0F);
-      usb_irq_len[usb_irq_w_idx]  = R8_USB_RX_LEN;
+	if(R8_USB_INT_FG & RB_UIF_TRANSFER)
+	{
+		/* ï¿½ï¿½setupï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
+		if((R8_USB_INT_ST & MASK_UIS_TOKEN) != MASK_UIS_TOKEN){     // ï¿½Ç¿ï¿½ï¿½ï¿½
+			/* Ö±ï¿½ï¿½Ð´ï¿½ï¿½ */
+			usb_irq_flag[usb_irq_w_idx] = 1;
+			usb_irq_pid[usb_irq_w_idx]  = R8_USB_INT_ST;  //& 0x3f;//(0x30 | 0x0F);
+			usb_irq_len[usb_irq_w_idx]  = R8_USB_RX_LEN;
 
-      switch(usb_irq_pid[usb_irq_w_idx]& 0x3f){   //·ÖÎöµ±Ç°µÄ¶Ëµã
-        case UIS_TOKEN_OUT | 2:{
-          if( R8_USB_INT_FG & RB_U_TOG_OK ){   //²»Í¬²½µÄÊý¾Ý°ü½«¶ªÆú
-            R8_UEP2_CTRL ^=  RB_UEP_R_TOG;
-            R8_UEP2_CTRL = (R8_UEP2_CTRL & 0xf3) | 0x08; //OUT_NAK
-            /* ±£´æÊý¾Ý */
-            for(j=0; j<(MAX_PACKET_SIZE/4); j++)
-              ((UINT32 *)Ep2OUTDataBuf)[j] = ((UINT32 *)Ep2Buffer)[j];
-          }
-          else usb_irq_flag[usb_irq_w_idx] = 0;
-        }break;
-        case UIS_TOKEN_IN | 2:{ //endpoint 2# ÅúÁ¿¶ËµãÉÏ´«Íê³É
-          R8_UEP2_CTRL ^=  RB_UEP_T_TOG;
-          R8_UEP2_CTRL = (R8_UEP2_CTRL & 0xfc) | IN_NAK; //IN_NAK
-        }break;
-        case UIS_TOKEN_OUT | 1:{
-          if( R8_USB_INT_FG & RB_U_TOG_OK ){   //²»Í¬²½µÄÊý¾Ý°ü½«¶ªÆú
-            R8_UEP1_CTRL ^=  RB_UEP_R_TOG;
-            R8_UEP1_CTRL = (R8_UEP1_CTRL & 0xf3) | 0x08; //OUT_NAK
-            /* ±£´æÊý¾Ý */
-            for(j=0; j<(MAX_PACKET_SIZE/4); j++)
-              ((UINT32 *)Ep1OUTDataBuf)[j] = ((UINT32 *)Ep1Buffer)[j];
-          }
-          else usb_irq_flag[usb_irq_w_idx] = 0;
-        }break;
-        case UIS_TOKEN_IN | 1:{  //endpoint 1# ÅúÁ¿¶ËµãÉÏ´«Íê³É
-          R8_UEP1_CTRL ^=  RB_UEP_T_TOG;
-          R8_UEP1_CTRL = (R8_UEP1_CTRL & 0xfc) | IN_NAK; //IN_NAK
-        }break;
-        case UIS_TOKEN_OUT | 0:{    // endpoint 0
-          if( R8_USB_INT_FG & RB_U_TOG_OK )   //²»Í¬²½µÄÊý¾Ý°ü½«¶ªÆú
-            R8_UEP0_CTRL = (R8_UEP0_CTRL & 0xf3) | 0x08; //OUT_NAK
-          else usb_irq_flag[usb_irq_w_idx] = 0;
-        }break;
-        case UIS_TOKEN_IN | 0:{  //endpoint 0
-          R8_UEP0_CTRL = (R8_UEP0_CTRL & 0xfc) | IN_NAK; //IN_NAK
-        }break;
-      }
+			switch(usb_irq_pid[usb_irq_w_idx]& 0x3f){   //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç°ï¿½Ä¶Ëµï¿½
+				case UIS_TOKEN_OUT | 2:{
+					if( R8_USB_INT_FG & RB_U_TOG_OK ){   //ï¿½ï¿½Í¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+						R8_UEP2_CTRL ^=  RB_UEP_R_TOG;
+						R8_UEP2_CTRL = (R8_UEP2_CTRL & 0xf3) | 0x08; //OUT_NAK
+						/* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
+						for(j=0; j<(MAX_PACKET_SIZE/4); j++)
+							((UINT32 *)Ep2OUTDataBuf)[j] = ((UINT32 *)Ep2Buffer)[j];
+					}
+					else usb_irq_flag[usb_irq_w_idx] = 0;
+				}break;
+				case UIS_TOKEN_IN | 2:{ //endpoint 2# ï¿½ï¿½ï¿½ï¿½ï¿½Ëµï¿½ï¿½Ï´ï¿½ï¿½ï¿½ï¿½
+					R8_UEP2_CTRL ^=  RB_UEP_T_TOG;
+					R8_UEP2_CTRL = (R8_UEP2_CTRL & 0xfc) | IN_NAK; //IN_NAK
+				}break;
+				case UIS_TOKEN_OUT | 1:{
+					if( R8_USB_INT_FG & RB_U_TOG_OK ){   //ï¿½ï¿½Í¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+						R8_UEP1_CTRL ^=  RB_UEP_R_TOG;
+						R8_UEP1_CTRL = (R8_UEP1_CTRL & 0xf3) | 0x08; //OUT_NAK
+						/* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
+						for(j=0; j<(MAX_PACKET_SIZE/4); j++)
+							((UINT32 *)Ep1OUTDataBuf)[j] = ((UINT32 *)Ep1Buffer)[j];
+					}
+					else usb_irq_flag[usb_irq_w_idx] = 0;
+				}break;
+				case UIS_TOKEN_IN | 1:{  //endpoint 1# ï¿½ï¿½ï¿½ï¿½ï¿½Ëµï¿½ï¿½Ï´ï¿½ï¿½ï¿½ï¿½
+					R8_UEP1_CTRL ^=  RB_UEP_T_TOG;
+					R8_UEP1_CTRL = (R8_UEP1_CTRL & 0xfc) | IN_NAK; //IN_NAK
+				}break;
+				case UIS_TOKEN_OUT | 0:{    // endpoint 0
+					if( R8_USB_INT_FG & RB_U_TOG_OK )   //ï¿½ï¿½Í¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+						R8_UEP0_CTRL = (R8_UEP0_CTRL & 0xf3) | 0x08; //OUT_NAK
+					else usb_irq_flag[usb_irq_w_idx] = 0;
+				}break;
+				case UIS_TOKEN_IN | 0:{  //endpoint 0
+					R8_UEP0_CTRL = (R8_UEP0_CTRL & 0xfc) | IN_NAK; //IN_NAK
+				}break;
+			}
 
-      /* ÇÐµ½ÏÂÒ»¸öÐ´µØÖ· */
-      if(usb_irq_flag[usb_irq_w_idx]){
-        usb_irq_w_idx++;
-        if(usb_irq_w_idx >= USB_IRQ_FLAG_NUM) usb_irq_w_idx = 0;
-      }
+			/* ï¿½Ðµï¿½ï¿½ï¿½Ò»ï¿½ï¿½Ð´ï¿½ï¿½Ö· */
+			if(usb_irq_flag[usb_irq_w_idx]){
+				usb_irq_w_idx++;
+				if(usb_irq_w_idx >= USB_IRQ_FLAG_NUM) usb_irq_w_idx = 0;
+			}
 
-      R8_USB_INT_FG = RB_UIF_TRANSFER;
-    }
+			R8_USB_INT_FG = RB_UIF_TRANSFER;
+		}
 
-    /* setup°ü´¦Àí */
-    if(R8_USB_INT_ST & RB_UIS_SETUP_ACT){
-      /* ÓëÖ®Ç°µÄ´¦Àí½Ó¹ì -- UIS_TOKEN_SETUP */
-      /* Ö±½ÓÐ´Èë */
-      usb_irq_flag[usb_irq_w_idx] = 1;
-      usb_irq_pid[usb_irq_w_idx]  = UIS_TOKEN_SETUP | 0;  //±£ÁôÖ®Ç°µÄ±êÖ¾
-      usb_irq_len[usb_irq_w_idx]  = 8;
-      /* ÇÐµ½ÏÂÒ»¸öÐ´µØÖ· */
-      usb_irq_w_idx++;
-      if(usb_irq_w_idx >= USB_IRQ_FLAG_NUM) usb_irq_w_idx = 0;
+		/* setupï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
+		if(R8_USB_INT_ST & RB_UIS_SETUP_ACT){
+			/* ï¿½ï¿½Ö®Ç°ï¿½Ä´ï¿½ï¿½ï¿½ï¿½Ó¹ï¿½ -- UIS_TOKEN_SETUP */
+			/* Ö±ï¿½ï¿½Ð´ï¿½ï¿½ */
+			usb_irq_flag[usb_irq_w_idx] = 1;
+			usb_irq_pid[usb_irq_w_idx]  = UIS_TOKEN_SETUP | 0;  //ï¿½ï¿½ï¿½ï¿½Ö®Ç°ï¿½Ä±ï¿½Ö¾
+			usb_irq_len[usb_irq_w_idx]  = 8;
+			/* ï¿½Ðµï¿½ï¿½ï¿½Ò»ï¿½ï¿½Ð´ï¿½ï¿½Ö· */
+			usb_irq_w_idx++;
+			if(usb_irq_w_idx >= USB_IRQ_FLAG_NUM) usb_irq_w_idx = 0;
 
-      R8_USB_INT_FG = RB_UIF_TRANSFER;
-    }
-  }
+			R8_USB_INT_FG = RB_UIF_TRANSFER;
+		}
+	}
 }
 
 UINT8 Ep4DataINFlag;
@@ -563,17 +559,17 @@ UINT8 Ep3DataINFlag;
 UINT8 Ep3DataOUTFlag = 0;
 UINT8 Ep4DataOUTFlag = 0;
 
-/* CH341Ïà¹ØµÄÃüÁîÖ¡ */
-#define DEF_VEN_DEBUG_READ              0X95         /* ¶ÁÁ½×é¼Ä´æÆ÷ */
-#define DEF_VEN_DEBUG_WRITE             0X9A         /* Ð´Á½×é¼Ä´æÆ÷ */
-#define DEF_VEN_UART_INIT             0XA1         /* ³õÊ¼»¯´®¿Ú */
-#define DEF_VEN_UART_M_OUT              0XA4         /* ÉèÖÃMODEMÐÅºÅÊä³ö */
-#define DEF_VEN_BUF_CLEAR             0XB2         /* Çå³ýÎ´Íê³ÉµÄÊý¾Ý */
-#define DEF_VEN_I2C_CMD_X             0X54         /* ·¢³öI2C½Ó¿ÚµÄÃüÁî,Á¢¼´Ö´ÐÐ */
-#define DEF_VEN_DELAY_MS              0X5E         /* ÒÔÙñÃëÎªµ¥Î»ÑÓÊ±Ö¸¶¨Ê±¼ä */
-#define DEF_VEN_GET_VER                 0X5F         /* »ñÈ¡Ð¾Æ¬°æ±¾ */
+/* CH341ï¿½ï¿½Øµï¿½ï¿½ï¿½ï¿½ï¿½Ö¡ */
+#define DEF_VEN_DEBUG_READ              0X95         /* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä´ï¿½ï¿½ï¿½ */
+#define DEF_VEN_DEBUG_WRITE             0X9A         /* Ð´ï¿½ï¿½ï¿½ï¿½Ä´ï¿½ï¿½ï¿½ */
+#define DEF_VEN_UART_INIT             0XA1         /* ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
+#define DEF_VEN_UART_M_OUT              0XA4         /* ï¿½ï¿½ï¿½ï¿½MODEMï¿½Åºï¿½ï¿½ï¿½ï¿½ */
+#define DEF_VEN_BUF_CLEAR             0XB2         /* ï¿½ï¿½ï¿½Î´ï¿½ï¿½Éµï¿½ï¿½ï¿½ï¿½ï¿½ */
+#define DEF_VEN_I2C_CMD_X             0X54         /* ï¿½ï¿½ï¿½ï¿½I2Cï¿½Ó¿Úµï¿½ï¿½ï¿½ï¿½ï¿½,ï¿½ï¿½ï¿½ï¿½Ö´ï¿½ï¿½ */
+#define DEF_VEN_DELAY_MS              0X5E         /* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Îªï¿½ï¿½Î»ï¿½ï¿½Ê±Ö¸ï¿½ï¿½Ê±ï¿½ï¿½ */
+#define DEF_VEN_GET_VER                 0X5F         /* ï¿½ï¿½È¡Ð¾Æ¬ï¿½æ±¾ */
 
-/* ÀàÇëÇó */
+/* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
 //  3.1 Requests---Abstract Control Model
 #define DEF_SEND_ENCAPSULATED_COMMAND  0x00
 #define DEF_GET_ENCAPSULATED_RESPONSE  0x01
@@ -592,1383 +588,1344 @@ UINT8 Ep4DataOUTFlag = 0;
 #define DEF_SERIAL_STATE               0x20
 
 __HIGH_CODE
-void USB_IRQProcessHandler( void )   /* USBÖÐ¶Ï·þÎñ³ÌÐò */
+void USB_IRQProcessHandler( void )   /* USBï¿½Ð¶Ï·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
 {
-  static  PUINT8  pDescr;
-  static  UINT8 irq_idx = 0;
-  UINT8 len;
-  UINT32  bps;
-  UINT8   buf[8];
-  UINT8   data_dir = 0;   //Êý¾Ý·½Ïò
-  UINT8   ep_idx, ep_pid;
-  UINT8   i;
-  UINT8   ep_sta;
+	static  PUINT8  pDescr;
+	UINT8 len;
+	UINT32  bps;
+	UINT8   buf[8];
+	UINT8   data_dir = 0;   //ï¿½ï¿½ï¿½Ý·ï¿½ï¿½ï¿½
+	UINT8   i;
 
-  //for(i=0; i<USB_IRQ_FLAG_NUM; i++)
-  {
-    i = usb_irq_r_idx;
+	//for(i=0; i<USB_IRQ_FLAG_NUM; i++)
+	{
+		i = usb_irq_r_idx;
 
-    if(usb_irq_flag[i])
-    {
-      usb_irq_r_idx++;
-      if(usb_irq_r_idx >= USB_IRQ_FLAG_NUM) usb_irq_r_idx = 0;
+		if(usb_irq_flag[i])
+		{
+			usb_irq_r_idx++;
+			if(usb_irq_r_idx >= USB_IRQ_FLAG_NUM) usb_irq_r_idx = 0;
 
-      switch ( usb_irq_pid[i] & 0x3f )   // ·ÖÎö²Ù×÷ÁîÅÆºÍ¶ËµãºÅ
-      {
-        case UIS_TOKEN_IN | 4:  //endpoint 4# ÅúÁ¿¶ËµãÉÏ´«Íê³É
-        {
-          Ep4DataINFlag = ~0;
-          break;
-        }
-        case UIS_TOKEN_IN | 3:  //endpoint 3# ÅúÁ¿¶ËµãÉÏ´«Íê³É
-        {
-          Ep3DataINFlag = ~0;
-          break;
-        }
-        case UIS_TOKEN_OUT | 2:    // endpoint 2# ÅúÁ¿¶ËµãÏÂ´«Íê³É
-        {
-          dg_log("usb_rec\n");
-          len = usb_irq_len[i];
-          {
-            //Ep2OUTDataBuf
-            //for(int i = 0;i<len;i++)
-            //dg_log("%02x  ",Ep2OUTDataBuf[i]);
-            //dg_log("\n");
-            //TODO
-            SendUSBData(Ep2OUTDataBuf, len);  //probably vendor lol idc
+			switch ( usb_irq_pid[i] & 0x3f )   // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÆºÍ¶Ëµï¿½ï¿½
+			{
+				case UIS_TOKEN_IN | 4:  //endpoint 4# ï¿½ï¿½ï¿½ï¿½ï¿½Ëµï¿½ï¿½Ï´ï¿½ï¿½ï¿½ï¿½
+				{
+					Ep4DataINFlag = ~0;
+					break;
+				}
+				case UIS_TOKEN_IN | 3:  //endpoint 3# ï¿½ï¿½ï¿½ï¿½ï¿½Ëµï¿½ï¿½Ï´ï¿½ï¿½ï¿½ï¿½
+				{
+					Ep3DataINFlag = ~0;
+					break;
+				}
+				case UIS_TOKEN_OUT | 2:    // endpoint 2# ï¿½ï¿½ï¿½ï¿½ï¿½Ëµï¿½ï¿½Â´ï¿½ï¿½ï¿½ï¿½
+				{
+					dg_log("usb_rec\n");
+					len = usb_irq_len[i];
+					{
+						//Ep2OUTDataBuf
+						//for(int i = 0;i<len;i++)
+						//dg_log("%02x  ",Ep2OUTDataBuf[i]);
+						//dg_log("\n");
+						//TODO
+						//SendUSBData(Ep2OUTDataBuf, len);  //probably vendor lol idc
+			sendCDCData(Ep1OUTDataBuf, len);
 
-            //CH341µÄÊý¾ÝÏÂ·¢
-            Ep2DataOUTFlag = 1;
-            Ep2DataOUTLen = len;
-            VENSer0SendFlag = 1;
-            PFIC_DisableIRQ(USB_IRQn);
-            R8_UEP2_CTRL = R8_UEP2_CTRL & 0xf3; //OUT_ACK
-            PFIC_EnableIRQ(USB_IRQn);
-          }
-          break;
-        }
-        case UIS_TOKEN_IN | 2:  //endpoint 2# ÅúÁ¿¶ËµãÉÏ´«Íê³É
-        {
-          Ep2DataINFlag = 1;
-          break;
-        }
-        case UIS_TOKEN_OUT | 1:    // endpoint 1# ÅúÁ¿¶ËµãÏÂ´«Íê³É
-        {
-          dg_log("usb_rec\n");
-          len = usb_irq_len[i];
-          //Ep1OUTDataBuf
-          //for(int i = 0;i<len;i++)
-          //dg_log("%02x  ",Ep1OUTDataBuf[i]);
-          //dg_log("\n");
-          processCDCData(Ep1OUTDataBuf, len);
-          //SendUSBData(Ep1OUTDataBuf, len); //TODO this is CDC recv
+						//CH341ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â·ï¿½
+						Ep2DataOUTFlag = 1;
+						Ep2DataOUTLen = len;
+						VENSer0SendFlag = 1;
+						PFIC_DisableIRQ(USB_IRQn);
+						R8_UEP2_CTRL = R8_UEP2_CTRL & 0xf3; //OUT_ACK
+						PFIC_EnableIRQ(USB_IRQn);
+					}
+					break;
+				}
+				case UIS_TOKEN_IN | 2:  //endpoint 2# ï¿½ï¿½ï¿½ï¿½ï¿½Ëµï¿½ï¿½Ï´ï¿½ï¿½ï¿½ï¿½
+				{
+					Ep2DataINFlag = 1;
+					break;
+				}
+				case UIS_TOKEN_OUT | 1:    // endpoint 1# ï¿½ï¿½ï¿½ï¿½ï¿½Ëµï¿½ï¿½Â´ï¿½ï¿½ï¿½ï¿½
+				{
+					dg_log("usb_rec\n");
+					len = usb_irq_len[i];
+					//Ep1OUTDataBuf
+					//for(int i = 0;i<len;i++)
+					//dg_log("%02x  ",Ep1OUTDataBuf[i]);
+					//dg_log("\n");
+					processCDCData(Ep1OUTDataBuf, len);
+			sendCDCData(Ep1OUTDataBuf, len);
+					//SendUSBData(Ep1OUTDataBuf, len); //TODO this is CDC recv
 
-          //CH341µÄÊý¾ÝÏÂ·¢
-          Ep1DataOUTFlag = 1;
-          Ep1DataOUTLen = len;
-          VENSer0SendFlag = 1;
-          PFIC_DisableIRQ(USB_IRQn);
-          R8_UEP1_CTRL = R8_UEP1_CTRL & 0xf3; //OUT_ACK
-          PFIC_EnableIRQ(USB_IRQn);
-          break;
-        }
-        case UIS_TOKEN_IN | 1:   // endpoint 1# ÖÐ¶Ï¶ËµãÉÏ´«Íê³É
-        {
-          Ep1DataINFlag = 1;
-          break;
-        }
-        case UIS_TOKEN_SETUP | 0:    // endpoint 0# SETUP
-        {
-          len = usb_irq_len[i];
-          if(len == sizeof(USB_SETUP_REQ))
-          {
-            SetupLen = UsbSetupBuf->wLengthL;
-            if(UsbSetupBuf->wLengthH) SetupLen = 0xff;
+					//CH341ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â·ï¿½
+					Ep1DataOUTFlag = 1;
+					Ep1DataOUTLen = len;
+					VENSer0SendFlag = 1;
+					PFIC_DisableIRQ(USB_IRQn);
+					R8_UEP1_CTRL = R8_UEP1_CTRL & 0xf3; //OUT_ACK
+					PFIC_EnableIRQ(USB_IRQn);
+					break;
+				}
+				case UIS_TOKEN_IN | 1:   // endpoint 1# ï¿½Ð¶Ï¶Ëµï¿½ï¿½Ï´ï¿½ï¿½ï¿½ï¿½
+				{
+					Ep1DataINFlag = 1;
+					break;
+				}
+				case UIS_TOKEN_SETUP | 0:    // endpoint 0# SETUP
+				{
+					len = usb_irq_len[i];
+					if(len == sizeof(USB_SETUP_REQ))
+					{
+						SetupLen = UsbSetupBuf->wLengthL;
+						if(UsbSetupBuf->wLengthH) SetupLen = 0xff;
 
-            len = 0;                                                 // Ä¬ÈÏÎª³É¹¦²¢ÇÒÉÏ´«0³¤¶È
-            SetupReqCode = UsbSetupBuf->bRequest;
+						len = 0;                                                 // Ä¬ï¿½ï¿½Îªï¿½É¹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½0ï¿½ï¿½ï¿½ï¿½
+						SetupReqCode = UsbSetupBuf->bRequest;
 
-            /* Êý¾Ý·½Ïò */
-            data_dir = USB_REQ_TYP_OUT;
-            if(UsbSetupBuf->bRequestType & USB_REQ_TYP_IN) data_dir = USB_REQ_TYP_IN;
+						/* ï¿½ï¿½ï¿½Ý·ï¿½ï¿½ï¿½ */
+						data_dir = USB_REQ_TYP_OUT;
+						if(UsbSetupBuf->bRequestType & USB_REQ_TYP_IN) data_dir = USB_REQ_TYP_IN;
 
-            /* ³§ÉÌÇëÇó */
-            if( ( UsbSetupBuf->bRequestType & USB_REQ_TYP_MASK ) == USB_REQ_TYP_VENDOR )
-            {
-              switch(SetupReqCode)
-              {
-                case DEF_VEN_DEBUG_WRITE:  //Ð´Á½×é 0X9A
-                {
-                  UINT32 bps = 0;
-                  UINT8 write_reg_add1;
-                  UINT8 write_reg_add2;
-                  UINT8 write_reg_val1;
-                  UINT8 write_reg_val2;
+						/* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
+						if( ( UsbSetupBuf->bRequestType & USB_REQ_TYP_MASK ) == USB_REQ_TYP_VENDOR )
+						{
+							switch(SetupReqCode)
+							{
+								case DEF_VEN_DEBUG_WRITE:  //Ð´ï¿½ï¿½ï¿½ï¿½ 0X9A
+								{
+									UINT32 bps = 0;
+									UINT8 write_reg_add1;
+									UINT8 write_reg_add2;
+									UINT8 write_reg_val1;
+									UINT8 write_reg_val2;
 
-                  len = 0;
+									len = 0;
 
-                  write_reg_add1 = Ep0Buffer[2];
-                  write_reg_add2 = Ep0Buffer[3];
-                  write_reg_val1 = Ep0Buffer[4];
-                  write_reg_val2 = Ep0Buffer[5];
+									write_reg_add1 = Ep0Buffer[2];
+									write_reg_add2 = Ep0Buffer[3];
+									write_reg_val1 = Ep0Buffer[4];
+									write_reg_val2 = Ep0Buffer[5];
 
-                  /* ¸Ã×éÊÇÉèÖÃ²¨ÌØÂÊµÄ¼Ä´æÆ÷ */
-                  if((write_reg_add1 == 0x12)&&(write_reg_add2 == 0x13))
-                  {
-                    /* ²¨ÌØÂÊ´¦Àí²ÉÓÃ¼ÆËãÖµ */
-                    if((UsbSetupBuf->wIndexL==0x87)&&(UsbSetupBuf->wIndexH==0xf3))
-                    {
-                      bps = 921600;  //13 * 921600 = 11980800
-                    }
-                    else if((UsbSetupBuf->wIndexL==0x87)&&(UsbSetupBuf->wIndexH==0xd9))
-                    {
-                      bps = 307200;  //39 * 307200 = 11980800
-                    }
+									/* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã²ï¿½ï¿½ï¿½ï¿½ÊµÄ¼Ä´ï¿½ï¿½ï¿½ */
+									if((write_reg_add1 == 0x12)&&(write_reg_add2 == 0x13))
+									{
+										/* ï¿½ï¿½ï¿½ï¿½ï¿½Ê´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã¼ï¿½ï¿½ï¿½Öµ */
+										if((UsbSetupBuf->wIndexL==0x87)&&(UsbSetupBuf->wIndexH==0xf3))
+										{
+											bps = 921600;  //13 * 921600 = 11980800
+										}
+										else if((UsbSetupBuf->wIndexL==0x87)&&(UsbSetupBuf->wIndexH==0xd9))
+										{
+											bps = 307200;  //39 * 307200 = 11980800
+										}
 
-                    //ÏµÍ³Ö÷Æµ£º 36923077
-                    else if( UsbSetupBuf->wIndexL == 0x88 )
-                    {
-                      UINT32 CalClock;
-                      UINT8 CalDiv;
+										//ÏµÍ³ï¿½ï¿½Æµï¿½ï¿½ 36923077
+										else if( UsbSetupBuf->wIndexL == 0x88 )
+										{
+											UINT32 CalClock;
+											UINT8 CalDiv;
 
-                      CalClock = 36923077 / 8;
-                      CalDiv = 0 - UsbSetupBuf->wIndexH;
-                      bps = CalClock / CalDiv;
-                    }
-                    else if( UsbSetupBuf->wIndexL == 0x89 )
-                    {
-                      UINT32 CalClock;
-                      UINT8 CalDiv;
+											CalClock = 36923077 / 8;
+											CalDiv = 0 - UsbSetupBuf->wIndexH;
+											bps = CalClock / CalDiv;
+										}
+										else if( UsbSetupBuf->wIndexL == 0x89 )
+										{
+											UINT32 CalClock;
+											UINT8 CalDiv;
 
-                      CalClock = 36923077 / 8 / 256;
-                      CalDiv = 0 - UsbSetupBuf->wIndexH;
-                      bps = CalClock / CalDiv;
-                    }
-                    //ÏµÍ³Ö÷Æµ£º  32000000
-                    else if( UsbSetupBuf->wIndexL == 0x8A )
-                    {
-                      UINT32 CalClock;
-                      UINT8 CalDiv;
+											CalClock = 36923077 / 8 / 256;
+											CalDiv = 0 - UsbSetupBuf->wIndexH;
+											bps = CalClock / CalDiv;
+										}
+										//ÏµÍ³ï¿½ï¿½Æµï¿½ï¿½  32000000
+										else if( UsbSetupBuf->wIndexL == 0x8A )
+										{
+											UINT32 CalClock;
+											UINT8 CalDiv;
 
-                      CalClock = 32000000 / 8;
-                      CalDiv = 0 - UsbSetupBuf->wIndexH;
-                      bps = CalClock / CalDiv;
-                    }
-                    else if( UsbSetupBuf->wIndexL == 0x8B )
-                    {
-                      UINT32 CalClock;
-                      UINT8 CalDiv;
+											CalClock = 32000000 / 8;
+											CalDiv = 0 - UsbSetupBuf->wIndexH;
+											bps = CalClock / CalDiv;
+										}
+										else if( UsbSetupBuf->wIndexL == 0x8B )
+										{
+											UINT32 CalClock;
+											UINT8 CalDiv;
 
-                      CalClock = 32000000 / 8 / 256;
-                      CalDiv = 0 - UsbSetupBuf->wIndexH;
-                      bps = CalClock / CalDiv;
-                    }
-                    else  //340
-                    {
-                      UINT32 CalClock;
-                      UINT8 CalDiv;
+											CalClock = 32000000 / 8 / 256;
+											CalDiv = 0 - UsbSetupBuf->wIndexH;
+											bps = CalClock / CalDiv;
+										}
+										else  //340
+										{
+											UINT32 CalClock;
+											UINT8 CalDiv;
 
-                      //115384
-                      if((UsbSetupBuf->wIndexL & 0x7f) == 3)
-                      {
-                        CalClock = 6000000;
-                        CalDiv = 0 - UsbSetupBuf->wIndexH;
-                        bps = CalClock / CalDiv;
-                      }
-                      else if((UsbSetupBuf->wIndexL & 0x7f) == 2)
-                      {
-                        CalClock = 750000;  //6000000 / 8
-                        CalDiv = 0 - UsbSetupBuf->wIndexH;
-                        bps = CalClock / CalDiv;
-                      }
-                      else if((UsbSetupBuf->wIndexL & 0x7f) == 1)
-                      {
-                        CalClock = 93750; //64 ·ÖÆµ
-                        CalDiv = 0 - UsbSetupBuf->wIndexH;
-                        bps = CalClock / CalDiv;
-                      }
-                      else if((UsbSetupBuf->wIndexL & 0x7f) == 0)
-                      {
-                        CalClock = 11719;  //Ô¼512
-                        CalDiv = 0 - UsbSetupBuf->wIndexH;
-                        bps = CalClock / CalDiv;
-                      }
-                      else
-                      {
-                        bps = 115200;
-                      }
-                    }
-                    Uart0Para.BaudRate = bps;
-                    dg_log("CH341 set bps:%d\r\n",(int)bps);
-                    //UART0BpsSet(bps);
-                  }
-                  else
-                  {
-                    CH341RegWrite(write_reg_add1,write_reg_val1);
-                    CH341RegWrite(write_reg_add2,write_reg_val2);
-                  }
+											//115384
+											if((UsbSetupBuf->wIndexL & 0x7f) == 3)
+											{
+												CalClock = 6000000;
+												CalDiv = 0 - UsbSetupBuf->wIndexH;
+												bps = CalClock / CalDiv;
+											}
+											else if((UsbSetupBuf->wIndexL & 0x7f) == 2)
+											{
+												CalClock = 750000;  //6000000 / 8
+												CalDiv = 0 - UsbSetupBuf->wIndexH;
+												bps = CalClock / CalDiv;
+											}
+											else if((UsbSetupBuf->wIndexL & 0x7f) == 1)
+											{
+												CalClock = 93750; //64 ï¿½ï¿½Æµ
+												CalDiv = 0 - UsbSetupBuf->wIndexH;
+												bps = CalClock / CalDiv;
+											}
+											else if((UsbSetupBuf->wIndexL & 0x7f) == 0)
+											{
+												CalClock = 11719;  //Ô¼512
+												CalDiv = 0 - UsbSetupBuf->wIndexH;
+												bps = CalClock / CalDiv;
+											}
+											else
+											{
+												bps = 115200;
+											}
+										}
+										Uart0Para.BaudRate = bps;
+										dg_log("CH341 set bps:%d\r\n",(int)bps);
+										//UART0BpsSet(bps);
+									}
+									else
+									{
+										CH341RegWrite(write_reg_add1,write_reg_val1);
+										CH341RegWrite(write_reg_add2,write_reg_val2);
+									}
 
-                  break;
-                }
-                case DEF_VEN_DEBUG_READ:   //ÐèÒª»Ø´«Êý¾Ý 0X95  /* ¶ÁÁ½×é¼Ä´æÆ÷ */
-                {
-                  UINT8 read_reg_add1;
-                  UINT8 read_reg_add2;
-                  UINT8 read_reg_val1;
-                  UINT8 read_reg_val2;
+									break;
+								}
+								case DEF_VEN_DEBUG_READ:   //ï¿½ï¿½Òªï¿½Ø´ï¿½ï¿½ï¿½ï¿½ï¿½ 0X95  /* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä´ï¿½ï¿½ï¿½ */
+								{
+									UINT8 read_reg_add1;
+									UINT8 read_reg_add2;
+									UINT8 read_reg_val1;
+									UINT8 read_reg_val2;
 
-                  read_reg_add1 = UsbSetupBuf->wValueL;
-                  read_reg_add2 = UsbSetupBuf->wValueH;
+									read_reg_add1 = UsbSetupBuf->wValueL;
+									read_reg_add2 = UsbSetupBuf->wValueH;
 
-                  CH341RegRead(read_reg_add1,&read_reg_val1);
-                  CH341RegRead(read_reg_add2,&read_reg_val2);
+									CH341RegRead(read_reg_add1,&read_reg_val1);
+									CH341RegRead(read_reg_add2,&read_reg_val2);
 
-                  len = 2;
-                  pDescr = buf;
-                  buf[0] = read_reg_val1;
-                  buf[1] = read_reg_val2;
-                  SetupLen = len;
-                  memcpy(Ep0Buffer, pDescr, len);
+									len = 2;
+									pDescr = buf;
+									buf[0] = read_reg_val1;
+									buf[1] = read_reg_val2;
+									SetupLen = len;
+									memcpy(Ep0Buffer, pDescr, len);
 
-                  break;
-                }
-                //A1ÃüÁîÒ²ÊÇÒª³õÊ¼»¯´®¿ÚµÄ
-                case DEF_VEN_UART_INIT:  //³õÊ¼»¯´®¿Ú 0XA1
-                {
-                  UINT8 reg_uart_ctrl;
-                  UINT8  parity_val;
-                  UINT8  data_bit_val;
-                  UINT8  stop_bit_val;
-                  UINT8  uart_reg1_val;
-                  UINT8  uart_reg2_val;
-                  UINT8  uart_set_m;
+									break;
+								}
+								//A1ï¿½ï¿½ï¿½ï¿½Ò²ï¿½ï¿½Òªï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½ï¿½Úµï¿½
+								case DEF_VEN_UART_INIT:  //ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 0XA1
+								{
+									UINT8 reg_uart_ctrl;
+									UINT8  parity_val;
+									UINT8  data_bit_val;
+									UINT8  stop_bit_val;
+									UINT8  uart_reg1_val;
+									UINT8  uart_reg2_val;
+									UINT8  uart_set_m;
 
-                  len = 0;
+									len = 0;
 
-                  if(Ep0Buffer[2] & 0x80)
-                  {
-                    reg_uart_ctrl = Ep0Buffer[3];
+									if(Ep0Buffer[2] & 0x80)
+									{
+										reg_uart_ctrl = Ep0Buffer[3];
 
-                    data_bit_val = reg_uart_ctrl & 0x03;
-                    if   (data_bit_val == 0x00) data_bit_val = HAL_UART_5_BITS_PER_CHAR;
-                    else if(data_bit_val == 0x01) data_bit_val = HAL_UART_6_BITS_PER_CHAR;
-                    else if(data_bit_val == 0x02) data_bit_val = HAL_UART_7_BITS_PER_CHAR;
-                    else if(data_bit_val == 0x03) data_bit_val = HAL_UART_8_BITS_PER_CHAR;
+										data_bit_val = reg_uart_ctrl & 0x03;
+										if   (data_bit_val == 0x00) data_bit_val = HAL_UART_5_BITS_PER_CHAR;
+										else if(data_bit_val == 0x01) data_bit_val = HAL_UART_6_BITS_PER_CHAR;
+										else if(data_bit_val == 0x02) data_bit_val = HAL_UART_7_BITS_PER_CHAR;
+										else if(data_bit_val == 0x03) data_bit_val = HAL_UART_8_BITS_PER_CHAR;
 
-                    stop_bit_val = reg_uart_ctrl & 0x04;
-                    if(stop_bit_val) stop_bit_val = HAL_UART_TWO_STOP_BITS;
-                    else stop_bit_val = HAL_UART_ONE_STOP_BIT;
+										stop_bit_val = reg_uart_ctrl & 0x04;
+										if(stop_bit_val) stop_bit_val = HAL_UART_TWO_STOP_BITS;
+										else stop_bit_val = HAL_UART_ONE_STOP_BIT;
 
-                    parity_val = reg_uart_ctrl & (0x38);
-                    if(parity_val == 0x00) parity_val = HAL_UART_NO_PARITY;
-                    else if(parity_val == 0x08) parity_val = HAL_UART_ODD_PARITY;
-                    else if(parity_val == 0x18) parity_val = HAL_UART_EVEN_PARITY;
-                    else if(parity_val == 0x28) parity_val = HAL_UART_MARK_PARITY;
-                    else if(parity_val == 0x38) parity_val = HAL_UART_SPACE_PARITY;
+										parity_val = reg_uart_ctrl & (0x38);
+										if(parity_val == 0x00) parity_val = HAL_UART_NO_PARITY;
+										else if(parity_val == 0x08) parity_val = HAL_UART_ODD_PARITY;
+										else if(parity_val == 0x18) parity_val = HAL_UART_EVEN_PARITY;
+										else if(parity_val == 0x28) parity_val = HAL_UART_MARK_PARITY;
+										else if(parity_val == 0x38) parity_val = HAL_UART_SPACE_PARITY;
 
-                    //Uart0Para.BaudRate;
-                    Uart0Para.StopBits = stop_bit_val;
-                    Uart0Para.ParityType = parity_val;
-                    Uart0Para.DataBits = data_bit_val;
+										//Uart0Para.BaudRate;
+										Uart0Para.StopBits = stop_bit_val;
+										Uart0Para.ParityType = parity_val;
+										Uart0Para.DataBits = data_bit_val;
 
-                    //Ö±½ÓÉèÖÃ¼Ä´æÆ÷
-                   // UART0ParaSet(data_bit_val, stop_bit_val,parity_val);
+										//Ö±ï¿½ï¿½ï¿½ï¿½ï¿½Ã¼Ä´ï¿½ï¿½ï¿½
+									// UART0ParaSet(data_bit_val, stop_bit_val,parity_val);
 
-                    uart_set_m = 0;
-                    uart_reg1_val = UsbSetupBuf->wIndexL;
-                    uart_reg2_val = UsbSetupBuf->wIndexH;
+										uart_set_m = 0;
+										uart_reg1_val = UsbSetupBuf->wIndexL;
+										uart_reg2_val = UsbSetupBuf->wIndexH;
 
-                    if(uart_reg1_val & (1<<6))  //ÅÐ¶ÏµÚÁùÎ»
-                    {
-                      uart_set_m = 1;
-                    }
-                    else
-                    {
-                      uart_set_m = 1;
-                      uart_reg1_val = uart_reg1_val & 0xC7;
-                    }
+										if(uart_reg1_val & (1<<6))  //ï¿½Ð¶Ïµï¿½ï¿½ï¿½Î»
+										{
+											uart_set_m = 1;
+										}
+										else
+										{
+											uart_set_m = 1;
+											uart_reg1_val = uart_reg1_val & 0xC7;
+										}
 
-                    if(uart_set_m)
-                    {
-                      /* ²¨ÌØÂÊ´¦Àí²ÉÓÃ¼ÆËãÖµ */
-                      if((uart_reg1_val == 0x87)&&(uart_reg2_val == 0xf3))
-                      {
-                        bps = 921600;  //13 * 921600 = 11980800
-                      }
-                      else if((uart_reg1_val == 0x87)&&(uart_reg2_val == 0xd9))
-                      {
-                        bps = 307200;  //39 * 307200 = 11980800
-                      }
+										if(uart_set_m)
+										{
+											/* ï¿½ï¿½ï¿½ï¿½ï¿½Ê´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã¼ï¿½ï¿½ï¿½Öµ */
+											if((uart_reg1_val == 0x87)&&(uart_reg2_val == 0xf3))
+											{
+												bps = 921600;  //13 * 921600 = 11980800
+											}
+											else if((uart_reg1_val == 0x87)&&(uart_reg2_val == 0xd9))
+											{
+												bps = 307200;  //39 * 307200 = 11980800
+											}
 
-                      //ÏµÍ³Ö÷Æµ£º 36923077
-                      else if( uart_reg1_val == 0xC8 )
-                      {
-                        UINT32 CalClock;
-                        UINT8 CalDiv;
+											//ÏµÍ³ï¿½ï¿½Æµï¿½ï¿½ 36923077
+											else if( uart_reg1_val == 0xC8 )
+											{
+												UINT32 CalClock;
+												UINT8 CalDiv;
 
-                        CalClock = 36923077 / 8;
-                        CalDiv = 0 - uart_reg2_val;
-                        bps = CalClock / CalDiv;
-                      }
-                      else if( uart_reg1_val == 0xC9 )
-                      {
-                        UINT32 CalClock;
-                        UINT8 CalDiv;
+												CalClock = 36923077 / 8;
+												CalDiv = 0 - uart_reg2_val;
+												bps = CalClock / CalDiv;
+											}
+											else if( uart_reg1_val == 0xC9 )
+											{
+												UINT32 CalClock;
+												UINT8 CalDiv;
 
-                        CalClock = 36923077 / 8 / 256;
-                        CalDiv = 0 - uart_reg2_val;
-                        bps = CalClock / CalDiv;
-                      }
-                      //ÏµÍ³Ö÷Æµ£º  32000000
-                      else if( uart_reg1_val == 0xCA )
-                      {
-                        UINT32 CalClock;
-                        UINT8 CalDiv;
+												CalClock = 36923077 / 8 / 256;
+												CalDiv = 0 - uart_reg2_val;
+												bps = CalClock / CalDiv;
+											}
+											//ÏµÍ³ï¿½ï¿½Æµï¿½ï¿½  32000000
+											else if( uart_reg1_val == 0xCA )
+											{
+												UINT32 CalClock;
+												UINT8 CalDiv;
 
-                        CalClock = 32000000 / 8;
-                        CalDiv = 0 - uart_reg2_val;
-                        bps = CalClock / CalDiv;
-                      }
-                      else if( uart_reg1_val == 0xCB )
-                      {
-                        UINT32 CalClock;
-                        UINT8 CalDiv;
+												CalClock = 32000000 / 8;
+												CalDiv = 0 - uart_reg2_val;
+												bps = CalClock / CalDiv;
+											}
+											else if( uart_reg1_val == 0xCB )
+											{
+												UINT32 CalClock;
+												UINT8 CalDiv;
 
-                        CalClock = 32000000 / 8 / 256;
-                        CalDiv = 0 - uart_reg2_val;
-                        bps = CalClock / CalDiv;
-                      }
-                      else  //340
-                      {
-                        UINT32 CalClock;
-                        UINT8 CalDiv;
+												CalClock = 32000000 / 8 / 256;
+												CalDiv = 0 - uart_reg2_val;
+												bps = CalClock / CalDiv;
+											}
+											else  //340
+											{
+												UINT32 CalClock;
+												UINT8 CalDiv;
 
-                        //115384
-                        if((uart_reg1_val & 0x7f) == 3)
-                        {
-                          CalClock = 6000000;
-                          CalDiv = 0 - uart_reg2_val;
-                          bps = CalClock / CalDiv;
-                        }
-                        else if((uart_reg1_val & 0x7f) == 2)
-                        {
-                          CalClock = 750000;  //6000000 / 8
-                          CalDiv = 0 - uart_reg2_val;
-                          bps = CalClock / CalDiv;
-                        }
-                        else if((uart_reg1_val & 0x7f) == 1)
-                        {
-                          CalClock = 93750; //64 ·ÖÆµ
-                          CalDiv = 0 - uart_reg2_val;
-                          bps = CalClock / CalDiv;
-                        }
-                        else if((uart_reg1_val & 0x7f) == 0)
-                        {
-                          CalClock = 11719;  //Ô¼512
-                          CalDiv = 0 - uart_reg2_val;
-                          bps = CalClock / CalDiv;
-                        }
-                        else
-                        {
-                          bps = 115200;
-                        }
-                      }
-                      Uart0Para.BaudRate = bps;
-                      dg_log("CH341 set bps:%d\r\n",(int)bps);
-                      //UART0BpsSet(bps);
-                    }
-                  }
-                  break;
-                }
-                case DEF_VEN_UART_M_OUT:  //ÉèÖÃMODEMÐÅºÅÊä³ö 0XA4
-                {
-                  UINT8 reg_pb_out;
+												//115384
+												if((uart_reg1_val & 0x7f) == 3)
+												{
+													CalClock = 6000000;
+													CalDiv = 0 - uart_reg2_val;
+													bps = CalClock / CalDiv;
+												}
+												else if((uart_reg1_val & 0x7f) == 2)
+												{
+													CalClock = 750000;  //6000000 / 8
+													CalDiv = 0 - uart_reg2_val;
+													bps = CalClock / CalDiv;
+												}
+												else if((uart_reg1_val & 0x7f) == 1)
+												{
+													CalClock = 93750; //64 ï¿½ï¿½Æµ
+													CalDiv = 0 - uart_reg2_val;
+													bps = CalClock / CalDiv;
+												}
+												else if((uart_reg1_val & 0x7f) == 0)
+												{
+													CalClock = 11719;  //Ô¼512
+													CalDiv = 0 - uart_reg2_val;
+													bps = CalClock / CalDiv;
+												}
+												else
+												{
+													bps = 115200;
+												}
+											}
+											Uart0Para.BaudRate = bps;
+											dg_log("CH341 set bps:%d\r\n",(int)bps);
+											//UART0BpsSet(bps);
+										}
+									}
+									break;
+								}
+								case DEF_VEN_UART_M_OUT:  //ï¿½ï¿½ï¿½ï¿½MODEMï¿½Åºï¿½ï¿½ï¿½ï¿½ 0XA4
+								{
+									UINT8 reg_pb_out;
 
-                  len = 0;
-                  reg_pb_out = Ep0Buffer[2];
-                  if(reg_pb_out & (1<<4)) UART0_OUT_Val = 1;
-                  else UART0_OUT_Val = 0;
-                  break;
-                }
-                case DEF_VEN_BUF_CLEAR: //0XB2  /* Çå³ýÎ´Íê³ÉµÄÊý¾Ý */
-                {
-                  len = 0;
+									len = 0;
+									reg_pb_out = Ep0Buffer[2];
+									if(reg_pb_out & (1<<4)) UART0_OUT_Val = 1;
+									else UART0_OUT_Val = 0;
+									break;
+								}
+								case DEF_VEN_BUF_CLEAR: //0XB2  /* ï¿½ï¿½ï¿½Î´ï¿½ï¿½Éµï¿½ï¿½ï¿½ï¿½ï¿½ */
+								{
+									len = 0;
 
-                  //¿ÉÒÔÖØÐÂ³õÊ¼»¯
-                  VENSer0ParaChange = 1; // ÖØÐÂ³õÊ¼»¯¼´¿ÉÇå³ýËùÓÐµÄÊý¾Ý
-                  break;
-                }
-                case DEF_VEN_I2C_CMD_X:  //0X54  ·¢³öI2C½Ó¿ÚµÄÃüÁî,Á¢¼´Ö´ÐÐ
-                {
-                  len = 0;
-                  break;
-                }
-                case DEF_VEN_DELAY_MS:  //0X5E  ÒÔÙñÃëÎªµ¥Î»ÑÓÊ±Ö¸¶¨Ê±¼ä
-                {
-                  len = 0;
-                  break;
-                }
-                case DEF_VEN_GET_VER:   //0X5E   »ñÈ¡Ð¾Æ¬°æ±¾ //ÐèÒª»Ø´«Êý¾Ý-->°æ±¾ºÅ
-                {
-                  len = 2;
-                  pDescr = buf;
-                  buf[0] = 0x30;
-                  buf[1] = 0x00;
-                  SetupLen = len;
-                  memcpy( Ep0Buffer, pDescr, len );
+									//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â³ï¿½Ê¼ï¿½ï¿½
+									VENSer0ParaChange = 1; // ï¿½ï¿½ï¿½Â³ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ðµï¿½ï¿½ï¿½ï¿½ï¿½
+									break;
+								}
+								case DEF_VEN_I2C_CMD_X:  //0X54  ï¿½ï¿½ï¿½ï¿½I2Cï¿½Ó¿Úµï¿½ï¿½ï¿½ï¿½ï¿½,ï¿½ï¿½ï¿½ï¿½Ö´ï¿½ï¿½
+								{
+									len = 0;
+									break;
+								}
+								case DEF_VEN_DELAY_MS:  //0X5E  ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Îªï¿½ï¿½Î»ï¿½ï¿½Ê±Ö¸ï¿½ï¿½Ê±ï¿½ï¿½
+								{
+									len = 0;
+									break;
+								}
+								case DEF_VEN_GET_VER:   //0X5E   ï¿½ï¿½È¡Ð¾Æ¬ï¿½æ±¾ //ï¿½ï¿½Òªï¿½Ø´ï¿½ï¿½ï¿½ï¿½ï¿½-->ï¿½æ±¾ï¿½ï¿½
+								{
+									len = 2;
+									pDescr = buf;
+									buf[0] = 0x30;
+									buf[1] = 0x00;
+									SetupLen = len;
+									memcpy( Ep0Buffer, pDescr, len );
 
-                  break;
-                }
-                default:
-                  //len = 0xFF;
-                  len = 0;
-                  break;
-              }
-            }
-            // ±ê×¼ÇëÇó
-            else if((UsbSetupBuf->bRequestType & USB_REQ_TYP_MASK) == USB_REQ_TYP_STANDARD)
-            {
-              switch( SetupReqCode )  // ÇëÇóÂë
-              {
-                case USB_GET_DESCRIPTOR:  //»ñÈ¡ÃèÊö·û
-                {
-                  switch( UsbSetupBuf->wValueH )
-                  {
-                    case 1: // Éè±¸ÃèÊö·û
-                    {
-                      if(usb_work_mode == USB_VENDOR_MODE)  //³§ÉÌÄ£Ê½
-                      {
-                        memcpy(ep0_send_buf,
-                               &TAB_USB_VEN_DEV_DES[0],
-                               sizeof( TAB_USB_VEN_DEV_DES ));
-                        pDescr = ep0_send_buf;
-                        len = sizeof( TAB_USB_VEN_DEV_DES );
-                      }
-                      else                    //CDCÀà
-                      {
-                        memcpy(ep0_send_buf,
-                               &TAB_USB_CDC_DEV_DES[0],
-                               sizeof( TAB_USB_CDC_DEV_DES ));
+									break;
+								}
+								default:
+									//len = 0xFF;
+									len = 0;
+									break;
+							}
+						}
+						// ï¿½ï¿½×¼ï¿½ï¿½ï¿½ï¿½
+						else if((UsbSetupBuf->bRequestType & USB_REQ_TYP_MASK) == USB_REQ_TYP_STANDARD)
+						{
+							switch( SetupReqCode )  // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+							{
+								case USB_GET_DESCRIPTOR:  //ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+								{
+									switch( UsbSetupBuf->wValueH )
+									{
+										case 1: // ï¿½è±¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+										{
+											if(usb_work_mode == USB_VENDOR_MODE)  //ï¿½ï¿½ï¿½ï¿½Ä£Ê½
+											{
+												memcpy(ep0_send_buf,
+															&TAB_USB_VEN_DEV_DES[0],
+															sizeof( TAB_USB_VEN_DEV_DES ));
+												pDescr = ep0_send_buf;
+												len = sizeof( TAB_USB_VEN_DEV_DES );
+											}
+											else                    //CDCï¿½ï¿½
+											{
+												memcpy(ep0_send_buf,
+															&TAB_USB_CDC_DEV_DES[0],
+															sizeof( TAB_USB_CDC_DEV_DES ));
 
-                        pDescr = ep0_send_buf;
-                        len = sizeof( TAB_USB_CDC_DEV_DES );
-                      }
-                      break;
-                    }
-                    case 2:  // ÅäÖÃÃèÊö·û
-                    {
-                      if(usb_work_mode == USB_VENDOR_MODE)  //³§ÉÌÄ£Ê½
-                      {
-                        memcpy(ep0_send_buf,
-                               &TAB_USB_VEN_CFG_DES[0],
-                               sizeof( TAB_USB_VEN_CFG_DES ));
-                        pDescr = ep0_send_buf;
-                        len = sizeof( TAB_USB_VEN_CFG_DES );
-                      }
-                      else                    //CDCÀà
-                      {
-                        memcpy(ep0_send_buf,
-                               &TAB_USB_CDC_CFG_DES[0],
-                               sizeof( TAB_USB_CDC_CFG_DES ));
-                        pDescr = ep0_send_buf;
-                        len = sizeof( TAB_USB_CDC_CFG_DES );
-                      }
-                      break;
-                    }
-                    case 3:  // ×Ö·û´®ÃèÊö·û
-                    {
-                      dg_log("str %d\r\n",UsbSetupBuf->wValueL);
-                      if(usb_work_mode == USB_VENDOR_MODE)  //³§ÉÌÄ£Ê½
-                      {
-                        dg_log("str %d\r\n",UsbSetupBuf->wValueL);
-                        switch(UsbSetupBuf->wValueL)
-                        {
-                          case 0:  //ÓïÑÔÃèÊö·û
-                          {
-                            pDescr = (PUINT8)( &TAB_USB_LID_STR_DES[0] );
-                            len = sizeof( TAB_USB_LID_STR_DES );
+												pDescr = ep0_send_buf;
+												len = sizeof( TAB_USB_CDC_DEV_DES );
+											}
+											break;
+										}
+										case 2:  // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+										{
+											if(usb_work_mode == USB_VENDOR_MODE)  //ï¿½ï¿½ï¿½ï¿½Ä£Ê½
+											{
+												memcpy(ep0_send_buf,
+															&TAB_USB_VEN_CFG_DES[0],
+															sizeof( TAB_USB_VEN_CFG_DES ));
+												pDescr = ep0_send_buf;
+												len = sizeof( TAB_USB_VEN_CFG_DES );
+											}
+											else                    //CDCï¿½ï¿½
+											{
+												memcpy(ep0_send_buf,
+															&TAB_USB_CDC_CFG_DES[0],
+															sizeof( TAB_USB_CDC_CFG_DES ));
+												pDescr = ep0_send_buf;
+												len = sizeof( TAB_USB_CDC_CFG_DES );
+											}
+											break;
+										}
+										case 3:  // ï¿½Ö·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+										{
+											dg_log("str %d\r\n",UsbSetupBuf->wValueL);
+											if(usb_work_mode == USB_VENDOR_MODE)  //ï¿½ï¿½ï¿½ï¿½Ä£Ê½
+											{
+												dg_log("str %d\r\n",UsbSetupBuf->wValueL);
+												switch(UsbSetupBuf->wValueL)
+												{
+													case 0:  //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+													{
+														pDescr = (PUINT8)( &TAB_USB_LID_STR_DES[0] );
+														len = sizeof( TAB_USB_LID_STR_DES );
 
-                            break;
-                          }
-                          case 1:  //iManufacturer
-                          case 2:   //iProduct
-                          case 3:   //iSerialNumber
-                          {
-                            UINT8 ep0_str_len;
-                            UINT8 *p_send;
-                            UINT8 *manu_str;
-                            UINT8 tmp;
+														break;
+													}
+													case 1:  //iManufacturer
+													case 2:   //iProduct
+													case 3:   //iSerialNumber
+													{
+														UINT8 ep0_str_len;
+														UINT8 *p_send;
+														UINT8 *manu_str;
+														UINT8 tmp;
 
-                            /* È¡³¤¶È */
-                            if(UsbSetupBuf->wValueL == 1)
-                              manu_str = (UINT8 *)USB_DEV_PARA_VEN_MANUFACTURE_STR;
-                            else if(UsbSetupBuf->wValueL == 2)
-                              manu_str = (UINT8 *)USB_DEV_PARA_VEN_PRODUCT_STR;
-                            else if(UsbSetupBuf->wValueL == 3)
-                              manu_str = (UINT8 *)USB_DEV_PARA_VEN_SERIAL_STR;
+														/* È¡ï¿½ï¿½ï¿½ï¿½ */
+														if(UsbSetupBuf->wValueL == 1)
+															manu_str = (UINT8 *)USB_DEV_PARA_VEN_MANUFACTURE_STR;
+														else if(UsbSetupBuf->wValueL == 2)
+															manu_str = (UINT8 *)USB_DEV_PARA_VEN_PRODUCT_STR;
+														else if(UsbSetupBuf->wValueL == 3)
+															manu_str = (UINT8 *)USB_DEV_PARA_VEN_SERIAL_STR;
 
-                            ep0_str_len = (UINT8)strlen((char *)manu_str);
-                            p_send = ep0_send_buf;
-                            *p_send++ = ep0_str_len*2 + 2;
-                            *p_send++ = 0x03;
-                            for(tmp = 0; tmp<ep0_str_len; tmp++)
-                            {
-                              *p_send++ = manu_str[tmp];
-                              *p_send++ = 0x00;
-                            }
+														ep0_str_len = (UINT8)strlen((char *)manu_str);
+														p_send = ep0_send_buf;
+														*p_send++ = ep0_str_len*2 + 2;
+														*p_send++ = 0x03;
+														for(tmp = 0; tmp<ep0_str_len; tmp++)
+														{
+															*p_send++ = manu_str[tmp];
+															*p_send++ = 0x00;
+														}
 
-                            pDescr = ep0_send_buf;
-                            len = ep0_send_buf[0];
-                            break;
-                          }
-                          default:
-                            len = 0xFF;    // ²»Ö§³ÖµÄÃèÊö·ûÀàÐÍ
-                            break;
-                        }
-                      }
-                      else   //CDCÄ£Ê½
-                      {
-                        dg_log("str %d\r\n",UsbSetupBuf->wValueL);
-                        switch(UsbSetupBuf->wValueL)
-                        {
-                          case 0:  //ÓïÑÔÃèÊö·û
-                          {
-                            pDescr = (PUINT8)( &TAB_USB_LID_STR_DES[0] );
-                            len = sizeof( TAB_USB_LID_STR_DES );
+														pDescr = ep0_send_buf;
+														len = ep0_send_buf[0];
+														break;
+													}
+													default:
+														len = 0xFF;    // ï¿½ï¿½Ö§ï¿½Öµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+														break;
+												}
+											}
+											else   //CDCÄ£Ê½
+											{
+												dg_log("str %d\r\n",UsbSetupBuf->wValueL);
+												switch(UsbSetupBuf->wValueL)
+												{
+													case 0:  //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+													{
+														pDescr = (PUINT8)( &TAB_USB_LID_STR_DES[0] );
+														len = sizeof( TAB_USB_LID_STR_DES );
 
-                            break;
-                          }
-                          case 1:  //iManufacturer
-                          case 2:   //iProduct
-                          case 3:   //iSerialNumber
-                          {
-                            UINT8 ep0_str_len;
-                            UINT8 *p_send;
-                            UINT8 *manu_str;
-                            UINT8 tmp;
+														break;
+													}
+													case 1:  //iManufacturer
+													case 2:   //iProduct
+													case 3:   //iSerialNumber
+													{
+														UINT8 ep0_str_len;
+														UINT8 *p_send;
+														UINT8 *manu_str;
+														UINT8 tmp;
 
-                            /* È¡³¤¶È */
-                            if(UsbSetupBuf->wValueL == 1)
-                              manu_str = (UINT8 *)USB_DEV_PARA_CDC_MANUFACTURE_STR;
-                            else if(UsbSetupBuf->wValueL == 2)
-                              manu_str = (UINT8 *)USB_DEV_PARA_CDC_PRODUCT_STR;
-                            else if(UsbSetupBuf->wValueL == 3)
-                              manu_str = (UINT8 *)USB_DEV_PARA_CDC_SERIAL_STR;
-                            ep0_str_len = (UINT8)strlen((char *)manu_str);
-                            p_send = ep0_send_buf;
-                            *p_send++ = ep0_str_len*2 + 2;
-                            *p_send++ = 0x03;
-                            for(tmp = 0; tmp<ep0_str_len; tmp++)
-                            {
-                              *p_send++ = manu_str[tmp];
-                              *p_send++ = 0x00;
-                            }
+														/* È¡ï¿½ï¿½ï¿½ï¿½ */
+														if(UsbSetupBuf->wValueL == 1)
+															manu_str = (UINT8 *)USB_DEV_PARA_CDC_MANUFACTURE_STR;
+														else if(UsbSetupBuf->wValueL == 2)
+															manu_str = (UINT8 *)USB_DEV_PARA_CDC_PRODUCT_STR;
+														else if(UsbSetupBuf->wValueL == 3)
+															manu_str = (UINT8 *)USB_DEV_PARA_CDC_SERIAL_STR;
+														ep0_str_len = (UINT8)strlen((char *)manu_str);
+														p_send = ep0_send_buf;
+														*p_send++ = ep0_str_len*2 + 2;
+														*p_send++ = 0x03;
+														for(tmp = 0; tmp<ep0_str_len; tmp++)
+														{
+															*p_send++ = manu_str[tmp];
+															*p_send++ = 0x00;
+														}
 
-                            pDescr = ep0_send_buf;
-                            len = ep0_send_buf[0];
+														pDescr = ep0_send_buf;
+														len = ep0_send_buf[0];
 
-                            break;
-                          }
-                          default:
-                            len = 0xFF;    // ²»Ö§³ÖµÄÃèÊö·ûÀàÐÍ
-                            break;
-                        }
-                      }
-                      break;
-                    }
-                    case 6:  //Éè±¸ÏÞ¶¨ÃèÊö·û
-                    {
-                      pDescr = (PUINT8)( &My_QueDescr[0] );
-                      len = sizeof( My_QueDescr );
-                      break;
-                    }
-                    default:
-                      len = 0xFF;                                  // ²»Ö§³ÖµÄÃèÊö·ûÀàÐÍ
-                      break;
-                  }
-                  if ( SetupLen > len ) SetupLen = len;            // ÏÞÖÆ×Ü³¤¶È
-                  len = (SetupLen >= THIS_ENDP0_SIZE) ? THIS_ENDP0_SIZE : SetupLen;  // ±¾´Î´«Êä³¤¶È
-                  memcpy( Ep0Buffer, pDescr, len );                 /* ¼ÓÔØÉÏ´«Êý¾Ý */
-                  SetupLen -= len;
-                  pDescr += len;
+														break;
+													}
+													default:
+														len = 0xFF;    // ï¿½ï¿½Ö§ï¿½Öµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+														break;
+												}
+											}
+											break;
+										}
+										case 6:  //ï¿½è±¸ï¿½Þ¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+										{
+											pDescr = (PUINT8)( &My_QueDescr[0] );
+											len = sizeof( My_QueDescr );
+											break;
+										}
+										default:
+											len = 0xFF;                                  // ï¿½ï¿½Ö§ï¿½Öµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+											break;
+									}
+									if ( SetupLen > len ) SetupLen = len;            // ï¿½ï¿½ï¿½ï¿½ï¿½Ü³ï¿½ï¿½ï¿½
+									len = (SetupLen >= THIS_ENDP0_SIZE) ? THIS_ENDP0_SIZE : SetupLen;  // ï¿½ï¿½ï¿½Î´ï¿½ï¿½ä³¤ï¿½ï¿½
+									memcpy( Ep0Buffer, pDescr, len );                 /* ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½ï¿½ï¿½ï¿½ï¿½ */
+									SetupLen -= len;
+									pDescr += len;
 
-                  break;
-                }
-                case USB_SET_ADDRESS:  //ÉèÖÃµØÖ·
-                {
-                  dg_log("SET_ADDRESS:%d\r\n",UsbSetupBuf->wValueL);
-                  devinf.gUsbFlag |= DEF_BIT_USB_ADDRESS;
-                  devinf.UsbAddress = UsbSetupBuf->wValueL;    // ÔÝ´æUSBÉè±¸µØÖ·
+									break;
+								}
+								case USB_SET_ADDRESS:  //ï¿½ï¿½ï¿½Ãµï¿½Ö·
+								{
+									dg_log("SET_ADDRESS:%d\r\n",UsbSetupBuf->wValueL);
+									devinf.gUsbFlag |= DEF_BIT_USB_ADDRESS;
+									devinf.UsbAddress = UsbSetupBuf->wValueL;    // ï¿½Ý´ï¿½USBï¿½è±¸ï¿½ï¿½Ö·
 
-                  break;
-                }
-                case USB_GET_CONFIGURATION:
-                {
-                  dg_log("GET_CONFIGURATION\r\n");
-                  Ep0Buffer[0] = devinf.UsbConfig;
-                  if ( SetupLen >= 1 ) len = 1;
+									break;
+								}
+								case USB_GET_CONFIGURATION:
+								{
+									dg_log("GET_CONFIGURATION\r\n");
+									Ep0Buffer[0] = devinf.UsbConfig;
+									if ( SetupLen >= 1 ) len = 1;
 
-                  break;
-                }
-                case USB_SET_CONFIGURATION:
-                {
-                  dg_log("SET_CONFIGURATION\r\n");
-                  devinf.gUsbFlag |= DEF_BIT_USB_SET_CFG;
-                  devinf.UsbConfig = UsbSetupBuf->wValueL;
-                  break;
-                }
-                case USB_CLEAR_FEATURE:
-                {
-                  dg_log("CLEAR_FEATURE\r\n");
-                  len = 0;
-                  /* Çå³ýÉè±¸ */
-                  if( ( UsbSetupBuf->bRequestType & USB_REQ_RECIP_MASK ) == USB_REQ_RECIP_DEVICE )
-                  {
-                    R8_UEP1_CTRL = (R8_UEP1_CTRL & (~ ( RB_UEP_T_TOG | MASK_UEP_T_RES ))) | UEP_T_RES_NAK;
-                    R8_UEP2_CTRL = (R8_UEP2_CTRL & (~ ( RB_UEP_T_TOG | MASK_UEP_T_RES ))) | UEP_T_RES_NAK;
-                    R8_UEP3_CTRL = (R8_UEP3_CTRL & (~ ( RB_UEP_T_TOG | MASK_UEP_T_RES ))) | UEP_T_RES_NAK;
-                    R8_UEP4_CTRL = (R8_UEP4_CTRL & (~ ( RB_UEP_T_TOG | MASK_UEP_T_RES ))) | UEP_T_RES_NAK;
+									break;
+								}
+								case USB_SET_CONFIGURATION:
+								{
+									dg_log("SET_CONFIGURATION\r\n");
+									devinf.gUsbFlag |= DEF_BIT_USB_SET_CFG;
+									devinf.UsbConfig = UsbSetupBuf->wValueL;
+									break;
+								}
+								case USB_CLEAR_FEATURE:
+								{
+									dg_log("CLEAR_FEATURE\r\n");
+									len = 0;
+									/* ï¿½ï¿½ï¿½ï¿½è±¸ */
+									if( ( UsbSetupBuf->bRequestType & USB_REQ_RECIP_MASK ) == USB_REQ_RECIP_DEVICE )
+									{
+										R8_UEP1_CTRL = (R8_UEP1_CTRL & (~ ( RB_UEP_T_TOG | MASK_UEP_T_RES ))) | UEP_T_RES_NAK;
+										R8_UEP2_CTRL = (R8_UEP2_CTRL & (~ ( RB_UEP_T_TOG | MASK_UEP_T_RES ))) | UEP_T_RES_NAK;
+										R8_UEP3_CTRL = (R8_UEP3_CTRL & (~ ( RB_UEP_T_TOG | MASK_UEP_T_RES ))) | UEP_T_RES_NAK;
+										R8_UEP4_CTRL = (R8_UEP4_CTRL & (~ ( RB_UEP_T_TOG | MASK_UEP_T_RES ))) | UEP_T_RES_NAK;
 
-                    //×´Ì¬±äÁ¿¸´Î»
-                    Ep1DataINFlag = 1;
-                    Ep2DataINFlag = 1;
-                    Ep3DataINFlag = 1;
-                    Ep4DataINFlag = 1;
+										//×´Ì¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î»
+										Ep1DataINFlag = 1;
+										Ep2DataINFlag = 1;
+										Ep3DataINFlag = 1;
+										Ep4DataINFlag = 1;
 
-                    Ep1DataOUTFlag = 0;
-                    Ep2DataOUTFlag = 0;
-                    Ep3DataOUTFlag = 0;
-                    Ep4DataOUTFlag = 0;
+										Ep1DataOUTFlag = 0;
+										Ep2DataOUTFlag = 0;
+										Ep3DataOUTFlag = 0;
+										Ep4DataOUTFlag = 0;
 
-                    cdc_uart_sta_trans_step = 0;
-                    ven_ep1_trans_step = 0;
-                  }
-                  else if ( ( UsbSetupBuf->bRequestType & USB_REQ_RECIP_MASK ) == USB_REQ_RECIP_ENDP )  // ¶Ëµã
-                  {
-                    switch( UsbSetupBuf->wIndexL )   //ÅÐ¶Ï¶Ëµã
-                    {
-                      case 0x84: R8_UEP4_CTRL = (R8_UEP4_CTRL & (~ ( RB_UEP_T_TOG | MASK_UEP_T_RES ))) | UEP_T_RES_NAK; break;
-                      case 0x04: R8_UEP4_CTRL = (R8_UEP4_CTRL & (~ ( RB_UEP_R_TOG | MASK_UEP_R_RES ))) | UEP_R_RES_ACK; break;
-                      case 0x83: R8_UEP3_CTRL = (R8_UEP3_CTRL & (~ ( RB_UEP_T_TOG | MASK_UEP_T_RES ))) | UEP_T_RES_NAK; break;
-                      case 0x03: R8_UEP3_CTRL = (R8_UEP3_CTRL & (~ ( RB_UEP_R_TOG | MASK_UEP_R_RES ))) | UEP_R_RES_ACK; break;
-                      case 0x82: R8_UEP2_CTRL = (R8_UEP2_CTRL & (~ ( RB_UEP_T_TOG | MASK_UEP_T_RES ))) | UEP_T_RES_NAK; break;
-                      case 0x02: R8_UEP2_CTRL = (R8_UEP2_CTRL & (~ ( RB_UEP_R_TOG | MASK_UEP_R_RES ))) | UEP_R_RES_ACK; break;
-                      case 0x81: R8_UEP1_CTRL = (R8_UEP1_CTRL & (~ ( RB_UEP_T_TOG | MASK_UEP_T_RES ))) | UEP_T_RES_NAK; break;
-                      case 0x01: R8_UEP1_CTRL = (R8_UEP1_CTRL & (~ ( RB_UEP_R_TOG | MASK_UEP_R_RES ))) | UEP_R_RES_ACK; break;
-                      default: len = 0xFF;  break;
-                    }
-                  }
-                  else len = 0xFF;                                  // ²»ÊÇ¶Ëµã²»Ö§³Ö
+										cdc_uart_sta_trans_step = 0;
+										ven_ep1_trans_step = 0;
+									}
+									else if ( ( UsbSetupBuf->bRequestType & USB_REQ_RECIP_MASK ) == USB_REQ_RECIP_ENDP )  // ï¿½Ëµï¿½
+									{
+										switch( UsbSetupBuf->wIndexL )   //ï¿½Ð¶Ï¶Ëµï¿½
+										{
+											case 0x84: R8_UEP4_CTRL = (R8_UEP4_CTRL & (~ ( RB_UEP_T_TOG | MASK_UEP_T_RES ))) | UEP_T_RES_NAK; break;
+											case 0x04: R8_UEP4_CTRL = (R8_UEP4_CTRL & (~ ( RB_UEP_R_TOG | MASK_UEP_R_RES ))) | UEP_R_RES_ACK; break;
+											case 0x83: R8_UEP3_CTRL = (R8_UEP3_CTRL & (~ ( RB_UEP_T_TOG | MASK_UEP_T_RES ))) | UEP_T_RES_NAK; break;
+											case 0x03: R8_UEP3_CTRL = (R8_UEP3_CTRL & (~ ( RB_UEP_R_TOG | MASK_UEP_R_RES ))) | UEP_R_RES_ACK; break;
+											case 0x82: R8_UEP2_CTRL = (R8_UEP2_CTRL & (~ ( RB_UEP_T_TOG | MASK_UEP_T_RES ))) | UEP_T_RES_NAK; break;
+											case 0x02: R8_UEP2_CTRL = (R8_UEP2_CTRL & (~ ( RB_UEP_R_TOG | MASK_UEP_R_RES ))) | UEP_R_RES_ACK; break;
+											case 0x81: R8_UEP1_CTRL = (R8_UEP1_CTRL & (~ ( RB_UEP_T_TOG | MASK_UEP_T_RES ))) | UEP_T_RES_NAK; break;
+											case 0x01: R8_UEP1_CTRL = (R8_UEP1_CTRL & (~ ( RB_UEP_R_TOG | MASK_UEP_R_RES ))) | UEP_R_RES_ACK; break;
+											default: len = 0xFF;  break;
+										}
+									}
+									else len = 0xFF;                                  // ï¿½ï¿½ï¿½Ç¶Ëµã²»Ö§ï¿½ï¿½
 
-                  break;
-                }
-                case USB_GET_INTERFACE:
-                {
-                  dg_log("GET_INTERFACE\r\n");
-                  Ep0Buffer[0] = 0x00;
-                  if ( SetupLen >= 1 ) len = 1;
-                  break;
-                }
-                case USB_GET_STATUS:
-                {
-                  dg_log("GET_STATUS\r\n");
-                  Ep0Buffer[0] = 0x00;
-                  Ep0Buffer[1] = 0x00;
-                  if ( SetupLen >= 2 ) len = 2;
-                  else len = SetupLen;
-                  break;
-                }
-                default:
-                  len = 0xFF;                                       // ²Ù×÷Ê§°Ü
-                  break;
-              }
-            }
-            /* ÀàÇëÇó */
-            else if( ( UsbSetupBuf->bRequestType & USB_REQ_TYP_MASK ) == USB_REQ_TYP_CLASS )
-            {
-              /* Ö÷»úÏÂ´« */
-              if(data_dir == USB_REQ_TYP_OUT)
-              {
-                switch( SetupReqCode )  // ÇëÇóÂë
-                {
-                  case DEF_SET_LINE_CODING: /* SET_LINE_CODING */
-                  {
-                    UINT8 i;
-                    dg_log("SET_LINE_CODING\r\n");
-                    for(i=0; i<8; i++)
-                    {
-                      dg_log("%02x ",Ep0Buffer[i]);
-                    }
-                    dg_log("\r\n");
-                    if( Ep0Buffer[ 4 ] == 0x00 )
-                    {
-                      CDCSetSerIdx = 0;
-                      len = 0x00;
-                    }
-                    else if( Ep0Buffer[ 4 ] == 0x02 )
-                    {
-                      CDCSetSerIdx = 1;
-                      len = 0x00;
-                    }
-                    else len = 0xFF;
-                    break;
-                  }
-                  case DEF_SET_CONTROL_LINE_STATE:  /* SET_CONTROL_LINE_STATE */
-                  {
-                    UINT8  carrier_sta;
-                    UINT8  present_sta;
-                    /* ÏßÂ·×´Ì¬ */
-                    dg_log("ctl %02x %02x\r\n",Ep0Buffer[2],Ep0Buffer[3]);
-                    carrier_sta = Ep0Buffer[2] & (1<<1);   //RTS×´Ì¬
-                    present_sta = Ep0Buffer[2] & (1<<0);   //DTR×´Ì¬
-                    len = 0;
-                    break;
-                  }
-                  default:
-                  {
-                    dg_log("CDC ReqCode%x\r\n",SetupReqCode);
-                    len = 0xFF;                                       // ²Ù×÷Ê§°Ü
-                    break;
-                  }
-                }
-              }
-              /* Éè±¸ÉÏ´« */
-              else
-              {
-                switch( SetupReqCode )  // ÇëÇóÂë
-                {
-                  case DEF_GET_LINE_CODING: /* GET_LINE_CODING */
-                  {
-                    dg_log("GET_LINE_CODING:%d\r\n",Ep0Buffer[ 4 ]);
-                    pDescr = Ep0Buffer;
-                    len = sizeof( LINE_CODE );
-                    ( ( PLINE_CODE )Ep0Buffer )->BaudRate   = Uart0Para.BaudRate;
-                    ( ( PLINE_CODE )Ep0Buffer )->StopBits   = Uart0Para.StopBits;
-                    ( ( PLINE_CODE )Ep0Buffer )->ParityType = Uart0Para.ParityType;
-                    ( ( PLINE_CODE )Ep0Buffer )->DataBits   = Uart0Para.DataBits;
-                    break;
-                  }
-                  case DEF_SERIAL_STATE:
-                  {
-                    dg_log("GET_SERIAL_STATE:%d\r\n",Ep0Buffer[ 4 ]);
-                    //SetupLen ÅÐ¶Ï×Ü³¤¶È
-                    len = 2;
-                    CDCSetSerIdx = 0;
-                    Ep0Buffer[0] = 0;
-                    Ep0Buffer[1] = 0;
-                    break;
-                  }
-                  default:
-                  {
-                    dg_log("CDC ReqCode%x\r\n",SetupReqCode);
-                    len = 0xFF;                                       // ²Ù×÷Ê§°Ü
-                    break;
-                  }
-                }
-              }
-            }
+									break;
+								}
+								case USB_GET_INTERFACE:
+								{
+									dg_log("GET_INTERFACE\r\n");
+									Ep0Buffer[0] = 0x00;
+									if ( SetupLen >= 1 ) len = 1;
+									break;
+								}
+								case USB_GET_STATUS:
+								{
+									dg_log("GET_STATUS\r\n");
+									Ep0Buffer[0] = 0x00;
+									Ep0Buffer[1] = 0x00;
+									if ( SetupLen >= 2 ) len = 2;
+									else len = SetupLen;
+									break;
+								}
+								default:
+									len = 0xFF;                                       // ï¿½ï¿½ï¿½ï¿½Ê§ï¿½ï¿½
+									break;
+							}
+						}
+						/* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
+						else if( ( UsbSetupBuf->bRequestType & USB_REQ_TYP_MASK ) == USB_REQ_TYP_CLASS )
+						{
+							/* ï¿½ï¿½ï¿½ï¿½ï¿½Â´ï¿½ */
+							if(data_dir == USB_REQ_TYP_OUT)
+							{
+								switch( SetupReqCode )  // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+								{
+									case DEF_SET_LINE_CODING: /* SET_LINE_CODING */
+									{
+										UINT8 i;
+										dg_log("SET_LINE_CODING\r\n");
+										for(i=0; i<8; i++)
+										{
+											dg_log("%02x ",Ep0Buffer[i]);
+										}
+										dg_log("\r\n");
+										if( Ep0Buffer[ 4 ] == 0x00 )
+										{
+											CDCSetSerIdx = 0;
+											len = 0x00;
+										}
+										else if( Ep0Buffer[ 4 ] == 0x02 )
+										{
+											CDCSetSerIdx = 1;
+											len = 0x00;
+										}
+										else len = 0xFF;
+										break;
+									}
+									case DEF_SET_CONTROL_LINE_STATE:  /* SET_CONTROL_LINE_STATE */
+									{
+										/*UINT8  carrier_sta;
+										UINT8  present_sta;
+										dg_log("ctl %02x %02x\r\n",Ep0Buffer[2],Ep0Buffer[3]);
+										carrier_sta = Ep0Buffer[2] & (1<<1);   //RTS×´Ì¬
+										present_sta = Ep0Buffer[2] & (1<<0);   //DTR×´Ì¬
+					*/
+										len = 0;
+										break;
+									}
+									default:
+									{
+										dg_log("CDC ReqCode%x\r\n",SetupReqCode);
+										len = 0xFF;                                       // ï¿½ï¿½ï¿½ï¿½Ê§ï¿½ï¿½
+										break;
+									}
+								}
+							}
+							/* ï¿½è±¸ï¿½Ï´ï¿½ */
+							else
+							{
+								switch( SetupReqCode )  // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+								{
+									case DEF_GET_LINE_CODING: /* GET_LINE_CODING */
+									{
+										dg_log("GET_LINE_CODING:%d\r\n",Ep0Buffer[ 4 ]);
+										pDescr = Ep0Buffer;
+										len = sizeof( LINE_CODE );
+										( ( PLINE_CODE )Ep0Buffer )->BaudRate   = Uart0Para.BaudRate;
+										( ( PLINE_CODE )Ep0Buffer )->StopBits   = Uart0Para.StopBits;
+										( ( PLINE_CODE )Ep0Buffer )->ParityType = Uart0Para.ParityType;
+										( ( PLINE_CODE )Ep0Buffer )->DataBits   = Uart0Para.DataBits;
+										break;
+									}
+									case DEF_SERIAL_STATE:
+									{
+										dg_log("GET_SERIAL_STATE:%d\r\n",Ep0Buffer[ 4 ]);
+										//SetupLen ï¿½Ð¶ï¿½ï¿½Ü³ï¿½ï¿½ï¿½
+										len = 2;
+										CDCSetSerIdx = 0;
+										Ep0Buffer[0] = 0;
+										Ep0Buffer[1] = 0;
+										break;
+									}
+									default:
+									{
+										dg_log("CDC ReqCode%x\r\n",SetupReqCode);
+										len = 0xFF;                                       // ï¿½ï¿½ï¿½ï¿½Ê§ï¿½ï¿½
+										break;
+									}
+								}
+							}
+						}
 
-            else len = 0xFF;   /* Ê§°Ü */
-          }
-          else
-          {
-            len = 0xFF; // SETUP°ü³¤¶È´íÎó
-          }
-          if ( len == 0xFF )  // ²Ù×÷Ê§°Ü
-          {
-            SetupReqCode = 0xFF;
-            PFIC_DisableIRQ(USB_IRQn);
-            R8_UEP0_CTRL = RB_UEP_R_TOG | RB_UEP_T_TOG | UEP_R_RES_STALL | UEP_T_RES_STALL;  // STALL
-            PFIC_EnableIRQ(USB_IRQn);
-          }
-          else if ( len <= THIS_ENDP0_SIZE )  // ÉÏ´«Êý¾Ý»òÕß×´Ì¬½×¶Î·µ»Ø0³¤¶È°ü
-          {
-            if( SetupReqCode ==  USB_SET_ADDRESS)  //ÉèÖÃµØÖ· 0x05
-            {
+						else len = 0xFF;   /* Ê§ï¿½ï¿½ */
+					}
+					else
+					{
+						len = 0xFF; // SETUPï¿½ï¿½ï¿½ï¿½ï¿½È´ï¿½ï¿½ï¿½
+					}
+					if ( len == 0xFF )  // ï¿½ï¿½ï¿½ï¿½Ê§ï¿½ï¿½
+					{
+						SetupReqCode = 0xFF;
+						PFIC_DisableIRQ(USB_IRQn);
+						R8_UEP0_CTRL = RB_UEP_R_TOG | RB_UEP_T_TOG | UEP_R_RES_STALL | UEP_T_RES_STALL;  // STALL
+						PFIC_EnableIRQ(USB_IRQn);
+					}
+					else if ( len <= THIS_ENDP0_SIZE )  // ï¿½Ï´ï¿½ï¿½ï¿½ï¿½Ý»ï¿½ï¿½ï¿½×´Ì¬ï¿½×¶Î·ï¿½ï¿½ï¿½0ï¿½ï¿½ï¿½È°ï¿½
+					{
+						if( SetupReqCode ==  USB_SET_ADDRESS)  //ï¿½ï¿½ï¿½Ãµï¿½Ö· 0x05
+						{
 //              dg_log("add in:%d\r\n",len);
-              PFIC_DisableIRQ(USB_IRQn);
-              R8_UEP0_T_LEN = len;
-              R8_UEP0_CTRL = RB_UEP_R_TOG | RB_UEP_T_TOG | UEP_R_RES_NAK | UEP_T_RES_ACK;  //Ä¬ÈÏÊý¾Ý°üÊÇDATA1
-              PFIC_EnableIRQ(USB_IRQn);
-            }
-            else if( SetupReqCode ==  USB_SET_CONFIGURATION)  //ÉèÖÃÅäÖÃÖµ 0x09
-            {
-              PFIC_DisableIRQ(USB_IRQn);
-              R8_UEP0_T_LEN = len;
-              R8_UEP0_CTRL = RB_UEP_R_TOG | RB_UEP_T_TOG | UEP_R_RES_NAK | UEP_T_RES_ACK;  //Ä¬ÈÏÊý¾Ý°üÊÇDATA1
-              PFIC_EnableIRQ(USB_IRQn);
-            }
-            else if( SetupReqCode ==  USB_GET_DESCRIPTOR)  //»ñÈ¡ÃèÊö·û  0x06
-            {
-              R8_UEP0_T_LEN = len;
-              PFIC_DisableIRQ(USB_IRQn);
-              R8_UEP0_CTRL = RB_UEP_R_TOG | RB_UEP_T_TOG | UEP_R_RES_ACK | UEP_T_RES_ACK;  //Ä¬ÈÏÊý¾Ý°üÊÇDATA1
-              PFIC_EnableIRQ(USB_IRQn);
-            }
-            else if( SetupReqCode ==  DEF_VEN_UART_INIT )  //0XA1 ³õÊ¼»¯´®¿Ú
-            {
-              R8_UEP0_T_LEN = len;
-              PFIC_DisableIRQ(USB_IRQn);
-              R8_UEP0_CTRL = RB_UEP_R_TOG | RB_UEP_T_TOG | UEP_R_RES_NAK | UEP_T_RES_ACK;  //Ä¬ÈÏÊý¾Ý°üÊÇDATA1
-              PFIC_EnableIRQ(USB_IRQn);
-            }
-            else if( SetupReqCode ==  DEF_VEN_DEBUG_WRITE )  //0X9A
-            {
-              R8_UEP0_T_LEN = len;
-              PFIC_DisableIRQ(USB_IRQn);
-              R8_UEP0_CTRL = RB_UEP_R_TOG | RB_UEP_T_TOG | UEP_R_RES_NAK | UEP_T_RES_ACK;  //Ä¬ÈÏÊý¾Ý°üÊÇDATA1
-              PFIC_EnableIRQ(USB_IRQn);
-            }
-            else if( SetupReqCode ==  DEF_VEN_UART_M_OUT )  //0XA4
-            {
-              R8_UEP0_T_LEN = len;
-              PFIC_DisableIRQ(USB_IRQn);
-              R8_UEP0_CTRL = RB_UEP_R_TOG | RB_UEP_T_TOG | UEP_R_RES_NAK | UEP_T_RES_ACK;  //Ä¬ÈÏÊý¾Ý°üÊÇDATA1
-              PFIC_EnableIRQ(USB_IRQn);
-            }
-            else if( SetupReqCode ==  DEF_SET_CONTROL_LINE_STATE )  //0x22
-            {
-              PFIC_DisableIRQ(USB_IRQn);
-              R8_UEP0_T_LEN = len;
-              R8_UEP0_CTRL = RB_UEP_R_TOG | RB_UEP_T_TOG | UEP_R_RES_NAK | UEP_T_RES_ACK;  //Ä¬ÈÏÊý¾Ý°üÊÇDATA1
-              PFIC_EnableIRQ(USB_IRQn);
-            }
-            else if( SetupReqCode ==  USB_CLEAR_FEATURE )  //0x01
-            {
-              PFIC_DisableIRQ(USB_IRQn);
-              R8_UEP0_T_LEN = len;
-              R8_UEP0_CTRL = RB_UEP_R_TOG | RB_UEP_T_TOG | UEP_R_RES_NAK | UEP_T_RES_ACK;  //Ä¬ÈÏÊý¾Ý°üÊÇDATA1
-              PFIC_EnableIRQ(USB_IRQn);
-            }
-            else
-            {
-              if(data_dir == USB_REQ_TYP_IN)   //µ±Ç°ÐèÒªÉÏ´«
-              {
-                PFIC_DisableIRQ(USB_IRQn);
-                R8_UEP0_T_LEN = len;
-                R8_UEP0_CTRL = RB_UEP_R_TOG | RB_UEP_T_TOG | UEP_R_RES_NAK | UEP_T_RES_ACK;  //Ä¬ÈÏÊý¾Ý°üÊÇDATA1
-                PFIC_EnableIRQ(USB_IRQn);
-              }
-              else                            //µ±Ç°ÐèÒªÏÂ´«
-              {
-                PFIC_DisableIRQ(USB_IRQn);
-                R8_UEP0_T_LEN = len;
-                R8_UEP0_CTRL = RB_UEP_R_TOG | RB_UEP_T_TOG | UEP_R_RES_ACK | UEP_T_RES_NAK;  //Ä¬ÈÏÊý¾Ý°üÊÇDATA1
-                PFIC_EnableIRQ(USB_IRQn);
-              }
-            }
-          }
-          else  // ÏÂ´«Êý¾Ý»òÆäËü
-          {
-            //ËäÈ»ÉÐÎ´µ½×´Ì¬½×¶Î£¬µ«ÊÇÌáÇ°Ô¤ÖÃÉÏ´«0³¤¶ÈÊý¾Ý°üÒÔ·ÀÖ÷»úÌáÇ°½øÈë×´Ì¬½×¶Î
-            R8_UEP0_T_LEN = 0;
-            PFIC_DisableIRQ(USB_IRQn);
-            R8_UEP0_CTRL = RB_UEP_R_TOG | RB_UEP_T_TOG | UEP_R_RES_ACK | UEP_T_RES_ACK;  // Ä¬ÈÏÊý¾Ý°üÊÇDATA1
-            PFIC_EnableIRQ(USB_IRQn);
-          }
-          break;
-        }
-        case UIS_TOKEN_IN | 0:      // endpoint 0# IN  UIS_TOKEN_IN
-        {
-          switch( SetupReqCode )
-          {
-            /* ¼òµ¥µÄ´¦ÀíSETUPµÄÃüÁî */
-            case USB_GET_DESCRIPTOR:  //0x06  »ñÈ¡ÃèÊö·û
-            {
-              len = (SetupLen >= THIS_ENDP0_SIZE) ? THIS_ENDP0_SIZE : SetupLen;  // ±¾´Î´«Êä³¤¶È
-              memcpy( Ep0Buffer, pDescr, len );                    /* ¼ÓÔØÉÏ´«Êý¾Ý */
-              SetupLen -= len;
-              pDescr += len;
+							PFIC_DisableIRQ(USB_IRQn);
+							R8_UEP0_T_LEN = len;
+							R8_UEP0_CTRL = RB_UEP_R_TOG | RB_UEP_T_TOG | UEP_R_RES_NAK | UEP_T_RES_ACK;  //Ä¬ï¿½ï¿½ï¿½ï¿½ï¿½Ý°ï¿½ï¿½ï¿½DATA1
+							PFIC_EnableIRQ(USB_IRQn);
+						}
+						else if( SetupReqCode ==  USB_SET_CONFIGURATION)  //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Öµ 0x09
+						{
+							PFIC_DisableIRQ(USB_IRQn);
+							R8_UEP0_T_LEN = len;
+							R8_UEP0_CTRL = RB_UEP_R_TOG | RB_UEP_T_TOG | UEP_R_RES_NAK | UEP_T_RES_ACK;  //Ä¬ï¿½ï¿½ï¿½ï¿½ï¿½Ý°ï¿½ï¿½ï¿½DATA1
+							PFIC_EnableIRQ(USB_IRQn);
+						}
+						else if( SetupReqCode ==  USB_GET_DESCRIPTOR)  //ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½  0x06
+						{
+							R8_UEP0_T_LEN = len;
+							PFIC_DisableIRQ(USB_IRQn);
+							R8_UEP0_CTRL = RB_UEP_R_TOG | RB_UEP_T_TOG | UEP_R_RES_ACK | UEP_T_RES_ACK;  //Ä¬ï¿½ï¿½ï¿½ï¿½ï¿½Ý°ï¿½ï¿½ï¿½DATA1
+							PFIC_EnableIRQ(USB_IRQn);
+						}
+						else if( SetupReqCode ==  DEF_VEN_UART_INIT )  //0XA1 ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+						{
+							R8_UEP0_T_LEN = len;
+							PFIC_DisableIRQ(USB_IRQn);
+							R8_UEP0_CTRL = RB_UEP_R_TOG | RB_UEP_T_TOG | UEP_R_RES_NAK | UEP_T_RES_ACK;  //Ä¬ï¿½ï¿½ï¿½ï¿½ï¿½Ý°ï¿½ï¿½ï¿½DATA1
+							PFIC_EnableIRQ(USB_IRQn);
+						}
+						else if( SetupReqCode ==  DEF_VEN_DEBUG_WRITE )  //0X9A
+						{
+							R8_UEP0_T_LEN = len;
+							PFIC_DisableIRQ(USB_IRQn);
+							R8_UEP0_CTRL = RB_UEP_R_TOG | RB_UEP_T_TOG | UEP_R_RES_NAK | UEP_T_RES_ACK;  //Ä¬ï¿½ï¿½ï¿½ï¿½ï¿½Ý°ï¿½ï¿½ï¿½DATA1
+							PFIC_EnableIRQ(USB_IRQn);
+						}
+						else if( SetupReqCode ==  DEF_VEN_UART_M_OUT )  //0XA4
+						{
+							R8_UEP0_T_LEN = len;
+							PFIC_DisableIRQ(USB_IRQn);
+							R8_UEP0_CTRL = RB_UEP_R_TOG | RB_UEP_T_TOG | UEP_R_RES_NAK | UEP_T_RES_ACK;  //Ä¬ï¿½ï¿½ï¿½ï¿½ï¿½Ý°ï¿½ï¿½ï¿½DATA1
+							PFIC_EnableIRQ(USB_IRQn);
+						}
+						else if( SetupReqCode ==  DEF_SET_CONTROL_LINE_STATE )  //0x22
+						{
+							PFIC_DisableIRQ(USB_IRQn);
+							R8_UEP0_T_LEN = len;
+							R8_UEP0_CTRL = RB_UEP_R_TOG | RB_UEP_T_TOG | UEP_R_RES_NAK | UEP_T_RES_ACK;  //Ä¬ï¿½ï¿½ï¿½ï¿½ï¿½Ý°ï¿½ï¿½ï¿½DATA1
+							PFIC_EnableIRQ(USB_IRQn);
+						}
+						else if( SetupReqCode ==  USB_CLEAR_FEATURE )  //0x01
+						{
+							PFIC_DisableIRQ(USB_IRQn);
+							R8_UEP0_T_LEN = len;
+							R8_UEP0_CTRL = RB_UEP_R_TOG | RB_UEP_T_TOG | UEP_R_RES_NAK | UEP_T_RES_ACK;  //Ä¬ï¿½ï¿½ï¿½ï¿½ï¿½Ý°ï¿½ï¿½ï¿½DATA1
+							PFIC_EnableIRQ(USB_IRQn);
+						}
+						else
+						{
+							if(data_dir == USB_REQ_TYP_IN)   //ï¿½ï¿½Ç°ï¿½ï¿½Òªï¿½Ï´ï¿½
+							{
+								PFIC_DisableIRQ(USB_IRQn);
+								R8_UEP0_T_LEN = len;
+								R8_UEP0_CTRL = RB_UEP_R_TOG | RB_UEP_T_TOG | UEP_R_RES_NAK | UEP_T_RES_ACK;  //Ä¬ï¿½ï¿½ï¿½ï¿½ï¿½Ý°ï¿½ï¿½ï¿½DATA1
+								PFIC_EnableIRQ(USB_IRQn);
+							}
+							else                            //ï¿½ï¿½Ç°ï¿½ï¿½Òªï¿½Â´ï¿½
+							{
+								PFIC_DisableIRQ(USB_IRQn);
+								R8_UEP0_T_LEN = len;
+								R8_UEP0_CTRL = RB_UEP_R_TOG | RB_UEP_T_TOG | UEP_R_RES_ACK | UEP_T_RES_NAK;  //Ä¬ï¿½ï¿½ï¿½ï¿½ï¿½Ý°ï¿½ï¿½ï¿½DATA1
+								PFIC_EnableIRQ(USB_IRQn);
+							}
+						}
+					}
+					else  // ï¿½Â´ï¿½ï¿½ï¿½ï¿½Ý»ï¿½ï¿½ï¿½ï¿½ï¿½
+					{
+						//ï¿½ï¿½È»ï¿½ï¿½Î´ï¿½ï¿½×´Ì¬ï¿½×¶Î£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç°Ô¤ï¿½ï¿½ï¿½Ï´ï¿½0ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý°ï¿½ï¿½Ô·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç°ï¿½ï¿½ï¿½ï¿½×´Ì¬ï¿½×¶ï¿½
+						R8_UEP0_T_LEN = 0;
+						PFIC_DisableIRQ(USB_IRQn);
+						R8_UEP0_CTRL = RB_UEP_R_TOG | RB_UEP_T_TOG | UEP_R_RES_ACK | UEP_T_RES_ACK;  // Ä¬ï¿½ï¿½ï¿½ï¿½ï¿½Ý°ï¿½ï¿½ï¿½DATA1
+						PFIC_EnableIRQ(USB_IRQn);
+					}
+					break;
+				}
+				case UIS_TOKEN_IN | 0:      // endpoint 0# IN  UIS_TOKEN_IN
+				{
+					switch( SetupReqCode )
+					{
+						/* ï¿½òµ¥µÄ´ï¿½ï¿½ï¿½SETUPï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
+						case USB_GET_DESCRIPTOR:  //0x06  ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+						{
+							len = (SetupLen >= THIS_ENDP0_SIZE) ? THIS_ENDP0_SIZE : SetupLen;  // ï¿½ï¿½ï¿½Î´ï¿½ï¿½ä³¤ï¿½ï¿½
+							memcpy( Ep0Buffer, pDescr, len );                    /* ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½ï¿½ï¿½ï¿½ï¿½ */
+							SetupLen -= len;
+							pDescr += len;
 
-              if(len)
-              {
-                R8_UEP0_T_LEN = len;
-                PFIC_DisableIRQ(USB_IRQn);
-                R8_UEP0_CTRL ^=  RB_UEP_T_TOG;
-                USBDevEPnINSetStatus(ENDP0, ENDP_TYPE_IN, IN_ACK);
-                PFIC_EnableIRQ(USB_IRQn);
-              }
-              else
-              {
-                R8_UEP0_T_LEN = len;
-                PFIC_DisableIRQ(USB_IRQn);
-                R8_UEP0_CTRL = RB_UEP_R_TOG|RB_UEP_T_TOG|UEP_R_RES_ACK | UEP_T_RES_NAK;
-                PFIC_EnableIRQ(USB_IRQn);
-              }
-              break;
-            }
-            case USB_SET_ADDRESS:   //0x05
-            {
-              R8_USB_DEV_AD = (R8_USB_DEV_AD & RB_UDA_GP_BIT) | (devinf.UsbAddress);
-              PFIC_DisableIRQ(USB_IRQn);
-              R8_UEP0_CTRL = RB_UEP_R_TOG|RB_UEP_T_TOG|UEP_R_RES_NAK | UEP_T_RES_NAK;
-              PFIC_EnableIRQ(USB_IRQn);
+							if(len)
+							{
+								R8_UEP0_T_LEN = len;
+								PFIC_DisableIRQ(USB_IRQn);
+								R8_UEP0_CTRL ^=  RB_UEP_T_TOG;
+								USBDevEPnINSetStatus(ENDP0, ENDP_TYPE_IN, IN_ACK);
+								PFIC_EnableIRQ(USB_IRQn);
+							}
+							else
+							{
+								R8_UEP0_T_LEN = len;
+								PFIC_DisableIRQ(USB_IRQn);
+								R8_UEP0_CTRL = RB_UEP_R_TOG|RB_UEP_T_TOG|UEP_R_RES_ACK | UEP_T_RES_NAK;
+								PFIC_EnableIRQ(USB_IRQn);
+							}
+							break;
+						}
+						case USB_SET_ADDRESS:   //0x05
+						{
+							R8_USB_DEV_AD = (R8_USB_DEV_AD & RB_UDA_GP_BIT) | (devinf.UsbAddress);
+							PFIC_DisableIRQ(USB_IRQn);
+							R8_UEP0_CTRL = RB_UEP_R_TOG|RB_UEP_T_TOG|UEP_R_RES_NAK | UEP_T_RES_NAK;
+							PFIC_EnableIRQ(USB_IRQn);
 //              dg_log("add in deal\r\n");
 
-              break;
-            }
-            //³§ÉÌ¶ÁÈ¡
-            case DEF_VEN_DEBUG_READ:     //0X95
-            case DEF_VEN_GET_VER:         //0X5F
-            {
-              PFIC_DisableIRQ(USB_IRQn);
-              R8_UEP0_CTRL = RB_UEP_R_TOG|RB_UEP_T_TOG|UEP_R_RES_ACK | UEP_T_RES_NAK;
-              PFIC_EnableIRQ(USB_IRQn);
+							break;
+						}
+						//ï¿½ï¿½ï¿½Ì¶ï¿½È¡
+						case DEF_VEN_DEBUG_READ:     //0X95
+						case DEF_VEN_GET_VER:         //0X5F
+						{
+							PFIC_DisableIRQ(USB_IRQn);
+							R8_UEP0_CTRL = RB_UEP_R_TOG|RB_UEP_T_TOG|UEP_R_RES_ACK | UEP_T_RES_NAK;
+							PFIC_EnableIRQ(USB_IRQn);
 
-              break;
-            }
-            case DEF_GET_LINE_CODING:  //0x21
-            {
-              PFIC_DisableIRQ(USB_IRQn);
-              R8_UEP0_CTRL = RB_UEP_R_TOG|RB_UEP_T_TOG|UEP_R_RES_ACK | UEP_T_RES_NAK;
-              PFIC_EnableIRQ(USB_IRQn);
+							break;
+						}
+						case DEF_GET_LINE_CODING:  //0x21
+						{
+							PFIC_DisableIRQ(USB_IRQn);
+							R8_UEP0_CTRL = RB_UEP_R_TOG|RB_UEP_T_TOG|UEP_R_RES_ACK | UEP_T_RES_NAK;
+							PFIC_EnableIRQ(USB_IRQn);
 
-              break;
-            }
-            case DEF_SET_LINE_CODING:   //0x20
-            {
-              PFIC_DisableIRQ(USB_IRQn);
-              R8_UEP0_CTRL = RB_UEP_R_TOG|RB_UEP_T_TOG|UEP_R_RES_NAK | UEP_T_RES_NAK;
-              PFIC_EnableIRQ(USB_IRQn);
-              break;
-            }
-            default:
-            {
-              R8_UEP0_T_LEN = 0;                                      // ×´Ì¬½×¶ÎÍê³ÉÖÐ¶Ï»òÕßÊÇÇ¿ÖÆÉÏ´«0³¤¶ÈÊý¾Ý°ü½áÊø¿ØÖÆ´«Êä
-              PFIC_DisableIRQ(USB_IRQn);
-              R8_UEP0_CTRL = RB_UEP_R_TOG|RB_UEP_T_TOG|UEP_R_RES_NAK | UEP_T_RES_NAK;
-              PFIC_EnableIRQ(USB_IRQn);
+							break;
+						}
+						case DEF_SET_LINE_CODING:   //0x20
+						{
+							PFIC_DisableIRQ(USB_IRQn);
+							R8_UEP0_CTRL = RB_UEP_R_TOG|RB_UEP_T_TOG|UEP_R_RES_NAK | UEP_T_RES_NAK;
+							PFIC_EnableIRQ(USB_IRQn);
+							break;
+						}
+						default:
+						{
+							R8_UEP0_T_LEN = 0;                                      // ×´Ì¬ï¿½×¶ï¿½ï¿½ï¿½ï¿½ï¿½Ð¶Ï»ï¿½ï¿½ï¿½ï¿½ï¿½Ç¿ï¿½ï¿½ï¿½Ï´ï¿½0ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ´ï¿½ï¿½ï¿½
+							PFIC_DisableIRQ(USB_IRQn);
+							R8_UEP0_CTRL = RB_UEP_R_TOG|RB_UEP_T_TOG|UEP_R_RES_NAK | UEP_T_RES_NAK;
+							PFIC_EnableIRQ(USB_IRQn);
 
-              break;
-            }
-          }
-          break;
-        }
-        case UIS_TOKEN_OUT | 0:      // endpoint 0# OUT
-        {
-          len = usb_irq_len[i];
-          if(len)
-          {
-            if(usb_work_mode == USB_CDC_MODE)
-            {
-              switch(SetupReqCode)
-              {
-                /* ÉèÖÃ´®¿Ú */
-                case DEF_SET_LINE_CODING:
-                {
-                  UINT32 set_bps;
-                  UINT8  data_bit;
-                  UINT8  stop_bit;
-                  UINT8  ver_bit;
-                  UINT8  set_stop_bit;
+							break;
+						}
+					}
+					break;
+				}
+				case UIS_TOKEN_OUT | 0:      // endpoint 0# OUT
+				{
+					len = usb_irq_len[i];
+					if(len)
+					{
+						if(usb_work_mode == USB_CDC_MODE)
+						{
+							switch(SetupReqCode)
+							{
+								/* ï¿½ï¿½ï¿½Ã´ï¿½ï¿½ï¿½ */
+								case DEF_SET_LINE_CODING:
+								{
+									UINT32 set_bps;
+									UINT8  data_bit;
+									UINT8  stop_bit;
+									UINT8  ver_bit;
 
-                  memcpy(&set_bps,Ep0Buffer,4);
-                  stop_bit = Ep0Buffer[4];
-                  ver_bit = Ep0Buffer[5];
-                  data_bit = Ep0Buffer[6];
+									memcpy(&set_bps,Ep0Buffer,4);
+									stop_bit = Ep0Buffer[4];
+									ver_bit = Ep0Buffer[5];
+									data_bit = Ep0Buffer[6];
 
-                  dg_log("LINE_CODING %d %d %d %d %d\r\n",CDCSetSerIdx
-                                       ,(int)set_bps
-                                       ,data_bit
-                                       ,stop_bit
-                                       ,ver_bit);
+									dg_log("LINE_CODING %d %d %d %d %d\r\n",CDCSetSerIdx
+																			,(int)set_bps
+																			,data_bit
+																			,stop_bit
+																			,ver_bit);
 
-                    Uart0Para.BaudRate = set_bps;
-                    Uart0Para.StopBits = stop_bit;
-                    Uart0Para.ParityType = ver_bit;
-                    Uart0Para.DataBits = data_bit;
-                    CDCSer0ParaChange = 1;
+										Uart0Para.BaudRate = set_bps;
+										Uart0Para.StopBits = stop_bit;
+										Uart0Para.ParityType = ver_bit;
+										Uart0Para.DataBits = data_bit;
+										CDCSer0ParaChange = 1;
 
-                  PFIC_DisableIRQ(USB_IRQn);
-                  R8_UEP0_CTRL = RB_UEP_R_TOG|RB_UEP_T_TOG|UEP_R_RES_NAK|UEP_T_RES_ACK;
-                  PFIC_EnableIRQ(USB_IRQn);
-                  break;
-                }
-                default:
-                  PFIC_DisableIRQ(USB_IRQn);
-                  R8_UEP0_CTRL = RB_UEP_R_TOG|RB_UEP_T_TOG|UEP_R_RES_NAK | UEP_T_RES_NAK;
-                  PFIC_EnableIRQ(USB_IRQn);
-                  break;
-              }
-            }
-            else
-            {
-              PFIC_DisableIRQ(USB_IRQn);
-              R8_UEP0_CTRL = RB_UEP_R_TOG|RB_UEP_T_TOG|UEP_R_RES_NAK | UEP_T_RES_NAK;
-              PFIC_EnableIRQ(USB_IRQn);
-            }
-          }
-          else
-          {
-            PFIC_DisableIRQ(USB_IRQn);
-            R8_UEP0_CTRL = RB_UEP_R_TOG|RB_UEP_T_TOG|UEP_R_RES_NAK|UEP_T_RES_NAK;
-            PFIC_EnableIRQ(USB_IRQn);
-          }
-          break;
-        }
-        default:
-          ep_idx = 0xff;
-          break;
-      }
+									PFIC_DisableIRQ(USB_IRQn);
+									R8_UEP0_CTRL = RB_UEP_R_TOG|RB_UEP_T_TOG|UEP_R_RES_NAK|UEP_T_RES_ACK;
+									PFIC_EnableIRQ(USB_IRQn);
+									break;
+								}
+								default:
+									PFIC_DisableIRQ(USB_IRQn);
+									R8_UEP0_CTRL = RB_UEP_R_TOG|RB_UEP_T_TOG|UEP_R_RES_NAK | UEP_T_RES_NAK;
+									PFIC_EnableIRQ(USB_IRQn);
+									break;
+							}
+						}
+						else
+						{
+							PFIC_DisableIRQ(USB_IRQn);
+							R8_UEP0_CTRL = RB_UEP_R_TOG|RB_UEP_T_TOG|UEP_R_RES_NAK | UEP_T_RES_NAK;
+							PFIC_EnableIRQ(USB_IRQn);
+						}
+					}
+					else
+					{
+						PFIC_DisableIRQ(USB_IRQn);
+						R8_UEP0_CTRL = RB_UEP_R_TOG|RB_UEP_T_TOG|UEP_R_RES_NAK|UEP_T_RES_NAK;
+						PFIC_EnableIRQ(USB_IRQn);
+					}
+					break;
+				}
+				default:
+					break;
+			}
 
-      PFIC_DisableIRQ(USB_IRQn);
-      usb_irq_flag[i] = 0;
-      PFIC_EnableIRQ(USB_IRQn);
-    }
-  }
+			PFIC_DisableIRQ(USB_IRQn);
+			usb_irq_flag[i] = 0;
+			PFIC_EnableIRQ(USB_IRQn);
+		}
+	}
 
-  if ( R8_USB_INT_FG & RB_UIF_BUS_RST )  // USB×ÜÏß¸´Î»
-  {
-    if(usb_work_mode == USB_VENDOR_MODE)
-    {
-      R8_UEP0_CTRL = UEP_R_RES_NAK | UEP_T_RES_NAK;
-      R8_UEP1_CTRL = UEP_R_RES_ACK | UEP_T_RES_NAK;
-      R8_UEP2_CTRL = UEP_R_RES_ACK | UEP_T_RES_NAK;
-    }
-    else
-    {
-      R8_UEP0_CTRL = UEP_R_RES_NAK | UEP_T_RES_NAK;
-      R8_UEP1_CTRL = UEP_R_RES_ACK | UEP_T_RES_NAK;
-      R8_UEP2_CTRL = UEP_R_RES_ACK | UEP_T_RES_NAK;
-      R8_UEP3_CTRL = UEP_T_RES_NAK;
-      R8_UEP4_CTRL = UEP_T_RES_NAK;
-    }
+	if ( R8_USB_INT_FG & RB_UIF_BUS_RST )  // USBï¿½ï¿½ï¿½ß¸ï¿½Î»
+	{
+		if(usb_work_mode == USB_VENDOR_MODE)
+		{
+			R8_UEP0_CTRL = UEP_R_RES_NAK | UEP_T_RES_NAK;
+			R8_UEP1_CTRL = UEP_R_RES_ACK | UEP_T_RES_NAK;
+			R8_UEP2_CTRL = UEP_R_RES_ACK | UEP_T_RES_NAK;
+		}
+		else
+		{
+			R8_UEP0_CTRL = UEP_R_RES_NAK | UEP_T_RES_NAK;
+			R8_UEP1_CTRL = UEP_R_RES_ACK | UEP_T_RES_NAK;
+			R8_UEP2_CTRL = UEP_R_RES_ACK | UEP_T_RES_NAK;
+			R8_UEP3_CTRL = UEP_T_RES_NAK;
+			R8_UEP4_CTRL = UEP_T_RES_NAK;
+		}
 
-    cdc_uart_sta_trans_step = 0;
-    ven_ep1_trans_step = 0;
+		cdc_uart_sta_trans_step = 0;
+		ven_ep1_trans_step = 0;
 
-    R8_USB_DEV_AD = 0x00;
-    devinf.UsbAddress = 0;
+		R8_USB_DEV_AD = 0x00;
+		devinf.UsbAddress = 0;
 
-    R8_USB_INT_FG = RB_UIF_BUS_RST;             // ÇåÖÐ¶Ï±êÖ¾
-  }
-  else if (  R8_USB_INT_FG & RB_UIF_SUSPEND )  // USB×ÜÏß¹ÒÆð/»½ÐÑÍê³É
-  {
-    if ( R8_USB_MIS_ST & RB_UMS_SUSPEND )    //¹ÒÆð
-    {
-      if(usb_work_mode == USB_VENDOR_MODE)
-      {
-        VENSer0ParaChange = 1;
-      }
-      else
-      {
-        CDCSer0ParaChange = 1;
-      }
+		R8_USB_INT_FG = RB_UIF_BUS_RST;             // ï¿½ï¿½ï¿½Ð¶Ï±ï¿½Ö¾
+	}
+	else if (  R8_USB_INT_FG & RB_UIF_SUSPEND )  // USBï¿½ï¿½ï¿½ß¹ï¿½ï¿½ï¿½/ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	{
+		if ( R8_USB_MIS_ST & RB_UMS_SUSPEND )    //ï¿½ï¿½ï¿½ï¿½
+		{
+			if(usb_work_mode == USB_VENDOR_MODE)
+			{
+				VENSer0ParaChange = 1;
+			}
+			else
+			{
+				CDCSer0ParaChange = 1;
+			}
 
-      Ep1DataINFlag = 0;
-      Ep2DataINFlag = 0;
-      Ep3DataINFlag = 0;
-      Ep4DataINFlag = 0;
+			Ep1DataINFlag = 0;
+			Ep2DataINFlag = 0;
+			Ep3DataINFlag = 0;
+			Ep4DataINFlag = 0;
 
-      Ep1DataOUTFlag = 0;
-      Ep2DataOUTFlag = 0;
-      Ep3DataOUTFlag = 0;
-      Ep4DataOUTFlag = 0;
+			Ep1DataOUTFlag = 0;
+			Ep2DataOUTFlag = 0;
+			Ep3DataOUTFlag = 0;
+			Ep4DataOUTFlag = 0;
 
-    }
-    else                                     //»½ÐÑ
-    {
-      Ep1DataINFlag = 1;
-      Ep2DataINFlag = 1;
-      Ep3DataINFlag = 1;
-      Ep4DataINFlag = 1;
+		}
+		else                                     //ï¿½ï¿½ï¿½ï¿½
+		{
+			Ep1DataINFlag = 1;
+			Ep2DataINFlag = 1;
+			Ep3DataINFlag = 1;
+			Ep4DataINFlag = 1;
 
-      Ep1DataOUTFlag = 0;
-      Ep2DataOUTFlag = 0;
-      Ep3DataOUTFlag = 0;
-      Ep4DataOUTFlag = 0;
-    }
+			Ep1DataOUTFlag = 0;
+			Ep2DataOUTFlag = 0;
+			Ep3DataOUTFlag = 0;
+			Ep4DataOUTFlag = 0;
+		}
 
-    cdc_uart_sta_trans_step = 0;
-    ven_ep1_trans_step = 0;
+		cdc_uart_sta_trans_step = 0;
+		ven_ep1_trans_step = 0;
 
-    R8_USB_INT_FG = RB_UIF_SUSPEND;
-  }
+		R8_USB_INT_FG = RB_UIF_SUSPEND;
+	}
 }
 
 /*******************************************************************************
 * Function Name  : USBDevEPnINSetStatus
-* Description    : ¶Ëµã×´Ì¬ÉèÖÃº¯Êý
-* Input          : ep_num£º¶ËµãºÅ
-                   type£º¶Ëµã´«ÊäÀàÐÍ
-                   sta£ºÇÐ»»µÄ¶Ëµã×´Ì¬
+* Description    : ï¿½Ëµï¿½×´Ì¬ï¿½ï¿½ï¿½Ãºï¿½ï¿½ï¿½
+* Input          : ep_numï¿½ï¿½ï¿½Ëµï¿½ï¿½
+									typeï¿½ï¿½ï¿½Ëµã´«ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+									staï¿½ï¿½ï¿½Ð»ï¿½ï¿½Ä¶Ëµï¿½×´Ì¬
 * Output         : None
 * Return         : None
 *******************************************************************************/
 void USBDevEPnINSetStatus(UINT8 ep_num, UINT8 type, UINT8 sta)
 {
-  UINT8 *p_UEPn_CTRL;
+	UINT8 *p_UEPn_CTRL;
 
-  p_UEPn_CTRL = (UINT8 *)(USB_BASE_ADDR + 0x22 + ep_num * 4);
-  if(type == ENDP_TYPE_IN) *((PUINT8V)p_UEPn_CTRL) = (*((PUINT8V)p_UEPn_CTRL) & (~(0x03))) | sta;
-  else *((PUINT8V)p_UEPn_CTRL) = (*((PUINT8V)p_UEPn_CTRL) & (~(0x03<<2))) | (sta<<2);
+	p_UEPn_CTRL = (UINT8 *)(USB_BASE_ADDR + 0x22 + ep_num * 4);
+	if(type == ENDP_TYPE_IN) *((PUINT8V)p_UEPn_CTRL) = (*((PUINT8V)p_UEPn_CTRL) & (~(0x03))) | sta;
+	else *((PUINT8V)p_UEPn_CTRL) = (*((PUINT8V)p_UEPn_CTRL) & (~(0x03<<2))) | (sta<<2);
 }
 
 /*******************************************************************************
 * Function Name  : USBParaInit
-* Description    : USB²ÎÊý³õÊ¼»¯£¬»º´æºÍ±êÖ¾
+* Description    : USBï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í±ï¿½Ö¾
 * Input          : None
 * Output         : None
 * Return         : None
 *******************************************************************************/
 void USBParaInit(void)
 {
-  Ep1DataINFlag = 1;
-  Ep1DataOUTFlag = 0;
-  Ep2DataINFlag = 1;
-  Ep2DataOUTFlag = 0;
-  Ep3DataINFlag = 1;
-  Ep3DataOUTFlag = 0;
-  Ep4DataINFlag = 1;
-  Ep4DataOUTFlag = 0;
+	Ep1DataINFlag = 1;
+	Ep1DataOUTFlag = 0;
+	Ep2DataINFlag = 1;
+	Ep2DataOUTFlag = 0;
+	Ep3DataINFlag = 1;
+	Ep3DataOUTFlag = 0;
+	Ep4DataINFlag = 1;
+	Ep4DataOUTFlag = 0;
 }
 
 
 /*******************************************************************************
 * Function Name  : InitCDCDevice
-* Description    : ³õÊ¼»¯CDCÉè±¸
+* Description    : ï¿½ï¿½Ê¼ï¿½ï¿½CDCï¿½è±¸
 * Input          : None
 * Output         : None
 * Return         : None
 *******************************************************************************/
 void InitCDCDevice(void)
 {
-  /* ³õÊ¼»¯»º´æ */
-  USBParaInit();
+	/* ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
+	USBParaInit();
 
-  R8_USB_CTRL = 0x00;                                                 // ÏÈÉè¶¨Ä£Ê½
+	R8_USB_CTRL = 0x00;                                                 // ï¿½ï¿½ï¿½è¶¨Ä£Ê½
 
-//  1.¶Ëµã·ÖÅä£º
-//  ¶Ëµã0
-//  ¶Ëµã1£ºINºÍOUT  £¨Êý¾Ý½Ó¿Ú£©
-//  ¶Ëµã2£ºINºÍOUT  £¨Êý¾Ý½Ó¿Ú£©
-//  ¶Ëµã3£ºIN       £¨½Ó¿Ú23×éºÏ£¬ÖÐ¶ÏÉÏ´«£©
-//  ¶Ëµã4£ºIN       £¨½Ó¿Ú01×éºÏ£¬ÖÐ¶ÏÉÏ´«£©
+//  1.ï¿½Ëµï¿½ï¿½ï¿½ä£º
+//  ï¿½Ëµï¿½0
+//  ï¿½Ëµï¿½1ï¿½ï¿½INï¿½ï¿½OUT  ï¿½ï¿½ï¿½ï¿½ï¿½Ý½Ó¿Ú£ï¿½
+//  ï¿½Ëµï¿½2ï¿½ï¿½INï¿½ï¿½OUT  ï¿½ï¿½ï¿½ï¿½ï¿½Ý½Ó¿Ú£ï¿½
+//  ï¿½Ëµï¿½3ï¿½ï¿½IN       ï¿½ï¿½ï¿½Ó¿ï¿½23ï¿½ï¿½Ï£ï¿½ï¿½Ð¶ï¿½ï¿½Ï´ï¿½ï¿½ï¿½
+//  ï¿½Ëµï¿½4ï¿½ï¿½IN       ï¿½ï¿½ï¿½Ó¿ï¿½01ï¿½ï¿½Ï£ï¿½ï¿½Ð¶ï¿½ï¿½Ï´ï¿½ï¿½ï¿½
 
-  R8_UEP4_1_MOD = RB_UEP4_TX_EN|RB_UEP1_TX_EN|RB_UEP1_RX_EN;
+	R8_UEP4_1_MOD = RB_UEP4_TX_EN|RB_UEP1_TX_EN|RB_UEP1_RX_EN;
 
-  /* µ¥ 64 ×Ö½Ú½ÓÊÕ»º³åÇø(OUT)£¬µ¥ 64 ×Ö½Ú·¢ËÍ»º³åÇø£¨IN£© */
-  R8_UEP2_3_MOD = RB_UEP2_RX_EN | RB_UEP2_TX_EN | RB_UEP3_TX_EN;
+	/* ï¿½ï¿½ 64 ï¿½Ö½Ú½ï¿½ï¿½Õ»ï¿½ï¿½ï¿½ï¿½ï¿½(OUT)ï¿½ï¿½ï¿½ï¿½ 64 ï¿½Ö½Ú·ï¿½ï¿½Í»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½INï¿½ï¿½ */
+	R8_UEP2_3_MOD = RB_UEP2_RX_EN | RB_UEP2_TX_EN | RB_UEP3_TX_EN;
 
-  R16_UEP0_DMA = (UINT32)&Ep0Buffer[0];
-  R16_UEP1_DMA = (UINT32)&Ep1Buffer[0];
-  R16_UEP2_DMA = (UINT32)&Ep2Buffer[0];
-  R16_UEP3_DMA = (UINT32)&Ep3Buffer[0];
-  //R16_UEP4_DMA = (UINT16)(UINT32)&Ep2Buffer[0];
+	R16_UEP0_DMA = (UINT32)&Ep0Buffer[0];
+	R16_UEP1_DMA = (UINT32)&Ep1Buffer[0];
+	R16_UEP2_DMA = (UINT32)&Ep2Buffer[0];
+	R16_UEP3_DMA = (UINT32)&Ep3Buffer[0];
+	//R16_UEP4_DMA = (UINT16)(UINT32)&Ep2Buffer[0];
 
-  /* ¶Ëµã0×´Ì¬£ºOUT--ACK IN--NAK */
-  R8_UEP0_CTRL = UEP_R_RES_NAK | UEP_T_RES_NAK;
+	/* ï¿½Ëµï¿½0×´Ì¬ï¿½ï¿½OUT--ACK IN--NAK */
+	R8_UEP0_CTRL = UEP_R_RES_NAK | UEP_T_RES_NAK;
 
-  /* ¶Ëµã1×´Ì¬£ºOUT--ACK IN--NAK ×Ô¶¯·­×ª */
-  R8_UEP1_CTRL = UEP_R_RES_ACK | UEP_T_RES_NAK;
+	/* ï¿½Ëµï¿½1×´Ì¬ï¿½ï¿½OUT--ACK IN--NAK ï¿½Ô¶ï¿½ï¿½ï¿½×ª */
+	R8_UEP1_CTRL = UEP_R_RES_ACK | UEP_T_RES_NAK;
 
-  /* ¶Ëµã2×´Ì¬£ºOUT--ACK IN--NAK ×Ô¶¯·­×ª */
-  R8_UEP2_CTRL = UEP_R_RES_ACK | UEP_T_RES_NAK;
+	/* ï¿½Ëµï¿½2×´Ì¬ï¿½ï¿½OUT--ACK IN--NAK ï¿½Ô¶ï¿½ï¿½ï¿½×ª */
+	R8_UEP2_CTRL = UEP_R_RES_ACK | UEP_T_RES_NAK;
 
-  /* ¶Ëµã3×´Ì¬£ºIN--NAK ×Ô¶¯·­×ª */
-  R8_UEP3_CTRL = UEP_T_RES_NAK;
+	/* ï¿½Ëµï¿½3×´Ì¬ï¿½ï¿½IN--NAK ï¿½Ô¶ï¿½ï¿½ï¿½×ª */
+	R8_UEP3_CTRL = UEP_T_RES_NAK;
 
-  /* ¶Ëµã4×´Ì¬£ºIN--NAK ÊÖ¶¯·­×ª */
-  R8_UEP4_CTRL = UEP_T_RES_NAK;
+	/* ï¿½Ëµï¿½4×´Ì¬ï¿½ï¿½IN--NAK ï¿½Ö¶ï¿½ï¿½ï¿½×ª */
+	R8_UEP4_CTRL = UEP_T_RES_NAK;
 
-  /* Éè±¸µØÖ· */
-  R8_USB_DEV_AD = 0x00;
+	/* ï¿½è±¸ï¿½ï¿½Ö· */
+	R8_USB_DEV_AD = 0x00;
 
-  //½ûÖ¹DP/DMÏÂÀ­µç×ès
-  R8_UDEV_CTRL = RB_UD_PD_DIS;
+	//ï¿½ï¿½Ö¹DP/DMï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½s
+	R8_UDEV_CTRL = RB_UD_PD_DIS;
 
-  //Æô¶¯USBÉè±¸¼°DMA£¬ÔÚÖÐ¶ÏÆÚ¼äÖÐ¶Ï±êÖ¾Î´Çå³ýÇ°×Ô¶¯·µ»ØNAK
-  R8_USB_CTRL = RB_UC_DEV_PU_EN | RB_UC_INT_BUSY | RB_UC_DMA_EN;
+	//ï¿½ï¿½ï¿½ï¿½USBï¿½è±¸ï¿½ï¿½DMAï¿½ï¿½ï¿½ï¿½ï¿½Ð¶ï¿½ï¿½Ú¼ï¿½ï¿½Ð¶Ï±ï¿½Ö¾Î´ï¿½ï¿½ï¿½Ç°ï¿½Ô¶ï¿½ï¿½ï¿½ï¿½ï¿½NAK
+	R8_USB_CTRL = RB_UC_DEV_PU_EN | RB_UC_INT_BUSY | RB_UC_DMA_EN;
 
-  //ÇåÖÐ¶Ï±êÖ¾
-  R8_USB_INT_FG = 0xFF;
+	//ï¿½ï¿½ï¿½Ð¶Ï±ï¿½Ö¾
+	R8_USB_INT_FG = 0xFF;
 
-  //³ÌÐòÍ³Ò»²éÑ¯£¿
-  //¿ªÆôÖÐ¶Ï          ¹ÒÆð            ´«ÊäÍê³É         ×ÜÏß¸´Î»
-  //R8_USB_INT_EN = RB_UIE_SUSPEND | RB_UIE_TRANSFER | RB_UIE_BUS_RST;
-  R8_USB_INT_EN = RB_UIE_TRANSFER ;
-  PFIC_EnableIRQ(USB_IRQn);
+	//ï¿½ï¿½ï¿½ï¿½Í³Ò»ï¿½ï¿½Ñ¯ï¿½ï¿½
+	//ï¿½ï¿½ï¿½ï¿½ï¿½Ð¶ï¿½          ï¿½ï¿½ï¿½ï¿½            ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½         ï¿½ï¿½ï¿½ß¸ï¿½Î»
+	//R8_USB_INT_EN = RB_UIE_SUSPEND | RB_UIE_TRANSFER | RB_UIE_BUS_RST;
+	R8_USB_INT_EN = RB_UIE_TRANSFER ;
+	PFIC_EnableIRQ(USB_IRQn);
 
-  //Ê¹ÄÜUSB¶Ë¿Ú
-  R8_UDEV_CTRL |= RB_UD_PORT_EN;
+	//Ê¹ï¿½ï¿½USBï¿½Ë¿ï¿½
+	R8_UDEV_CTRL |= RB_UD_PORT_EN;
 
-  devinf.UsbConfig = 0;
-  devinf.UsbAddress = 0;
+	devinf.UsbConfig = 0;
+	devinf.UsbAddress = 0;
 }
 
 /*******************************************************************************
 * Function Name  : InitVendorDevice
-* Description    : ³õÊ¼»¯³§ÉÌUSBÉè±¸
+* Description    : ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½USBï¿½è±¸
 * Input          : None
 * Output         : None
 * Return         : None
 *******************************************************************************/
 void InitVendorDevice(void)
 {
-  /* ³õÊ¼»¯»º´æ */
-  USBParaInit();
+	/* ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
+	USBParaInit();
 
-  R8_USB_CTRL = 0x00;                                                 // ÏÈÉè¶¨Ä£Ê½
+	R8_USB_CTRL = 0x00;                                                 // ï¿½ï¿½ï¿½è¶¨Ä£Ê½
 
-//  1.¶Ëµã·ÖÅä£º
-//  ¶Ëµã0
-//  ¶Ëµã1£ºINºÍOUT  £¨ÅäÖÃ½Ó¿Ú£©
-//  ¶Ëµã2£ºINºÍOUT  £¨Êý¾Ý½Ó¿Ú£©
+//  1.ï¿½Ëµï¿½ï¿½ï¿½ä£º
+//  ï¿½Ëµï¿½0
+//  ï¿½Ëµï¿½1ï¿½ï¿½INï¿½ï¿½OUT  ï¿½ï¿½ï¿½ï¿½ï¿½Ã½Ó¿Ú£ï¿½
+//  ï¿½Ëµï¿½2ï¿½ï¿½INï¿½ï¿½OUT  ï¿½ï¿½ï¿½ï¿½ï¿½Ý½Ó¿Ú£ï¿½
 
-  /* µ¥ 64 ×Ö½Ú½ÓÊÕ»º³åÇø(OUT)£¬µ¥ 64 ×Ö½Ú·¢ËÍ»º³åÇø£¨IN£© */
-  R8_UEP4_1_MOD = RB_UEP1_TX_EN | RB_UEP1_RX_EN;
+	/* ï¿½ï¿½ 64 ï¿½Ö½Ú½ï¿½ï¿½Õ»ï¿½ï¿½ï¿½ï¿½ï¿½(OUT)ï¿½ï¿½ï¿½ï¿½ 64 ï¿½Ö½Ú·ï¿½ï¿½Í»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½INï¿½ï¿½ */
+	R8_UEP4_1_MOD = RB_UEP1_TX_EN | RB_UEP1_RX_EN;
 
-  /* µ¥ 64 ×Ö½Ú½ÓÊÕ»º³åÇø(OUT)£¬µ¥ 64 ×Ö½Ú·¢ËÍ»º³åÇø£¨IN£© */
-  R8_UEP2_3_MOD = RB_UEP2_RX_EN | RB_UEP2_TX_EN;
+	/* ï¿½ï¿½ 64 ï¿½Ö½Ú½ï¿½ï¿½Õ»ï¿½ï¿½ï¿½ï¿½ï¿½(OUT)ï¿½ï¿½ï¿½ï¿½ 64 ï¿½Ö½Ú·ï¿½ï¿½Í»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½INï¿½ï¿½ */
+	R8_UEP2_3_MOD = RB_UEP2_RX_EN | RB_UEP2_TX_EN;
 
-  R16_UEP0_DMA = (UINT32)&Ep0Buffer[0];
-  R16_UEP1_DMA = (UINT32)&Ep1Buffer[0];
-  R16_UEP2_DMA = (UINT32)&Ep2Buffer[0];
+	R16_UEP0_DMA = (UINT32)&Ep0Buffer[0];
+	R16_UEP1_DMA = (UINT32)&Ep1Buffer[0];
+	R16_UEP2_DMA = (UINT32)&Ep2Buffer[0];
 
-  /* ¶Ëµã0×´Ì¬£ºOUT--ACK IN--NAK */
-  R8_UEP0_CTRL = UEP_R_RES_NAK | UEP_T_RES_NAK;
+	/* ï¿½Ëµï¿½0×´Ì¬ï¿½ï¿½OUT--ACK IN--NAK */
+	R8_UEP0_CTRL = UEP_R_RES_NAK | UEP_T_RES_NAK;
 
-  /* ¶Ëµã1×´Ì¬£ºOUT--ACK IN--NAK ×Ô¶¯·­×ª */
-  R8_UEP1_CTRL = UEP_R_RES_ACK | UEP_T_RES_NAK;
+	/* ï¿½Ëµï¿½1×´Ì¬ï¿½ï¿½OUT--ACK IN--NAK ï¿½Ô¶ï¿½ï¿½ï¿½×ª */
+	R8_UEP1_CTRL = UEP_R_RES_ACK | UEP_T_RES_NAK;
 
-  /* ¶Ëµã2×´Ì¬£ºOUT--ACK IN--NAK ×Ô¶¯·­×ª */
-  R8_UEP2_CTRL =  UEP_R_RES_ACK | UEP_T_RES_NAK;
+	/* ï¿½Ëµï¿½2×´Ì¬ï¿½ï¿½OUT--ACK IN--NAK ï¿½Ô¶ï¿½ï¿½ï¿½×ª */
+	R8_UEP2_CTRL =  UEP_R_RES_ACK | UEP_T_RES_NAK;
 
-  /* Éè±¸µØÖ· */
-  R8_USB_DEV_AD = 0x00;
+	/* ï¿½è±¸ï¿½ï¿½Ö· */
+	R8_USB_DEV_AD = 0x00;
 
-  //½ûÖ¹DP/DMÏÂÀ­µç×ès
-  R8_UDEV_CTRL = RB_UD_PD_DIS;
+	//ï¿½ï¿½Ö¹DP/DMï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½s
+	R8_UDEV_CTRL = RB_UD_PD_DIS;
 
-  //Æô¶¯USBÉè±¸¼°DMA£¬ÔÚÖÐ¶ÏÆÚ¼äÖÐ¶Ï±êÖ¾Î´Çå³ýÇ°×Ô¶¯·µ»ØNAK
-  R8_USB_CTRL = RB_UC_DEV_PU_EN | RB_UC_INT_BUSY | RB_UC_DMA_EN;
+	//ï¿½ï¿½ï¿½ï¿½USBï¿½è±¸ï¿½ï¿½DMAï¿½ï¿½ï¿½ï¿½ï¿½Ð¶ï¿½ï¿½Ú¼ï¿½ï¿½Ð¶Ï±ï¿½Ö¾Î´ï¿½ï¿½ï¿½Ç°ï¿½Ô¶ï¿½ï¿½ï¿½ï¿½ï¿½NAK
+	R8_USB_CTRL = RB_UC_DEV_PU_EN | RB_UC_INT_BUSY | RB_UC_DMA_EN;
 
-  //ÇåÖÐ¶Ï±êÖ¾
-  R8_USB_INT_FG = 0xFF;
+	//ï¿½ï¿½ï¿½Ð¶Ï±ï¿½Ö¾
+	R8_USB_INT_FG = 0xFF;
 
-  //¿ªÆôÖÐ¶Ï          ¹ÒÆð            ´«ÊäÍê³É         ×ÜÏß¸´Î»
-  //R8_USB_INT_EN = RB_UIE_SUSPEND | RB_UIE_TRANSFER | RB_UIE_BUS_RST;
-  R8_USB_INT_EN = RB_UIE_TRANSFER ;
-  PFIC_EnableIRQ(USB_IRQn);
+	//ï¿½ï¿½ï¿½ï¿½ï¿½Ð¶ï¿½          ï¿½ï¿½ï¿½ï¿½            ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½         ï¿½ï¿½ï¿½ß¸ï¿½Î»
+	//R8_USB_INT_EN = RB_UIE_SUSPEND | RB_UIE_TRANSFER | RB_UIE_BUS_RST;
+	R8_USB_INT_EN = RB_UIE_TRANSFER ;
+	PFIC_EnableIRQ(USB_IRQn);
 
-  //Ê¹ÄÜUSB¶Ë¿Ú
-  R8_UDEV_CTRL |= RB_UD_PORT_EN;
+	//Ê¹ï¿½ï¿½USBï¿½Ë¿ï¿½
+	R8_UDEV_CTRL |= RB_UD_PORT_EN;
 
-  devinf.UsbConfig = 0;
-  devinf.UsbAddress = 0;
+	devinf.UsbConfig = 0;
+	devinf.UsbAddress = 0;
 }
 
 /*******************************************************************************
 * Function Name  : InitUSBDevPara
-* Description    : USBÏà¹ØµÄ±äÁ¿³õÊ¼»¯
+* Description    : USBï¿½ï¿½ØµÄ±ï¿½ï¿½ï¿½ï¿½ï¿½Ê¼ï¿½ï¿½
 * Input          : None
 * Output         : None
 * Return         : None
 *******************************************************************************/
 void InitUSBDevPara(void)
 {
-  UINT8 i;
+	UINT8 i;
 
-  Uart0Para.BaudRate = 115200;
-  Uart0Para.DataBits = HAL_UART_8_BITS_PER_CHAR;
-  Uart0Para.ParityType = HAL_UART_NO_PARITY;
-  Uart0Para.StopBits = HAL_UART_ONE_STOP_BIT;
+	Uart0Para.BaudRate = 115200;
+	Uart0Para.DataBits = HAL_UART_8_BITS_PER_CHAR;
+	Uart0Para.ParityType = HAL_UART_NO_PARITY;
+	Uart0Para.StopBits = HAL_UART_ONE_STOP_BIT;
 
-  VENSer0ParaChange = 0;
-  VENSer0SendFlag = 0;
-  CDCSetSerIdx = 0;
-  CDCSer0ParaChange = 0;
+	VENSer0ParaChange = 0;
+	VENSer0SendFlag = 0;
+	CDCSetSerIdx = 0;
+	CDCSer0ParaChange = 0;
 
-  for(i=0; i<CH341_REG_NUM; i++)
-  {
-    CH341_Reg_Add[i] = 0xff;
-    CH341_Reg_val[i] = 0x00;
-  }
+	for(i=0; i<CH341_REG_NUM; i++)
+	{
+		CH341_Reg_Add[i] = 0xff;
+		CH341_Reg_val[i] = 0x00;
+	}
 
-  UART0_DCD_Val = 0;
-  UART0_RI_Val = 0;
-  UART0_DSR_Val = 0;
-  UART0_CTS_Val = 0;
+	UART0_DCD_Val = 0;
+	UART0_RI_Val = 0;
+	UART0_DSR_Val = 0;
+	UART0_CTS_Val = 0;
 
-  UART0_RTS_Val = 0; //Êä³ö ±íÊ¾DTEÇëÇóDCE·¢ËÍÊý¾Ý
-  UART0_DTR_Val = 0; //Êä³ö Êý¾ÝÖÕ¶Ë¾ÍÐ÷
-  UART0_OUT_Val = 0; //×Ô¶¨ÒåmodemÐÅºÅ£¨CH340ÊÖ²á£©
+	UART0_RTS_Val = 0; //ï¿½ï¿½ï¿½ ï¿½ï¿½Ê¾DTEï¿½ï¿½ï¿½ï¿½DCEï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	UART0_DTR_Val = 0; //ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Õ¶Ë¾ï¿½ï¿½ï¿½
+	UART0_OUT_Val = 0; //ï¿½Ô¶ï¿½ï¿½ï¿½modemï¿½ÅºÅ£ï¿½CH340ï¿½Ö²á£©
 
-  for(i=0; i<USB_IRQ_FLAG_NUM; i++)
-  {
-    usb_irq_flag[i] = 0;
-  }
+	for(i=0; i<USB_IRQ_FLAG_NUM; i++)
+	{
+		usb_irq_flag[i] = 0;
+	}
 }
 
 /*******************************************************************************
 * Function Name  : InitUSBDevice
-* Description    : ³õÊ¼»¯USB
+* Description    : ï¿½ï¿½Ê¼ï¿½ï¿½USB
 * Input          : None
 * Output         : None
 * Return         : None
 *******************************************************************************/
 void InitUSBDevice(void)
 {
-  if(usb_work_mode == USB_VENDOR_MODE) InitVendorDevice();
-  else                                 InitCDCDevice();
+	if(usb_work_mode == USB_VENDOR_MODE) InitVendorDevice();
+	else                                 InitCDCDevice();
 }
 
-/* Í¨Ñ¶Ïà¹Ø */
-/*******************************************************************************
-* Function Name  : SendUSBData
-* Description    : ·¢ËÍÊý¾Ý´¦Àí
-* Input          : p_send_dat£º·¢ËÍµÄÊý¾ÝÖ¸Õë
-                   send_len£º·¢ËÍµÄ×´Ì¬
-* Output         : None
-* Return         : ·¢ËÍµÄ×´Ì¬
-*******************************************************************************/
-UINT8 SendUSBData(const UINT8 *p_send_dat,UINT16 send_len)
+void sendCDCData(const uint8_t *data, uint16_t len)
 {
-  UINT8 sta = 0;
+	memcpy(&Ep1Buffer[MAX_PACKET_SIZE], data, len);
 
-  /* ³§ÉÌÄ£Ê½´¦Àí */
-  if(usb_work_mode == USB_VENDOR_MODE)
-  {
-    memcpy(&Ep2Buffer[MAX_PACKET_SIZE],p_send_dat,send_len);
-
-    Ep2DataINFlag = 0;
-    R8_UEP2_T_LEN = (UINT8)send_len;
-    PFIC_DisableIRQ(USB_IRQn);
-    R8_UEP2_CTRL = R8_UEP2_CTRL & 0xfc; //IN_ACK
-    PFIC_EnableIRQ(USB_IRQn);
-  }
-  /* CDCÄ£Ê½´¦Àí */
-  else
-  {
-    /* Ö±½Ó·¢ËÍÊý¾Ý */
-    memcpy(&Ep1Buffer[MAX_PACKET_SIZE],p_send_dat,send_len);
-
-    Ep1DataINFlag = 0;
-    R8_UEP1_T_LEN = (UINT8)send_len;
-    PFIC_DisableIRQ(USB_IRQn);
-    R8_UEP1_CTRL = R8_UEP1_CTRL & 0xfc; //IN_ACK
-    PFIC_EnableIRQ(USB_IRQn);
-  }
-
-  return sta;
-}
-
-void DebugInit( void )
-{
-  GPIOA_SetBits(bTXD_0);
-  GPIOA_ModeCfg(bTXD_0, GPIO_ModeOut_PP_5mA); // TXD-ÅäÖÃÍÆÍìÊä³ö£¬×¢ÒâÏÈÈÃIO¿ÚÊä³ö¸ßµçÆ½
-  UART_DefInit();
+	Ep1DataINFlag = 0;
+	R8_UEP1_T_LEN = (UINT8)len;
+	PFIC_DisableIRQ(USB_IRQn);
+	R8_UEP1_CTRL = R8_UEP1_CTRL & 0xfc; //IN_ACK
+	PFIC_EnableIRQ(USB_IRQn);
 }
 
 void initCDC()
 {
-  InitUSBDevPara();
-  InitUSBDevice();
-  PFIC_EnableIRQ( USB_IRQn );
+	InitUSBDevPara();
+	InitUSBDevice();
+	PFIC_EnableIRQ( USB_IRQn );
 }
 void processCDC()
 {
-    USB_IRQProcessHandler();
+		USB_IRQProcessHandler();
 }
 
 

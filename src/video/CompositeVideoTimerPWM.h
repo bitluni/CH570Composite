@@ -6,7 +6,7 @@ extern "C" {
 
 void initVideo();
 void updateVideo();
-void processCDCData(const uint8_t *p_send_dat, uint16_t send_len);
+void processCDCData(const uint8_t *data, uint16_t len);
 
 __INTERRUPT
 __HIGH_CODE

@@ -72,10 +72,10 @@ void updateVideo()
 }
 
 __HIGH_CODE
-void processCDCData(const uint8_t *p_send_dat, uint16_t send_len)
+void processCDCData(const uint8_t *data, uint16_t len)
 {
-    for(int i = 0; i < send_len; i++)
-        textBuffer[10][i] = p_send_dat[i] - 32;
+    for(int i = 0; i < len; i++)
+        textBuffer[10][i] = data[i] - 32;
 }
 
 //using pragmas to prevent GCC to replace loops by memcpy that is not in SRAM
