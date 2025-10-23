@@ -629,7 +629,7 @@ void USB_IRQProcessHandler( void )   /* USB�жϷ������ */
 						//dg_log("\n");
 						//TODO
 						//SendUSBData(Ep2OUTDataBuf, len);  //probably vendor lol idc
-			sendCDCData(Ep1OUTDataBuf, len);
+						sendCDCData(Ep1OUTDataBuf, len);
 
 						//CH341�������·�
 						Ep2DataOUTFlag = 1;
@@ -655,7 +655,7 @@ void USB_IRQProcessHandler( void )   /* USB�жϷ������ */
 					//dg_log("%02x  ",Ep1OUTDataBuf[i]);
 					//dg_log("\n");
 					processCDCData(Ep1OUTDataBuf, len);
-			sendCDCData(Ep1OUTDataBuf, len);
+					sendCDCData(Ep1OUTDataBuf, len);
 					//SendUSBData(Ep1OUTDataBuf, len); //TODO this is CDC recv
 
 					//CH341�������·�
@@ -1031,7 +1031,7 @@ void USB_IRQProcessHandler( void )   /* USB�жϷ������ */
 									{
 										case 1: // �豸������
 										{
-											if(usb_work_mode == USB_VENDOR_MODE)  //����ģʽ
+											/*if(usb_work_mode == USB_VENDOR_MODE) 
 											{
 												memcpy(ep0_send_buf,
 															&TAB_USB_VEN_DEV_DES[0],
@@ -1039,7 +1039,7 @@ void USB_IRQProcessHandler( void )   /* USB�жϷ������ */
 												pDescr = ep0_send_buf;
 												len = sizeof( TAB_USB_VEN_DEV_DES );
 											}
-											else                    //CDC��
+											else */
 											{
 												memcpy(ep0_send_buf,
 															&TAB_USB_CDC_DEV_DES[0],
@@ -1052,7 +1052,7 @@ void USB_IRQProcessHandler( void )   /* USB�жϷ������ */
 										}
 										case 2:  // ����������
 										{
-											if(usb_work_mode == USB_VENDOR_MODE)  //����ģʽ
+											/*if(usb_work_mode == USB_VENDOR_MODE)  //����ģʽ
 											{
 												memcpy(ep0_send_buf,
 															&TAB_USB_VEN_CFG_DES[0],
@@ -1060,7 +1060,7 @@ void USB_IRQProcessHandler( void )   /* USB�жϷ������ */
 												pDescr = ep0_send_buf;
 												len = sizeof( TAB_USB_VEN_CFG_DES );
 											}
-											else                    //CDC��
+											else                    //CDC��*/
 											{
 												memcpy(ep0_send_buf,
 															&TAB_USB_CDC_CFG_DES[0],
@@ -1073,7 +1073,7 @@ void USB_IRQProcessHandler( void )   /* USB�жϷ������ */
 										case 3:  // �ַ���������
 										{
 											dg_log("str %d\r\n",UsbSetupBuf->wValueL);
-											if(usb_work_mode == USB_VENDOR_MODE)  //����ģʽ
+											/*if(usb_work_mode == USB_VENDOR_MODE)  //����ģʽ
 											{
 												dg_log("str %d\r\n",UsbSetupBuf->wValueL);
 												switch(UsbSetupBuf->wValueL)
@@ -1094,7 +1094,6 @@ void USB_IRQProcessHandler( void )   /* USB�жϷ������ */
 														UINT8 *manu_str;
 														UINT8 tmp;
 
-														/* ȡ���� */
 														if(UsbSetupBuf->wValueL == 1)
 															manu_str = (UINT8 *)USB_DEV_PARA_VEN_MANUFACTURE_STR;
 														else if(UsbSetupBuf->wValueL == 2)
@@ -1121,7 +1120,7 @@ void USB_IRQProcessHandler( void )   /* USB�жϷ������ */
 														break;
 												}
 											}
-											else   //CDCģʽ
+											else*/
 											{
 												dg_log("str %d\r\n",UsbSetupBuf->wValueL);
 												switch(UsbSetupBuf->wValueL)
@@ -1585,12 +1584,12 @@ void USB_IRQProcessHandler( void )   /* USB�жϷ������ */
 									break;
 							}
 						}
-						else
+						/*else
 						{
 							PFIC_DisableIRQ(USB_IRQn);
 							R8_UEP0_CTRL = RB_UEP_R_TOG|RB_UEP_T_TOG|UEP_R_RES_NAK | UEP_T_RES_NAK;
 							PFIC_EnableIRQ(USB_IRQn);
-						}
+						}*/
 					}
 					else
 					{
@@ -1612,13 +1611,13 @@ void USB_IRQProcessHandler( void )   /* USB�жϷ������ */
 
 	if ( R8_USB_INT_FG & RB_UIF_BUS_RST )  // USB���߸�λ
 	{
-		if(usb_work_mode == USB_VENDOR_MODE)
+		/*if(usb_work_mode == USB_VENDOR_MODE)
 		{
 			R8_UEP0_CTRL = UEP_R_RES_NAK | UEP_T_RES_NAK;
 			R8_UEP1_CTRL = UEP_R_RES_ACK | UEP_T_RES_NAK;
 			R8_UEP2_CTRL = UEP_R_RES_ACK | UEP_T_RES_NAK;
 		}
-		else
+		else*/
 		{
 			R8_UEP0_CTRL = UEP_R_RES_NAK | UEP_T_RES_NAK;
 			R8_UEP1_CTRL = UEP_R_RES_ACK | UEP_T_RES_NAK;
@@ -1639,11 +1638,11 @@ void USB_IRQProcessHandler( void )   /* USB�жϷ������ */
 	{
 		if ( R8_USB_MIS_ST & RB_UMS_SUSPEND )    //����
 		{
-			if(usb_work_mode == USB_VENDOR_MODE)
+			/*if(usb_work_mode == USB_VENDOR_MODE)
 			{
 				VENSer0ParaChange = 1;
 			}
-			else
+			else*/
 			{
 				CDCSer0ParaChange = 1;
 			}
@@ -1902,8 +1901,10 @@ void InitUSBDevPara(void)
 *******************************************************************************/
 void InitUSBDevice(void)
 {
-	if(usb_work_mode == USB_VENDOR_MODE) InitVendorDevice();
-	else                                 InitCDCDevice();
+	/*if(usb_work_mode == USB_VENDOR_MODE) 
+		InitVendorDevice();
+	else  */                               
+		InitCDCDevice();
 }
 
 void sendCDCData(const uint8_t *data, uint16_t len)
