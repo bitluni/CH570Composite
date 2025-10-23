@@ -2,27 +2,30 @@
 #include "font.h"
 #include "CompositeVideoTimerPWM.h"
 
-constexpr int textCols = 37;
-constexpr int textRows = 25; //34
+constexpr int textCols = 24;
+constexpr int textRows = 34;
 //296x272
-constexpr int xres = 300;
+constexpr int xres = 200;
 constexpr int yres = textRows * 8;
-constexpr int pixelsPerLine = 400;
+constexpr int pixelsPerLine = 270;
 constexpr int pixelsPerLineHalf = pixelsPerLine >> 1;
-constexpr int pixelsSync = 32;
-constexpr int pixelsSyncShort = 16;
+constexpr int pixelsSync = 24;
+constexpr int pixelsSyncShort = 12;
 constexpr int pixelsSyncLong = pixelsPerLineHalf - pixelsSyncShort;
-constexpr int pixelsFront = 50;
+constexpr int pixelsFront = 37;
 constexpr int pixelsBack = pixelsPerLine - pixelsSync - pixelsFront - xres;
 constexpr int linesTotal = 312;
 constexpr int linesBlankFront = 20;
 constexpr int linesSync = 8;
 constexpr int linesBlankBack = linesTotal - linesSync - linesBlankFront - yres;
+constexpr int pixelsBurstOffset = 4;
+constexpr int pixelsBurst = 10;
+
 
 constexpr int levelSync = 0;
-constexpr int levelBlack = 4;
-constexpr int levelGrey = 10;
-constexpr int levelWhite = 16;
+constexpr int levelBlack = 6;
+constexpr int levelGrey = 12;
+constexpr int levelWhite = 24;
 
 __attribute__((aligned(4))) uint32_t vram[2][pixelsPerLine];
 
@@ -35,12 +38,12 @@ void initVideo()
 {
     GPIOA_ModeCfg(GPIO_Pin_7, GPIO_ModeOut_PP_5mA);
 
-    TMR_PWMCycleCfg(16);
+    TMR_PWMCycleCfg(24);
     TMR_PWMInit(High_Level, PWM_Times_1);
 
     for(int r = 0; r < textRows; r++)
         for(int c = 0; c < textCols; c++)
-            textBuffer[r][c] = 0;//'0' + (c % 10) - 32;
+            textBuffer[r][c] = '0' + (c % 10) - 32;
 
     TMR_DMACfg(ENABLE, (uint32_t)vram[0], (uint32_t)vram[1] + pixelsPerLine * sizeof(uint32_t), Mode_LOOP); //two lines
     TMR_PWMEnable();
@@ -58,24 +61,17 @@ const char *hex = "0123456789ABCDEF";
 __HIGH_CODE
 void updateVideo()
 {
-    /*static int lastFrame = 0;
+    static int lastFrame = 0;
     if(lastFrame != (counter >> 2))
     {
         lastFrame = counter >> 2;
         int f = lastFrame % 20;
         for(int i = 0; i < rick_offsets[f + 1] - rick_offsets[f] && i < rleBufferSize; i++)
             rleBuffer[i] = rick_data[rick_offsets[f] + i];
-    }/**/
-    for(int i = 0; i < 8; i++)
-        textBuffer[0][12 - i] = hex[((counter >> (i * 4)) & 15)] - 32;
-    return;
-}
-
-__HIGH_CODE
-void processCDCData(const uint8_t *p_send_dat, uint16_t send_len)
-{
-    for(int i = 0; i < send_len; i++)
-        textBuffer[10][i] = p_send_dat[i] - 32;
+    }
+//    for(int i = 0; i < 8; i++)
+//        textBuffer[10][12 - i] = hex[((counter >> (i * 4)) & 15)] - 32;
+//    return;
 }
 
 //using pragmas to prevent GCC to replace loops by memcpy that is not in SRAM
@@ -133,6 +129,8 @@ void firstBlank(uint32_t *line)
     uint32_t *l = line;
     for(int i = 0; i < pixelsSync; i++)
         l[i] = levelSync;
+    for(int i = pixelsSync + pixelsBurstOffset; i < pixelsSync + pixelsBurstOffset + pixelsBurst; i++)
+        l[i] = levelGrey;
     for(int i = 0; i < pixelsSyncShort; i++)
         l[i + pixelsPerLineHalf] = levelBlack;
 }
@@ -171,6 +169,7 @@ void TMR_IRQHandler(void) // TMR0
 
         if(b == 1)
             while(R16_TMR_DMA_NOW < ((uint32_t)(&vram[0][pixelsPerLine - pixelsBack]) & 0xffff));
+        R8_TMR_CTRL_MOD = (R8_TMR_CTRL_MOD & ~16) | (b << 4);
 
         if(currentLine <= 2 || (currentLine == 6) || (currentLine == 7))
             syncShortShort(line);

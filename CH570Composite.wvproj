@@ -32,14 +32,14 @@
 				"name": "main.h"
 			},
 			{
-				"name": "palPwm.h",
 				"parentLogicPath": "src/video",
-				"type": "file"
+				"type": "file",
+				"name": "palPwm.h"
 			},
 			{
-				"name": "palPwmDma2.h",
 				"parentLogicPath": "src/video",
-				"type": "file"
+				"type": "file",
+				"name": "palPwmDma2.h"
 			}
 		],
 		"projectName": "CH570Composite",
@@ -61,7 +61,10 @@
 				"pre_script_description": "",
 				"post_script": "",
 				"post_script_description": "",
-				"excludeResources": [],
+				"excludeResources": [
+					"${project}/src/video/CompositeVideoColorTimerPWM.cpp",
+					"${project}/src/video/CompositeVideoSPI.cpp"
+				],
 				"optimization": {
 					"level": "size",
 					"message_length": true,
@@ -354,7 +357,7 @@
 		"sdiPrintf": false,
 		"disablepowerout": false,
 		"clearcodeflash": false,
-		"disablecodeprotect": false,
+		"disablecodeprotect": true,
 		"exepath": "",
 		"exearguments": ""
 	},
