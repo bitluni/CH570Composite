@@ -2,7 +2,7 @@
 
 /********************************** (C) COPYRIGHT *******************************
 * File Name          : Main.c
-* Author             : WCH
+* Author             : WCH, modified by bitluni
 * Version            : V1.0
 * Date               : 2020/08/06
 * Description        : 
@@ -39,25 +39,6 @@ const UINT8 TAB_USB_CDC_DEV_DES[18] =
 	0x01
 };
 
-/*
-const UINT8 TAB_USB_CDC_CFG_DES[ ] =
-{
-	0x09,0x02,0x43,0x00,0x02,0x01,0x00,0x80,0x30,
-
-	0x09, 0x04,0x00,0x00,0x01,0x02,0x02,0x01,0x00,
-
-	0x05,0x24,0x00,0x10,0x01,
-	0x04,0x24,0x02,0x02,
-	0x05,0x24,0x06,0x00,0x01,
-	0x05,0x24,0x01,0x01,0x00,
-
-	0x07,0x05,0x84,0x03,0x08,0x00,0x01,
-	0x09,0x04,0x01,0x00,0x02,0x0a,0x00,0x00,0x00,
-
-	0x07,0x05,0x01,0x02,0x40,0x00,0x00,
-	0x07,0x05,0x81,0x02,0x40,0x00,0x00,
-};*/
-
 // -----------------------------------------------------------------------------
 // USB CDC-ACM Configuration Descriptor
 // Two interfaces: 
@@ -70,87 +51,87 @@ const UINT8 TAB_USB_CDC_CFG_DES[ ] =
 // -----------------------------------------------------------------------------
 const uint8_t CDC_ConfigDescriptor[] = 
 {
-    // --- Configuration Descriptor ---
-    0x09,                       // bLength
-    0x02,                       // bDescriptorType = CONFIGURATION
-    0x43, 0x00,                 // wTotalLength = 67 bytes
-    0x02,                       // bNumInterfaces = 2
-    0x01,                       // bConfigurationValue = 1
-    0x00,                       // iConfiguration = none
-    0x80,                       // bmAttributes = Bus powered
-    0x30,                       // bMaxPower = 48 mA (value * 2)
+	// --- Configuration Descriptor ---
+	0x09,                       // bLength
+	0x02,                       // bDescriptorType = CONFIGURATION
+	0x43, 0x00,                 // wTotalLength = 67 bytes
+	0x02,                       // bNumInterfaces = 2
+	0x01,                       // bConfigurationValue = 1
+	0x00,                       // iConfiguration = none
+	0x80,                       // bmAttributes = Bus powered
+	0x30,                       // bMaxPower = 48 mA (value * 2)
 
-    // --- Interface 0: Communication Interface (CDC Control) ---
-    0x09,                       // bLength
-    0x04,                       // bDescriptorType = INTERFACE
-    0x00,                       // bInterfaceNumber = 0
-    0x00,                       // bAlternateSetting
-    0x01,                       // bNumEndpoints = 1 (Interrupt IN)
-    0x02,                       // bInterfaceClass = Communications (CDC)
-    0x02,                       // bInterfaceSubClass = Abstract Control Model (ACM)
-    0x01,                       // bInterfaceProtocol = AT commands (V.25ter)
-    0x00,                       // iInterface = none
+	// --- Interface 0: Communication Interface (CDC Control) ---
+	0x09,                       // bLength
+	0x04,                       // bDescriptorType = INTERFACE
+	0x00,                       // bInterfaceNumber = 0
+	0x00,                       // bAlternateSetting
+	0x01,                       // bNumEndpoints = 1 (Interrupt IN)
+	0x02,                       // bInterfaceClass = Communications (CDC)
+	0x02,                       // bInterfaceSubClass = Abstract Control Model (ACM)
+	0x01,                       // bInterfaceProtocol = AT commands (V.25ter)
+	0x00,                       // iInterface = none
 
-    // --- Header Functional Descriptor ---
-    0x05,                       // bFunctionLength
-    0x24,                       // bDescriptorType = CS_INTERFACE
-    0x00,                       // bDescriptorSubtype = Header
-    0x10, 0x01,                 // bcdCDC = 1.10
+	// --- Header Functional Descriptor ---
+	0x05,                       // bFunctionLength
+	0x24,                       // bDescriptorType = CS_INTERFACE
+	0x00,                       // bDescriptorSubtype = Header
+	0x10, 0x01,                 // bcdCDC = 1.10
 
-    // --- Abstract Control Management Functional Descriptor ---
-    0x04,                       // bFunctionLength
-    0x24,                       // bDescriptorType = CS_INTERFACE
-    0x02,                       // bDescriptorSubtype = Abstract Control Management
-    0x02,                       // bmCapabilities = Supports Set/Get_Line_Coding & Set_Control_Line_State
+	// --- Abstract Control Management Functional Descriptor ---
+	0x04,                       // bFunctionLength
+	0x24,                       // bDescriptorType = CS_INTERFACE
+	0x02,                       // bDescriptorSubtype = Abstract Control Management
+	0x02,                       // bmCapabilities = Supports Set/Get_Line_Coding & Set_Control_Line_State
 
-    // --- Union Functional Descriptor ---
-    0x05,                       // bFunctionLength
-    0x24,                       // bDescriptorType = CS_INTERFACE
-    0x06,                       // bDescriptorSubtype = Union
-    0x00,                       // bMasterInterface = 0 (Communication)
-    0x01,                       // bSlaveInterface0 = 1 (Data)
+	// --- Union Functional Descriptor ---
+	0x05,                       // bFunctionLength
+	0x24,                       // bDescriptorType = CS_INTERFACE
+	0x06,                       // bDescriptorSubtype = Union
+	0x00,                       // bMasterInterface = 0 (Communication)
+	0x01,                       // bSlaveInterface0 = 1 (Data)
 
-    // --- Call Management Functional Descriptor (fixed) ---
-    0x05,                       // bFunctionLength
-    0x24,                       // bDescriptorType = CS_INTERFACE
-    0x01,                       // bDescriptorSubtype = Call Management
-    0x01,                       // bmCapabilities = Device handles call management itself
-    0x01,                       // bDataInterface = 1 (Data interface)
+	// --- Call Management Functional Descriptor (fixed) ---
+	0x05,                       // bFunctionLength
+	0x24,                       // bDescriptorType = CS_INTERFACE
+	0x01,                       // bDescriptorSubtype = Call Management
+	0x01,                       // bmCapabilities = Device handles call management itself
+	0x01,                       // bDataInterface = 1 (Data interface)
 
-    // --- Endpoint: Interrupt IN (Notification, EP4 IN) ---
-    0x07,                       // bLength
-    0x05,                       // bDescriptorType = ENDPOINT
-    0x84,                       // bEndpointAddress = IN endpoint 4 (0x80 | 4)
-    0x03,                       // bmAttributes = Interrupt
-    0x08, 0x00,                 // wMaxPacketSize = 8 bytes
-    0x01,                       // bInterval = 1 ms
+	// --- Endpoint: Interrupt IN (Notification, EP4 IN) ---
+	0x07,                       // bLength
+	0x05,                       // bDescriptorType = ENDPOINT
+	0x84,                       // bEndpointAddress = IN endpoint 4 (0x80 | 4)
+	0x03,                       // bmAttributes = Interrupt
+	0x08, 0x00,                 // wMaxPacketSize = 8 bytes
+	0x01,                       // bInterval = 1 ms
 
-    // --- Interface 1: Data Interface ---
-    0x09,                       // bLength
-    0x04,                       // bDescriptorType = INTERFACE
-    0x01,                       // bInterfaceNumber = 1
-    0x00,                       // bAlternateSetting
-    0x02,                       // bNumEndpoints = 2 (Bulk IN + Bulk OUT)
-    0x0A,                       // bInterfaceClass = Data
-    0x00,                       // bInterfaceSubClass = none
-    0x00,                       // bInterfaceProtocol = none
-    0x00,                       // iInterface = none
+	// --- Interface 1: Data Interface ---
+	0x09,                       // bLength
+	0x04,                       // bDescriptorType = INTERFACE
+	0x01,                       // bInterfaceNumber = 1
+	0x00,                       // bAlternateSetting
+	0x02,                       // bNumEndpoints = 2 (Bulk IN + Bulk OUT)
+	0x0A,                       // bInterfaceClass = Data
+	0x00,                       // bInterfaceSubClass = none
+	0x00,                       // bInterfaceProtocol = none
+	0x00,                       // iInterface = none
 
-    // --- Endpoint: Bulk OUT (EP1 OUT) ---
-    0x07,                       // bLength
-    0x05,                       // bDescriptorType = ENDPOINT
-    0x01,                       // bEndpointAddress = OUT endpoint 1
-    0x02,                       // bmAttributes = Bulk
-    0x40, 0x00,                 // wMaxPacketSize = 64 bytes
-    0x00,                       // bInterval = N/A (Bulk)
+	// --- Endpoint: Bulk OUT (EP1 OUT) ---
+	0x07,                       // bLength
+	0x05,                       // bDescriptorType = ENDPOINT
+	0x01,                       // bEndpointAddress = OUT endpoint 1
+	0x02,                       // bmAttributes = Bulk
+	0x40, 0x00,                 // wMaxPacketSize = 64 bytes
+	0x00,                       // bInterval = N/A (Bulk)
 
-    // --- Endpoint: Bulk IN (EP1 IN) ---
-    0x07,                       // bLength
-    0x05,                       // bDescriptorType = ENDPOINT
-    0x81,                       // bEndpointAddress = IN endpoint 1
-    0x02,                       // bmAttributes = Bulk
-    0x40, 0x00,                 // wMaxPacketSize = 64 bytes
-    0x00,                       // bInterval = N/A (Bulk)
+	// --- Endpoint: Bulk IN (EP1 IN) ---
+	0x07,                       // bLength
+	0x05,                       // bDescriptorType = ENDPOINT
+	0x81,                       // bEndpointAddress = IN endpoint 1
+	0x02,                       // bmAttributes = Bulk
+	0x40, 0x00,                 // wMaxPacketSize = 64 bytes
+	0x00,                       // bInterval = N/A (Bulk)
 };
 
 
@@ -166,12 +147,23 @@ UINT8 TAB_CDC_LINE_CODING[ ]  =
 	0x00,   /* parity - none*/
 	0x08    /* no. of bits 8*/
 };
+/*
+const wchar_t TAB_USB_LID_STR_DES[] = 				{0x0409, 0};
+const wchar_t USB_DEV_PARA_CDC_SERIAL_STR[] =		L"videoshnipsel";
+const wchar_t USB_DEV_PARA_CDC_PRODUCT_STR[] =		L"videoshnipsel";
+const wchar_t USB_DEV_PARA_CDC_MANUFACTURE_STR[] =	L"bituni";
 
+const wchar_t *CDC_Descriptor_strings[] = {
+	TAB_USB_LID_STR_DES,
+	USB_DEV_PARA_CDC_SERIAL_STR,
+	USB_DEV_PARA_CDC_PRODUCT_STR,
+	USB_DEV_PARA_CDC_MANUFACTURE_STR};
+*/
 const UINT8 TAB_USB_LID_STR_DES[ ] = { 0x04, 0x03, 0x09, 0x04 };
-
 const UINT8 USB_DEV_PARA_CDC_SERIAL_STR[] =			"videoshnipsel";
 const UINT8 USB_DEV_PARA_CDC_PRODUCT_STR[] =		"bitluni's CDC";
 const UINT8 USB_DEV_PARA_CDC_MANUFACTURE_STR[] =	"bituni";
+
 
 typedef struct DevInfo
 {
@@ -188,8 +180,6 @@ UINT8 SetupReqCode, SetupLen;
 
 __aligned(4) UINT8  Ep0Buffer[MAX_PACKET_SIZE];
 __aligned(4) UINT8  Ep1Buffer[MAX_PACKET_SIZE];     //IN
-__aligned(4) UINT8  Ep2Buffer[2 * MAX_PACKET_SIZE];   //OUT & IN
-__aligned(4) UINT8  Ep3Buffer[2 * MAX_PACKET_SIZE];   //OUT & IN
 
 typedef struct __PACKED _LINE_CODE
 {
@@ -222,11 +212,6 @@ UINT8 Ep1DataINFlag = 0;
 UINT8 Ep1DataOUTFlag = 0;
 UINT8 Ep1DataOUTLen = 0;
 __aligned(4) UINT8 Ep1OUTDataBuf[MAX_PACKET_SIZE];
-
-UINT8 Ep2DataINFlag = 0;
-UINT8 Ep2DataOUTFlag = 0;
-UINT8 Ep2DataOUTLen = 0;
-__aligned(4) UINT8 Ep2OUTDataBuf[MAX_PACKET_SIZE];
 
 #define USB_IRQ_FLAG_NUM     4
 
@@ -290,15 +275,14 @@ void USBDevEPnINSetStatus(UINT8 ep_num, UINT8 type, UINT8 sta);
 #define IN_NAK                          2
 #define IN_STALL                        3
 
-/* USB�豸���ֱ�־λ���� */
-#define DEF_BIT_USB_RESET               0x01                                    /* ���߸�λ��־ */
-#define DEF_BIT_USB_DEV_DESC            0x02                                    /* ��ȡ���豸��������־ */
-#define DEF_BIT_USB_ADDRESS             0x04                                    /* ���ù���ַ��־ */
-#define DEF_BIT_USB_CFG_DESC            0x08                                    /* ��ȡ��������������־ */
-#define DEF_BIT_USB_SET_CFG             0x10                                    /* ���ù�����ֵ��־ */
-#define DEF_BIT_USB_WAKE                0x20                                    /* USB���ѱ�־ */
-#define DEF_BIT_USB_SUPD                0x40                                    /* USB���߹����־ */
-#define DEF_BIT_USB_HS                  0x80                                    /* USB���١�ȫ�ٱ�־ */
+#define DEF_BIT_USB_RESET               0x01
+#define DEF_BIT_USB_DEV_DESC            0x02
+#define DEF_BIT_USB_ADDRESS             0x04
+#define DEF_BIT_USB_CFG_DESC            0x08
+#define DEF_BIT_USB_SET_CFG             0x10
+#define DEF_BIT_USB_WAKE                0x20
+#define DEF_BIT_USB_SUPD                0x40
+#define DEF_BIT_USB_HS                  0x80
 
 __attribute__((interrupt("WCH-Interrupt-fast")))
 __attribute__((section(".highcode")))
@@ -314,25 +298,6 @@ void USB_IRQHandler(void)
 
 			switch(usb_irq_pid[usb_irq_w_idx]& 0x3f)
 			{
-				case UIS_TOKEN_OUT | 2:
-				{
-					if( R8_USB_INT_FG & RB_U_TOG_OK )
-					{
-						R8_UEP2_CTRL ^=  RB_UEP_R_TOG;
-						R8_UEP2_CTRL = (R8_UEP2_CTRL & 0xf3) | 0x08; //OUT_NAK
-						for(int i = 0; i < (MAX_PACKET_SIZE / 4); i++)
-							((UINT32 *)Ep2OUTDataBuf)[i] = ((UINT32 *)Ep2Buffer)[i];
-					}
-					else usb_irq_flag[usb_irq_w_idx] = 0;
-					break;
-				}
-				case UIS_TOKEN_IN | 2:
-				{ 
-					//endpoint 2# 
-					R8_UEP2_CTRL ^=  RB_UEP_T_TOG;
-					R8_UEP2_CTRL = (R8_UEP2_CTRL & 0xfc) | IN_NAK; //IN_NAK
-					break;
-				}
 				case UIS_TOKEN_OUT | 1:
 				{
 					if( R8_USB_INT_FG & RB_U_TOG_OK )
@@ -387,9 +352,6 @@ void USB_IRQHandler(void)
 }
 
 UINT8 Ep4DataINFlag;
-UINT8 Ep3DataINFlag;
-
-UINT8 Ep3DataOUTFlag = 0;
 UINT8 Ep4DataOUTFlag = 0;
 
 //  3.1 Requests---Abstract Control Model
@@ -417,7 +379,6 @@ void USB_IRQProcessHandler( void )
 	UINT8   data_dir = 0;
 	UINT8   i;
 
-	//for(i=0; i<USB_IRQ_FLAG_NUM; i++)
 	{
 		i = usb_irq_r_idx;
 
@@ -431,33 +392,6 @@ void USB_IRQProcessHandler( void )
 				case UIS_TOKEN_IN | 4:  //endpoint 4#
 				{
 					Ep4DataINFlag = ~0;
-					break;
-				}
-				case UIS_TOKEN_IN | 3:  //endpoint 3#
-				{
-					Ep3DataINFlag = ~0;
-					break;
-				}
-				case UIS_TOKEN_OUT | 2:    // endpoint 2#
-				{
-					len = usb_irq_len[i];
-					{
-						//TODO
-						//SendUSBData(Ep2OUTDataBuf, len);  //probably vendor lol idc
-						sendCDCData(Ep1OUTDataBuf, len);
-
-						//CH341�������·�
-						Ep2DataOUTFlag = 1;
-						Ep2DataOUTLen = len;
-						PFIC_DisableIRQ(USB_IRQn);
-						R8_UEP2_CTRL = R8_UEP2_CTRL & 0xf3; //OUT_ACK
-						PFIC_EnableIRQ(USB_IRQn);
-					}
-					break;
-				}
-				case UIS_TOKEN_IN | 2:  //endpoint 2#
-				{
-					Ep2DataINFlag = 1;
 					break;
 				}
 				case UIS_TOKEN_OUT | 1:    // endpoint 1#
@@ -499,40 +433,43 @@ void USB_IRQProcessHandler( void )
 							{
 								case USB_GET_DESCRIPTOR:
 								{
-									switch( UsbSetupBuf->wValueH )
+									switch(UsbSetupBuf->wValueH)
 									{
 										case 1:
 										{
-											memcpy(ep0_send_buf,
-														&TAB_USB_CDC_DEV_DES[0],
-														sizeof( TAB_USB_CDC_DEV_DES ));
-
+											memcpy(ep0_send_buf, &TAB_USB_CDC_DEV_DES[0], sizeof( TAB_USB_CDC_DEV_DES ));
 											pDescr = ep0_send_buf;
 											len = sizeof( TAB_USB_CDC_DEV_DES );
 											break;
 										}
 										case 2:
 										{
-											memcpy(ep0_send_buf,
-														&TAB_USB_CDC_CFG_DES[0],
-														sizeof( TAB_USB_CDC_CFG_DES ));
+											memcpy(ep0_send_buf, &CDC_ConfigDescriptor[0], sizeof( CDC_ConfigDescriptor ));
 											pDescr = ep0_send_buf;
-											len = sizeof( TAB_USB_CDC_CFG_DES );
+											len = sizeof( CDC_ConfigDescriptor );
 											break;
 										}
 										case 3:
 										{
+											/*len = 255;
+											if(UsbSetupBuf->wValueL > 3) break;
+											const wchar_t *str = CDC_Descriptor_strings[UsbSetupBuf->wValueL];
+											int i = 0;
+											for(; str[i] != 0; i++)
+												((wchar_t*)&(ep0_send_buf[2]))[i] = str[i];
+											ep0_send_buf[0] = len = i * 2 + 2;
+											ep0_send_buf[1] = 0x03;
+											break;*/
 											switch(UsbSetupBuf->wValueL)
 											{
 												case 0:
 												{
 													pDescr = (PUINT8)( &TAB_USB_LID_STR_DES[0] );
 													len = sizeof( TAB_USB_LID_STR_DES );
-
 													break;
 												}
 												case 1:  //iManufacturer
-												case 2:   //iProduct
+												case 2:   //iProduct											
 												case 3:   //iSerialNumber
 												{
 													UINT8 ep0_str_len;
@@ -548,9 +485,9 @@ void USB_IRQProcessHandler( void )
 														manu_str = (UINT8 *)USB_DEV_PARA_CDC_SERIAL_STR;
 													ep0_str_len = (UINT8)strlen((char *)manu_str);
 													p_send = ep0_send_buf;
-													*p_send++ = ep0_str_len*2 + 2;
+													*p_send++ = ep0_str_len * 2 + 2;
 													*p_send++ = 0x03;
-													for(tmp = 0; tmp<ep0_str_len; tmp++)
+													for(tmp = 0; tmp < ep0_str_len; tmp++)
 													{
 														*p_send++ = manu_str[tmp];
 														*p_send++ = 0x00;
@@ -611,18 +548,12 @@ void USB_IRQProcessHandler( void )
 									if( ( UsbSetupBuf->bRequestType & USB_REQ_RECIP_MASK ) == USB_REQ_RECIP_DEVICE )
 									{
 										R8_UEP1_CTRL = (R8_UEP1_CTRL & (~ ( RB_UEP_T_TOG | MASK_UEP_T_RES ))) | UEP_T_RES_NAK;
-										R8_UEP2_CTRL = (R8_UEP2_CTRL & (~ ( RB_UEP_T_TOG | MASK_UEP_T_RES ))) | UEP_T_RES_NAK;
-										R8_UEP3_CTRL = (R8_UEP3_CTRL & (~ ( RB_UEP_T_TOG | MASK_UEP_T_RES ))) | UEP_T_RES_NAK;
 										R8_UEP4_CTRL = (R8_UEP4_CTRL & (~ ( RB_UEP_T_TOG | MASK_UEP_T_RES ))) | UEP_T_RES_NAK;
 
 										Ep1DataINFlag = 1;
-										Ep2DataINFlag = 1;
-										Ep3DataINFlag = 1;
 										Ep4DataINFlag = 1;
 
 										Ep1DataOUTFlag = 0;
-										Ep2DataOUTFlag = 0;
-										Ep3DataOUTFlag = 0;
 										Ep4DataOUTFlag = 0;
 
 										cdc_uart_sta_trans_step = 0;
@@ -634,10 +565,6 @@ void USB_IRQProcessHandler( void )
 										{
 											case 0x84: R8_UEP4_CTRL = (R8_UEP4_CTRL & (~ ( RB_UEP_T_TOG | MASK_UEP_T_RES ))) | UEP_T_RES_NAK; break;
 											case 0x04: R8_UEP4_CTRL = (R8_UEP4_CTRL & (~ ( RB_UEP_R_TOG | MASK_UEP_R_RES ))) | UEP_R_RES_ACK; break;
-											case 0x83: R8_UEP3_CTRL = (R8_UEP3_CTRL & (~ ( RB_UEP_T_TOG | MASK_UEP_T_RES ))) | UEP_T_RES_NAK; break;
-											case 0x03: R8_UEP3_CTRL = (R8_UEP3_CTRL & (~ ( RB_UEP_R_TOG | MASK_UEP_R_RES ))) | UEP_R_RES_ACK; break;
-											case 0x82: R8_UEP2_CTRL = (R8_UEP2_CTRL & (~ ( RB_UEP_T_TOG | MASK_UEP_T_RES ))) | UEP_T_RES_NAK; break;
-											case 0x02: R8_UEP2_CTRL = (R8_UEP2_CTRL & (~ ( RB_UEP_R_TOG | MASK_UEP_R_RES ))) | UEP_R_RES_ACK; break;
 											case 0x81: R8_UEP1_CTRL = (R8_UEP1_CTRL & (~ ( RB_UEP_T_TOG | MASK_UEP_T_RES ))) | UEP_T_RES_NAK; break;
 											case 0x01: R8_UEP1_CTRL = (R8_UEP1_CTRL & (~ ( RB_UEP_R_TOG | MASK_UEP_R_RES ))) | UEP_R_RES_ACK; break;
 											default: len = 0xFF;  break;
@@ -932,8 +859,6 @@ void USB_IRQProcessHandler( void )
 	{
 		R8_UEP0_CTRL = UEP_R_RES_NAK | UEP_T_RES_NAK;
 		R8_UEP1_CTRL = UEP_R_RES_ACK | UEP_T_RES_NAK;
-		R8_UEP2_CTRL = UEP_R_RES_ACK | UEP_T_RES_NAK;
-		R8_UEP3_CTRL = UEP_T_RES_NAK;
 		R8_UEP4_CTRL = UEP_T_RES_NAK;
 
 		cdc_uart_sta_trans_step = 0;
@@ -951,26 +876,18 @@ void USB_IRQProcessHandler( void )
 			CDCSer0ParaChange = 1;
 
 			Ep1DataINFlag = 0;
-			Ep2DataINFlag = 0;
-			Ep3DataINFlag = 0;
 			Ep4DataINFlag = 0;
 
 			Ep1DataOUTFlag = 0;
-			Ep2DataOUTFlag = 0;
-			Ep3DataOUTFlag = 0;
 			Ep4DataOUTFlag = 0;
 
 		}
 		else
 		{
 			Ep1DataINFlag = 1;
-			Ep2DataINFlag = 1;
-			Ep3DataINFlag = 1;
 			Ep4DataINFlag = 1;
 
 			Ep1DataOUTFlag = 0;
-			Ep2DataOUTFlag = 0;
-			Ep3DataOUTFlag = 0;
 			Ep4DataOUTFlag = 0;
 		}
 
@@ -994,10 +911,6 @@ void USBParaInit(void)
 {
 	Ep1DataINFlag = 1;
 	Ep1DataOUTFlag = 0;
-	Ep2DataINFlag = 1;
-	Ep2DataOUTFlag = 0;
-	Ep3DataINFlag = 1;
-	Ep3DataOUTFlag = 0;
 	Ep4DataINFlag = 1;
 	Ep4DataOUTFlag = 0;
 }
@@ -1011,9 +924,6 @@ void InitCDCDevice(void)
 
 	R16_UEP0_DMA = (UINT32)&Ep0Buffer[0];
 	R16_UEP1_DMA = (UINT32)&Ep1Buffer[0];
-	R16_UEP2_DMA = (UINT32)&Ep2Buffer[0];
-	R16_UEP3_DMA = (UINT32)&Ep3Buffer[0];
-	//R16_UEP4_DMA = (UINT16)(UINT32)&Ep2Buffer[0];
 
 	R8_UEP0_CTRL = UEP_R_RES_NAK | UEP_T_RES_NAK;
 	R8_UEP1_CTRL = UEP_R_RES_ACK | UEP_T_RES_NAK;
