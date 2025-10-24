@@ -17,28 +17,6 @@
 #define THIS_ENDP0_SIZE         64
 #define MAX_PACKET_SIZE         64
 
-#define USB_CDC_MODE      1
-#define USB_VENDOR_MODE   0
-
-/*const UINT8 TAB_USB_CDC_DEV_DES[18] =
-{
-	0x12,
-	0x01,
-	0x10,
-	0x01,
-	0x02,
-	0x00,
-	0x00,
-	0x40,
-	0x86, 0x1a,
-	0x40, 0x80,
-	0x00, 0x30,
-	0x01,
-	0x02,
-	0x03,
-	0x01
-};*/
-
 const UINT8 CDC_DeviceDescriptor[18] =
 {
     0x12,       // bLength: 18 bytes
@@ -49,12 +27,10 @@ const UINT8 CDC_DeviceDescriptor[18] =
     0x00,       // bDeviceProtocol: defined at interface level
     0x40,       // bMaxPacketSize0: 64 bytes (endpoint 0)
 
-//    0x09, 0x12, // idVendor: 0x1209 (pid.codes shared VID)
-//    0x69, 0x00, // idProduct: 0x0069 (your assigned PID)
-	0x86, 0x1a,
-	0x40, 0x80,
+    0x09, 0x12, // idVendor: 0x1209 (pid.codes shared VID)
+    0x69, 0x00, // idProduct: 0x0069 (your assigned PID)
 
-    0x00, 0x30, // bcdDevice: device version 3.00
+    0x00, 0x10, // bcdDevice: device version 1.00
     0x01,       // iManufacturer: string descriptor index 1
     0x02,       // iProduct: string descriptor index 2
     0x03,       // iSerialNumber: string descriptor index 3
@@ -156,8 +132,19 @@ const uint8_t CDC_ConfigDescriptor[] =
 	0x00,                       // bInterval = N/A (Bulk)
 };
 
+const UINT8 CDC_QueDescr[] =
+{
+    0x0A,       // bLength: 10 bytes
+    0x06,       // bDescriptorType: Device Qualifier Descriptor
+    0x00, 0x02, // bcdUSB: USB 2.00
+    0xFF,       // bDeviceClass: Vendor-specific
+    0x00,       // bDeviceSubClass: None
+    0xFF,       // bDeviceProtocol: Vendor-specific
+    0x40,       // bMaxPacketSize0: 64 bytes
+    0x01,       // bNumConfigurations: 1
+    0x00        // bReserved: must be 0
+};
 
-const UINT8 My_QueDescr[ ] = { 0x0A, 0x06, 0x00, 0x02, 0xFF, 0x00, 0xFF, 0x40, 0x01, 0x00 };
 
 UINT8 TAB_CDC_LINE_CODING[ ]  =
 {
@@ -169,26 +156,19 @@ UINT8 TAB_CDC_LINE_CODING[ ]  =
 	0x00,   /* parity - none*/
 	0x08    /* no. of bits 8*/
 };
-/*
-const wchar_t TAB_USB_LID_STR_DES[] = 				L"\x0304\x0409";
-const wchar_t USB_DEV_PARA_CDC_SERIAL_STR[] =		L"\x031c" L"videoshnipsel";
-const wchar_t USB_DEV_PARA_CDC_PRODUCT_STR[] =		L"\x031c" L"videoshnipsel";
-const wchar_t USB_DEV_PARA_CDC_MANUFACTURE_STR[] =	L"\x030e" L"bituni";
-
-const wchar_t* const CDC_Descriptor_strings[] = {
+const UINT8 TAB_USB_LID_STR_DES[] =
+	{0x04, 0x03, 0x09, 0x04};
+const UINT8 USB_DEV_PARA_CDC_MANUFACTURE_STR[] =
+	{0x10, 0x03, 'b',0, 'i',0, 't',0, 'l',0, 'u',0, 'n',0, 'i',0};
+const UINT8 USB_DEV_PARA_CDC_PRODUCT_STR[] =
+	{0x1c, 0x03, 'v',0, 'i',0, 'd',0, 'e',0, 'o',0, 's',0, 'h',0, 'n',0, 'i',0, 'p',0, 's',0, 'e',0, 'l',0 };
+const UINT8 USB_DEV_PARA_CDC_SERIAL_STR[] =	
+	{0x1c, 0x03, 'v',0, 'i',0, 'd',0, 'e',0, 'o',0, 's',0, 'h',0, 'n',0, 'i',0, 'p',0, 's',0, 'e',0, 'l',0 };
+const UINT8* const CDC_Descriptor_strings[] = {
 	TAB_USB_LID_STR_DES,
 	USB_DEV_PARA_CDC_SERIAL_STR,
 	USB_DEV_PARA_CDC_PRODUCT_STR,
 	USB_DEV_PARA_CDC_MANUFACTURE_STR};
-*/
-//const UINT8 TAB_USB_LID_STR_DES[ ] = { 0x04, 0x03, 0x09, 0x04 };
-const wchar_t TAB_USB_LID_STR_DES[] = 				L"\x0304\x0409";
-//const UINT8 USB_DEV_PARA_CDC_MANUFACTURE_STR[] =	"bituni";
-const wchar_t USB_DEV_PARA_CDC_MANUFACTURE_STR[] =	L"\x030e" L"bituni";
-//const UINT8 USB_DEV_PARA_CDC_PRODUCT_STR[] =		"bitluni's CDC";
-const wchar_t USB_DEV_PARA_CDC_PRODUCT_STR[] =		L"\x031c" L"bitluni's CDC";
-const UINT8 USB_DEV_PARA_CDC_SERIAL_STR[] =		"videoshnipsel";
-const wchar_t USB_DEV_PARA_CDC_SERIAL_WSTR[] =		L"\x031c" L"videoshnipsel";
 
 
 typedef struct DevInfo
@@ -247,11 +227,6 @@ UINT8 usb_irq_r_idx = 0;
 volatile UINT8 usb_irq_len[USB_IRQ_FLAG_NUM];
 volatile UINT8 usb_irq_pid[USB_IRQ_FLAG_NUM];
 volatile UINT8 usb_irq_flag[USB_IRQ_FLAG_NUM];
-
-UINT8 cdc_uart_sta_trans_step = 0;
-UINT8 ven_ep1_trans_step = 0;
-
-UINT8 ep0_send_buf[256];
 
 /**********************************************************/
 UINT8 DevConfig;
@@ -402,8 +377,8 @@ void USB_IRQProcessHandler( void )
 {
 	static PUINT8 pDescr;
 	UINT8 len;
-	UINT8   data_dir = 0;
-	UINT8   i;
+	UINT8 data_dir = 0;
+	UINT8 i;
 
 	{
 		i = usb_irq_r_idx;
@@ -424,8 +399,7 @@ void USB_IRQProcessHandler( void )
 				{
 					len = usb_irq_len[i];
 					processCDCData(Ep1OUTDataBuf, len);
-					sendCDCData(Ep1OUTDataBuf, len);
-					//SendUSBData(Ep1OUTDataBuf, len); //TODO this is CDC recv
+					sendCDCData(Ep1OUTDataBuf, len);	//echo
 
 					Ep1DataOUTFlag = 1;
 					Ep1DataOUTLen = len;
@@ -475,79 +449,16 @@ void USB_IRQProcessHandler( void )
 										}
 										case 3:
 										{
-											/*len = 255;
+											len = 255;
 											if(UsbSetupBuf->wValueL > 3) break;
 											pDescr =(PUINT8) CDC_Descriptor_strings[UsbSetupBuf->wValueL];
 											len = pDescr[0];
-											break;*/
-											/*len = 255;
-											if(UsbSetupBuf->wValueL > 3) break;
-											const wchar_t *str = CDC_Descriptor_strings[UsbSetupBuf->wValueL];
-											int i = 0;
-											for(; str[i] != 0; i++)
-												((wchar_t*)&(ep0_send_buf[2]))[i] = str[i];
-											ep0_send_buf[0] = len = i * 2 + 2;
-											ep0_send_buf[1] = 0x03;
-											break;*/
-											switch(UsbSetupBuf->wValueL)
-											{
-												case 0:
-												{
-													pDescr = (PUINT8)( &TAB_USB_LID_STR_DES[0] );
-													len = pDescr[0];
-													break;
-												}
-												case 1:  //iManufacturer
-												{
-													pDescr = (PUINT8)( &USB_DEV_PARA_CDC_MANUFACTURE_STR[0] );
-													len = pDescr[0];
-													break;
-												}
-												case 2:   //iProduct											
-												{
-													pDescr = (PUINT8)( &USB_DEV_PARA_CDC_PRODUCT_STR[0] );
-													len = pDescr[0];
-													break;
-												}
-												case 3:   //iSerialNumber
-												/*{
-													pDescr = (PUINT8)( &USB_DEV_PARA_CDC_SERIAL_STR[0] );
-													len = sizeof( USB_DEV_PARA_CDC_SERIAL_STR );
-													break;
-												}*/
-												{
-													UINT8 ep0_str_len;
-													UINT8 *p_send;
-													UINT8 *manu_str;
-													UINT8 tmp;
-
-													manu_str = (UINT8 *)USB_DEV_PARA_CDC_SERIAL_STR;
-													ep0_str_len = (UINT8)strlen((char *)USB_DEV_PARA_CDC_SERIAL_STR);
-													p_send = ep0_send_buf;
-													*p_send++ = ep0_str_len * 2 + 2;
-													*p_send++ = 0x03;
-													for(tmp = 0; tmp < ep0_str_len; tmp++)
-													{
-														*p_send++ = manu_str[tmp];
-														*p_send++ = 0x00;
-													}
-
-													//pDescr = (PUINT8)(&USB_DEV_PARA_CDC_SERIAL_WSTR[0]);
-													pDescr = ep0_send_buf;
-													len = pDescr[0];
-
-													break;
-												}
-												default:
-													len = 0xFF;
-													break;
-											}
 											break;
 										}
 										case 6:
 										{
-											pDescr = (PUINT8)( &My_QueDescr[0] );
-											len = sizeof( My_QueDescr );
+											pDescr = (PUINT8)( &CDC_QueDescr[0] );
+											len = sizeof( CDC_QueDescr );
 											break;
 										}
 										default:
@@ -595,9 +506,6 @@ void USB_IRQProcessHandler( void )
 
 										Ep1DataOUTFlag = 0;
 										Ep4DataOUTFlag = 0;
-
-										cdc_uart_sta_trans_step = 0;
-										ven_ep1_trans_step = 0;
 									}
 									else if ( ( UsbSetupBuf->bRequestType & USB_REQ_RECIP_MASK ) == USB_REQ_RECIP_ENDP )
 									{
@@ -900,13 +808,8 @@ void USB_IRQProcessHandler( void )
 		R8_UEP0_CTRL = UEP_R_RES_NAK | UEP_T_RES_NAK;
 		R8_UEP1_CTRL = UEP_R_RES_ACK | UEP_T_RES_NAK;
 		R8_UEP4_CTRL = UEP_T_RES_NAK;
-
-		cdc_uart_sta_trans_step = 0;
-		ven_ep1_trans_step = 0;
-
 		R8_USB_DEV_AD = 0x00;
 		devinf.UsbAddress = 0;
-
 		R8_USB_INT_FG = RB_UIF_BUS_RST;
 	}
 	else if (  R8_USB_INT_FG & RB_UIF_SUSPEND )
@@ -930,10 +833,6 @@ void USB_IRQProcessHandler( void )
 			Ep1DataOUTFlag = 0;
 			Ep4DataOUTFlag = 0;
 		}
-
-		cdc_uart_sta_trans_step = 0;
-		ven_ep1_trans_step = 0;
-
 		R8_USB_INT_FG = RB_UIF_SUSPEND;
 	}
 }
@@ -941,7 +840,6 @@ void USB_IRQProcessHandler( void )
 void USBDevEPnINSetStatus(UINT8 ep_num, UINT8 type, UINT8 sta)
 {
 	UINT8 *p_UEPn_CTRL;
-
 	p_UEPn_CTRL = (UINT8 *)(USB_BASE_ADDR + 0x22 + ep_num * 4);
 	if(type == ENDP_TYPE_IN) *((PUINT8V)p_UEPn_CTRL) = (*((PUINT8V)p_UEPn_CTRL) & (~(0x03))) | sta;
 	else *((PUINT8V)p_UEPn_CTRL) = (*((PUINT8V)p_UEPn_CTRL) & (~(0x03<<2))) | (sta<<2);
@@ -1022,5 +920,3 @@ void processCDC()
 {
 		USB_IRQProcessHandler();
 }
-
-
