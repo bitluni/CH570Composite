@@ -20,7 +20,7 @@
 #define USB_CDC_MODE      1
 #define USB_VENDOR_MODE   0
 
-const UINT8 TAB_USB_CDC_DEV_DES[18] =
+/*const UINT8 TAB_USB_CDC_DEV_DES[18] =
 {
 	0x12,
 	0x01,
@@ -37,6 +37,28 @@ const UINT8 TAB_USB_CDC_DEV_DES[18] =
 	0x02,
 	0x03,
 	0x01
+};*/
+
+const UINT8 CDC_DeviceDescriptor[18] =
+{
+    0x12,       // bLength: 18 bytes
+    0x01,       // bDescriptorType: Device Descriptor
+    0x10, 0x01, // bcdUSB: USB 1.10
+    0x02,       // bDeviceClass: CDC (Communications Device Class)
+    0x00,       // bDeviceSubClass: defined at interface level
+    0x00,       // bDeviceProtocol: defined at interface level
+    0x40,       // bMaxPacketSize0: 64 bytes (endpoint 0)
+
+//    0x09, 0x12, // idVendor: 0x1209 (pid.codes shared VID)
+//    0x69, 0x00, // idProduct: 0x0069 (your assigned PID)
+	0x86, 0x1a,
+	0x40, 0x80,
+
+    0x00, 0x30, // bcdDevice: device version 3.00
+    0x01,       // iManufacturer: string descriptor index 1
+    0x02,       // iProduct: string descriptor index 2
+    0x03,       // iSerialNumber: string descriptor index 3
+    0x01        // bNumConfigurations: 1
 };
 
 // -----------------------------------------------------------------------------
@@ -148,21 +170,25 @@ UINT8 TAB_CDC_LINE_CODING[ ]  =
 	0x08    /* no. of bits 8*/
 };
 /*
-const wchar_t TAB_USB_LID_STR_DES[] = 				{0x0409, 0};
-const wchar_t USB_DEV_PARA_CDC_SERIAL_STR[] =		L"videoshnipsel";
-const wchar_t USB_DEV_PARA_CDC_PRODUCT_STR[] =		L"videoshnipsel";
-const wchar_t USB_DEV_PARA_CDC_MANUFACTURE_STR[] =	L"bituni";
+const wchar_t TAB_USB_LID_STR_DES[] = 				L"\x0304\x0409";
+const wchar_t USB_DEV_PARA_CDC_SERIAL_STR[] =		L"\x031c" L"videoshnipsel";
+const wchar_t USB_DEV_PARA_CDC_PRODUCT_STR[] =		L"\x031c" L"videoshnipsel";
+const wchar_t USB_DEV_PARA_CDC_MANUFACTURE_STR[] =	L"\x030e" L"bituni";
 
-const wchar_t *CDC_Descriptor_strings[] = {
+const wchar_t* const CDC_Descriptor_strings[] = {
 	TAB_USB_LID_STR_DES,
 	USB_DEV_PARA_CDC_SERIAL_STR,
 	USB_DEV_PARA_CDC_PRODUCT_STR,
 	USB_DEV_PARA_CDC_MANUFACTURE_STR};
 */
-const UINT8 TAB_USB_LID_STR_DES[ ] = { 0x04, 0x03, 0x09, 0x04 };
-const UINT8 USB_DEV_PARA_CDC_SERIAL_STR[] =			"videoshnipsel";
-const UINT8 USB_DEV_PARA_CDC_PRODUCT_STR[] =		"bitluni's CDC";
-const UINT8 USB_DEV_PARA_CDC_MANUFACTURE_STR[] =	"bituni";
+//const UINT8 TAB_USB_LID_STR_DES[ ] = { 0x04, 0x03, 0x09, 0x04 };
+const wchar_t TAB_USB_LID_STR_DES[] = 				L"\x0304\x0409";
+//const UINT8 USB_DEV_PARA_CDC_MANUFACTURE_STR[] =	"bituni";
+const wchar_t USB_DEV_PARA_CDC_MANUFACTURE_STR[] =	L"\x030e" L"bituni";
+//const UINT8 USB_DEV_PARA_CDC_PRODUCT_STR[] =		"bitluni's CDC";
+const wchar_t USB_DEV_PARA_CDC_PRODUCT_STR[] =		L"\x031c" L"bitluni's CDC";
+const UINT8 USB_DEV_PARA_CDC_SERIAL_STR[] =		"videoshnipsel";
+const wchar_t USB_DEV_PARA_CDC_SERIAL_WSTR[] =		L"\x031c" L"videoshnipsel";
 
 
 typedef struct DevInfo
@@ -374,7 +400,7 @@ UINT8 Ep4DataOUTFlag = 0;
 __HIGH_CODE
 void USB_IRQProcessHandler( void )
 {
-	static  PUINT8  pDescr;
+	static PUINT8 pDescr;
 	UINT8 len;
 	UINT8   data_dir = 0;
 	UINT8   i;
@@ -437,20 +463,23 @@ void USB_IRQProcessHandler( void )
 									{
 										case 1:
 										{
-											memcpy(ep0_send_buf, &TAB_USB_CDC_DEV_DES[0], sizeof( TAB_USB_CDC_DEV_DES ));
-											pDescr = ep0_send_buf;
-											len = sizeof( TAB_USB_CDC_DEV_DES );
+											pDescr = (PUINT8)CDC_DeviceDescriptor;
+											len = sizeof( CDC_DeviceDescriptor );
 											break;
 										}
 										case 2:
 										{
-											memcpy(ep0_send_buf, &CDC_ConfigDescriptor[0], sizeof( CDC_ConfigDescriptor ));
-											pDescr = ep0_send_buf;
+											pDescr = (PUINT8)CDC_ConfigDescriptor;
 											len = sizeof( CDC_ConfigDescriptor );
 											break;
 										}
 										case 3:
 										{
+											/*len = 255;
+											if(UsbSetupBuf->wValueL > 3) break;
+											pDescr =(PUINT8) CDC_Descriptor_strings[UsbSetupBuf->wValueL];
+											len = pDescr[0];
+											break;*/
 											/*len = 255;
 											if(UsbSetupBuf->wValueL > 3) break;
 											const wchar_t *str = CDC_Descriptor_strings[UsbSetupBuf->wValueL];
@@ -465,25 +494,35 @@ void USB_IRQProcessHandler( void )
 												case 0:
 												{
 													pDescr = (PUINT8)( &TAB_USB_LID_STR_DES[0] );
-													len = sizeof( TAB_USB_LID_STR_DES );
+													len = pDescr[0];
 													break;
 												}
 												case 1:  //iManufacturer
+												{
+													pDescr = (PUINT8)( &USB_DEV_PARA_CDC_MANUFACTURE_STR[0] );
+													len = pDescr[0];
+													break;
+												}
 												case 2:   //iProduct											
+												{
+													pDescr = (PUINT8)( &USB_DEV_PARA_CDC_PRODUCT_STR[0] );
+													len = pDescr[0];
+													break;
+												}
 												case 3:   //iSerialNumber
+												/*{
+													pDescr = (PUINT8)( &USB_DEV_PARA_CDC_SERIAL_STR[0] );
+													len = sizeof( USB_DEV_PARA_CDC_SERIAL_STR );
+													break;
+												}*/
 												{
 													UINT8 ep0_str_len;
 													UINT8 *p_send;
 													UINT8 *manu_str;
 													UINT8 tmp;
 
-													if(UsbSetupBuf->wValueL == 1)
-														manu_str = (UINT8 *)USB_DEV_PARA_CDC_MANUFACTURE_STR;
-													else if(UsbSetupBuf->wValueL == 2)
-														manu_str = (UINT8 *)USB_DEV_PARA_CDC_PRODUCT_STR;
-													else if(UsbSetupBuf->wValueL == 3)
-														manu_str = (UINT8 *)USB_DEV_PARA_CDC_SERIAL_STR;
-													ep0_str_len = (UINT8)strlen((char *)manu_str);
+													manu_str = (UINT8 *)USB_DEV_PARA_CDC_SERIAL_STR;
+													ep0_str_len = (UINT8)strlen((char *)USB_DEV_PARA_CDC_SERIAL_STR);
 													p_send = ep0_send_buf;
 													*p_send++ = ep0_str_len * 2 + 2;
 													*p_send++ = 0x03;
@@ -493,8 +532,9 @@ void USB_IRQProcessHandler( void )
 														*p_send++ = 0x00;
 													}
 
+													//pDescr = (PUINT8)(&USB_DEV_PARA_CDC_SERIAL_WSTR[0]);
 													pDescr = ep0_send_buf;
-													len = ep0_send_buf[0];
+													len = pDescr[0];
 
 													break;
 												}
