@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Auto-serial sender — videoshnipsel</title>
+  <style>
+    body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; padding: 24px; max-width:720px; }
+    pre { background:#f6f8fa;padding:12px;border-radius:8px;overflow:auto }
+    button { padding:10px 14px;border-radius:8px;border:1px solid #ccc;background:#fff;cursor:pointer }
+    .ok { color: green }
+    .err { color: #b00 }
+  </style>
+</head>
+<body>
+  <h1>Auto connect to "videoshnipsel" and send timestamps</h1>
+  <p id="status">Starting…</p>
+  <div id="controls" style="margin-top:16px;">
+    <button id="selectBtn" style="display:none">Select serial device</button>
+    <button id="stopBtn" style="display:none">Stop sending</button>
+  </div>
+
+  <h3>Console</h3>
+  <pre id="log"></pre>
+
+<script>
+(async () => {
+  const statusEl = document.getElementById('status');
+  const logEl = document.getElementById('log');
+  const selectBtn = document.getElementById('selectBtn');
+  const stopBtn = document.getElementById('stopBtn');
+
+  function log(...args){
+    const line = args.map(a => (typeof a === 'object' ? JSON.stringify(a) : String(a))).join(' ');
+    logEl.textContent += (new Date().toISOString()) + '  ' + line + '\\n';
+    logEl.scrollTop = logEl.scrollHeight;
+  }
+
+  if (!('serial' in navigator)) {
+    statusEl.innerHTML = '<span class="err">Web Serial API not available in this browser.</span> Use a Chromium-based browser and open via https or localhost.';
+    log('navigator.serial missing');
+    return;
+  }
+
+  let port = null;
+  let writer = null;
+  let sendInterval = null;
+  const ENCODER = new TextEncoder();
+
+  // heuristics to check if a port matches the name "videoshnipsel"
+  function portLooksLikeVideoshnipsel(pInfo) {
+    if (!pInfo) return false;
+    // stringify any available fields and look for substring
+    const text = Object.values(pInfo).filter(v => v !== undefined && v !== null).join(' ').toLowerCase();
+    return text.includes('videoshnipsel');
+  }
+
+  // try to automatically find a previously-authorized port that matches our target
+  async function autoFindPreviouslyGrantedPort() {
+    try {
+      const ports = await navigator.serial.getPorts(); // previously allowed ports
+      log('found previously granted ports:', ports.length);
+      for (const p of ports) {
+        try {
+          const info = p.getInfo ? p.getInfo() : {};
+          // Attempt to detect friendly/product/serial strings if browser exposes them (non-standard)
+          // Some platforms may expose additional fields on the port object (e.g., p.serialNumber, p.productName).
+          const extra = {};
+          if (p.serialNumber) extra.serialNumber = p.serialNumber;
+          if (p.productName) extra.productName = p.productName;
+          if (p.manufacturer) extra.manufacturer = p.manufacturer;
+          const combined = Object.assign({}, info, extra);
+          log('port info:', combined);
+
+          if (portLooksLikeVideoshnipsel(combined)) {
+            log('candidate matched by heuristic, trying to open it');
+            return p;
+          }
+        } catch (err) {
+          log('error inspecting port:', err);
+        }
+      }
+
+      // if no heuristic match, return first previously-granted port as fallback (optional)
+      if (ports.length === 1) {
+        log('no name match but only one previously-granted port — will try that as fallback');
+        return ports[0];
+      }
+      return null;
+    } catch (err) {
+      log('getPorts() failed:', err);
+      return null;
+    }
+  }
+
+  async function openPort(p) {
+    try {
+      // common default baudRate; change if your device expects different rate
+      await p.open({ baudRate: 115200 });
+      log('port opened', p.getInfo ? p.getInfo() : {});
+      // create writer
+      writer = p.writable.getWriter();
+      port = p;
+      return true;
+    } catch (err) {
+      log('failed to open port:', err);
+      return false;
+    }
+  }
+
+  async function startSending() {
+    if (!port || !writer) {
+      log('no writer/port, cannot start sending');
+      return;
+    }
+    if (sendInterval) {
+      log('already sending');
+      return;
+    }
+    statusEl.innerHTML = '<span class="ok">Connected — sending timestamps every 100 ms.</span>';
+    stopBtn.style.display = '';
+    selectBtn.style.display = 'none';
+
+    sendInterval = setInterval(async () => {
+      try {
+        // unix timestamp in seconds
+        const ts = Math.floor(Date.now() / 1000) + '\n';
+        const data = ENCODER.encode(ts);
+        await writer.write(data);
+        // log short: don't spam too much — but show occasional messages
+      } catch (err) {
+        log('error writing:', err);
+        stopSending();
+      }
+    }, 100);
+    log('started interval');
+  }
+
+  async function stopSending() {
+    if (sendInterval) {
+      clearInterval(sendInterval);
+      sendInterval = null;
+      log('stopped interval');
+    }
+    if (writer) {
+      try { await writer.releaseLock(); } catch(e){ /* ignore */ }
+      writer = null;
+    }
+    if (port) {
+      try { await port.close(); log('port closed'); } catch(e){ log('error closing port', e); }
+      port = null;
+    }
+    statusEl.textContent = 'Stopped.';
+    stopBtn.style.display = 'none';
+    selectBtn.style.display = '';
+  }
+
+  // If user clicks select, request a port (requires user gesture)
+  selectBtn.addEventListener('click', async () => {
+    try {
+      // no filters so user can pick; could add filters by USB vendor/product id if known
+      const requested = await navigator.serial.requestPort();
+      log('user selected port:', requested.getInfo ? requested.getInfo() : requested);
+      const ok = await openPort(requested);
+      if (ok) await startSending();
+      else {
+        statusEl.innerHTML = '<span class="err">Failed to open selected port.</span>';
+      }
+    } catch (err) {
+      log('requestPort canceled or failed:', err);
+      statusEl.innerHTML = '<span class="err">No device selected / permission denied.</span>';
+    }
+  });
+
+  stopBtn.addEventListener('click', async () => {
+    await stopSending();
+  });
+
+  // Try automatic connection path
+  try {
+    statusEl.textContent = 'Looking for previously-authorized serial ports…';
+    const autoPort = await autoFindPreviouslyGrantedPort();
+    if (autoPort) {
+      statusEl.textContent = 'Attempting to open matched port…';
+      const ok = await openPort(autoPort);
+      if (ok) {
+        log('auto-open successful');
+        await startSending();
+        return;
+      } else {
+        log('auto-open failed; will show select button');
+      }
+    } else {
+      log('no previously-granted port matched heuristics');
+    }
+  } catch (err) {
+    log('unexpected error during auto-connect:', err);
+  }
+
+  // If we reach here, automatic connection did not happen — show UI to let user pick
+  statusEl.innerHTML = 'No previously-granted matching port found. <span class="err">Please grant access.</span>';
+  selectBtn.style.display = '';
+})();
+</script>
+</body>
+</html>

@@ -916,6 +916,8 @@ void initCDC()
 	InitCDCDevice();
 	PFIC_EnableIRQ( USB_IRQn );
 }
+
+__HIGH_CODE
 void processCDC()
 {
 		USB_IRQProcessHandler();

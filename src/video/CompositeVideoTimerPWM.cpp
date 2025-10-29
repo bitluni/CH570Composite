@@ -53,29 +53,121 @@ void initVideo()
 
 #include "rick.h"
 
+int textCursorX = 0;
+int textCursorY = 0;
 volatile uint32_t counter = 0;
+int cursorCharacter = 0;
 const char *hex = "0123456789ABCDEF";
 __HIGH_CODE
 void updateVideo()
 {
-    /*static int lastFrame = 0;
-    if(lastFrame != (counter >> 2))
-    {
-        lastFrame = counter >> 2;
-        int f = lastFrame % 20;
-        for(int i = 0; i < rick_offsets[f + 1] - rick_offsets[f] && i < rleBufferSize; i++)
-            rleBuffer[i] = rick_data[rick_offsets[f] + i];
-    }/**/
-    for(int i = 0; i < 8; i++)
-        textBuffer[0][12 - i] = hex[((counter >> (i * 4)) & 15)] - 32;
-    return;
+	/*static int lastFrame = 0;
+	if(lastFrame != (counter >> 2))
+	{
+		lastFrame = counter >> 2;
+		int f = lastFrame % 20;
+		for(int i = 0; i < rick_offsets[f + 1] - rick_offsets[f] && i < rleBufferSize; i++)
+			rleBuffer[i] = rick_data[rick_offsets[f] + i];
+	}/**/
+	/*for(int i = 0; i < 8; i++)
+		textBuffer[1][textCols - 1 - i] = hex[((counter >> (i * 4)) & 15)] - 32;*/
+	/*if((counter & 31) == 0)
+	{
+		cursorCharacter = textBuffer[textCursorY][textCursorX];
+		textBuffer[textCursorY][textCursorX] = 0x7f - 32;
+	}
+	else
+	if((counter & 31) == 16)
+	{
+		textBuffer[textCursorY][textCursorX] = cursorCharacter;
+	}*/
+	return;
 }
 
 __HIGH_CODE
-void processCDCData(const uint8_t *data, uint16_t len)
+void scroll(int rows, bool clear)
 {
-    for(int i = 0; i < len; i++)
-        textBuffer[10][i] = data[i] - 32;
+	if(rows <= 0) return;
+	textBuffer[textCursorY][textCursorX] = cursorCharacter;
+	for(int y = 0; y < textRows - rows; y++)
+		for(int x = 0; x < textCols; x++)
+			textBuffer[y][x] = textBuffer[y + rows][x];
+	if(!clear) return;
+	for(int y = textRows - rows; y < textRows; y++)
+		for(int x = 0; x < textCols; x++)
+			textBuffer[y][x] = 0;	
+}
+
+__HIGH_CODE
+void print(const char *text, bool autoScroll, uint32_t len)
+{
+	textBuffer[textCursorY][textCursorX] = cursorCharacter;
+	while(*text && len)
+	{
+		if(*text < 32)
+		{
+			switch(*text)
+			{
+				case '\n':
+					if(textCursorY == textRows - 1)
+						scroll(1, true);
+					else
+						textCursorY++;
+					textCursorX = 0;
+				break;
+				case '\r':
+				break;
+				default:
+				break;
+			}
+		}
+		else 
+		{
+			if(*text == '^')
+			{
+				if(len == 1) return;
+				text++;
+				switch(*text)
+				{
+					case 0:
+						return;
+					case 'L':	//clear screen
+						for(int y = 0; y < textRows; y++)
+							for(int x = 0; x < textCols; x++)
+								textBuffer[y][x] = 0;
+						textCursorX = 0;
+						textCursorY = 0;
+						text++;
+						continue;
+				}
+			}
+			textBuffer[textCursorY][textCursorX] = *text - 32;
+			textCursorX++;
+			if(textCursorX == textCols)
+			{
+				if(textCursorY == textRows - 1)
+				{
+					if(autoScroll)
+						scroll(1, true);
+				}
+				else
+				{
+					textCursorY++;
+				}
+				textCursorX = 0;
+			}
+		}
+		text++;
+		len--;
+	}
+}
+
+__HIGH_CODE
+void setCursor(int x, int y)
+{
+	textBuffer[textCursorY][textCursorX] = cursorCharacter;
+	textCursorX = x;
+	textCursorY = y;
 }
 
 //using pragmas to prevent GCC to replace loops by memcpy that is not in SRAM

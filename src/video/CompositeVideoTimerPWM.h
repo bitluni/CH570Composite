@@ -6,7 +6,10 @@ extern "C" {
 
 void initVideo();
 void updateVideo();
-void processCDCData(const uint8_t *data, uint16_t len);
+
+void setCursor(int x, int y);
+void scroll(int rows, bool clear = false);
+void print(const char *text, bool autoScroll = true, uint32_t len = 0xffffffff);
 
 __INTERRUPT
 __HIGH_CODE

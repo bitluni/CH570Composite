@@ -3,7 +3,15 @@
 #include "video/CompositeVideoTimerPWM.h"
 #include "cdc/cdc.h"
 
-extern "C" int main()
+__HIGH_CODE
+void processCDCData(const uint8_t *data, uint16_t len)
+{
+    print((const char*)data, true, len);
+}
+
+extern "C" 
+__HIGH_CODE
+int main()
 {
     HSECFG_Capacitance(HSECap_18p);
     SetSysClock(CLK_SOURCE_HSE_PLL_100MHz);
