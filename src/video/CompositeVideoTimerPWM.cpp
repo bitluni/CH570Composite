@@ -108,6 +108,8 @@ void print(const char *text, bool autoScroll, uint32_t len)
 		{
 			switch(*text)
 			{
+				case 0:
+					return;
 				case '\n':
 					if(textCursorY == textRows - 1)
 						scroll(1, true);
@@ -257,6 +259,17 @@ void TMR_IRQHandler(void) // TMR0
             rleBufferPos = 0;
             rleLength = 0;
             counter++;
+			
+			if((counter & 31) == 0)
+			{
+				cursorCharacter = textBuffer[textCursorY][textCursorX];
+				textBuffer[textCursorY][textCursorX] = 0x7f - 32;
+			}
+			else
+			if((counter & 31) == 16)
+			{
+				textBuffer[textCursorY][textCursorX] = cursorCharacter;
+			}
         }
         uint32_t *line = vram[b ^ 1];
         uint32_t *pixels = &(line[pixelsSync + pixelsFront]);

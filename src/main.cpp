@@ -26,6 +26,9 @@ int main()
 
     initCDC();
     initVideo();
+    print("##############\n");
+    print("   henlo\n");
+    print("##############\n\n");
     while(1)
     {
         updateVideo();
