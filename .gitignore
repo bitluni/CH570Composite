@@ -2,3 +2,6 @@ obj
 .settings
 .vscode
 .mrs
+*-backups
+production
+*-cache

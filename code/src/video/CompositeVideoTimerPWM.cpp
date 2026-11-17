@@ -2,34 +2,34 @@
 #include "font.h"
 #include "CompositeVideoTimerPWM.h"
 
-constexpr int textCols = 24;
-constexpr int textRows = 34;
+constexpr int textCols = 37;
+constexpr int textRows = 34 - 4;
+
 //296x272
-constexpr int xres = 200;
+constexpr int xres = 300;
 constexpr int yres = textRows * 8;
-constexpr int pixelsPerLine = 270;
+constexpr int pixelsPerLine = 400;
 constexpr int pixelsPerLineHalf = pixelsPerLine >> 1;
-constexpr int pixelsSync = 24;
-constexpr int pixelsSyncShort = 12;
+constexpr int pixelsSync = 32;
+constexpr int pixelsSyncShort = 16;
 constexpr int pixelsSyncLong = pixelsPerLineHalf - pixelsSyncShort;
-constexpr int pixelsFront = 37;
+constexpr int pixelsFront = 50;
 constexpr int pixelsBack = pixelsPerLine - pixelsSync - pixelsFront - xres;
 constexpr int linesTotal = 312;
-constexpr int linesBlankFront = 20;
+constexpr int linesBlankFront = 20 + 2 * 8;
 constexpr int linesSync = 8;
-constexpr int linesBlankBack = linesTotal - linesSync - linesBlankFront - yres;
-constexpr int pixelsBurstOffset = 4;
-constexpr int pixelsBurst = 10;
-
+//constexpr int linesBlankBack = linesTotal - linesSync - linesBlankFront - yres;
 
 constexpr int levelSync = 0;
-constexpr int levelBlack = 6;
-constexpr int levelGrey = 12;
-constexpr int levelWhite = 24;
+constexpr int levelBlack = 4;
+//constexpr int levelGrey = 10;
+constexpr int levelWhite = 16;
 
 __attribute__((aligned(4))) uint32_t vram[2][pixelsPerLine];
 
 volatile int currentLine = 0;
+constexpr int cursor = 1;
+volatile int cursorCounter = 0;
 volatile uint8_t textBuffer[textRows][textCols];
 constexpr int rleBufferSize = 4500;
 volatile uint8_t rleBuffer[rleBufferSize];
@@ -38,12 +38,12 @@ void initVideo()
 {
     GPIOA_ModeCfg(GPIO_Pin_7, GPIO_ModeOut_PP_5mA);
 
-    TMR_PWMCycleCfg(24);
+    TMR_PWMCycleCfg(16);
     TMR_PWMInit(High_Level, PWM_Times_1);
 
     for(int r = 0; r < textRows; r++)
         for(int c = 0; c < textCols; c++)
-            textBuffer[r][c] = '0' + (c % 10) - 32;
+            textBuffer[r][c] = 0;
 
     TMR_DMACfg(ENABLE, (uint32_t)vram[0], (uint32_t)vram[1] + pixelsPerLine * sizeof(uint32_t), Mode_LOOP); //two lines
     TMR_PWMEnable();
@@ -56,25 +56,128 @@ void initVideo()
 
 #include "rick.h"
 
+int textCursorX = 0;
+int textCursorY = 0;
 volatile uint32_t counter = 0;
+int cursorCharacter = 0;
 const char *hex = "0123456789ABCDEF";
 __HIGH_CODE
 void updateVideo()
 {
-    static int lastFrame = 0;
-    if(lastFrame != (counter >> 2))
-    {
-        lastFrame = counter >> 2;
-        int f = lastFrame % 20;
-        for(int i = 0; i < rick_offsets[f + 1] - rick_offsets[f] && i < rleBufferSize; i++)
-            rleBuffer[i] = rick_data[rick_offsets[f] + i];
-    }
-//    for(int i = 0; i < 8; i++)
-//        textBuffer[10][12 - i] = hex[((counter >> (i * 4)) & 15)] - 32;
-//    return;
+	/*static int lastFrame = 0;
+	if(lastFrame != (counter >> 2))
+	{
+		lastFrame = counter >> 2;
+		int f = lastFrame % 20;
+		for(int i = 0; i < rick_offsets[f + 1] - rick_offsets[f] && i < rleBufferSize; i++)
+			rleBuffer[i] = rick_data[rick_offsets[f] + i];
+	}/**/
+	/*for(int i = 0; i < 8; i++)
+		textBuffer[1][textCols - 1 - i] = hex[((counter >> (i * 4)) & 15)] - 32;*/
+	/*if((counter & 31) == 0)
+	{
+		cursorCharacter = textBuffer[textCursorY][textCursorX];
+		textBuffer[textCursorY][textCursorX] = 0x7f - 32;
+	}
+	else
+	if((counter & 31) == 16)
+	{
+		textBuffer[textCursorY][textCursorX] = cursorCharacter;
+	}*/
+	return;
 }
 
-//using pragmas to prevent GCC to replace loops by memcpy that is not in SRAM
+__HIGH_CODE
+void scroll(int rows, bool clear)
+{
+	if(rows <= 0) return;
+	textBuffer[textCursorY][textCursorX] = cursorCharacter;
+	for(int y = 0; y < textRows - rows; y++)
+		for(int x = 0; x < textCols; x++)
+			textBuffer[y][x] = textBuffer[y + rows][x];
+	if(!clear) return;
+	for(int y = textRows - rows; y < textRows; y++)
+		for(int x = 0; x < textCols; x++)
+			textBuffer[y][x] = 0;	
+}
+
+__HIGH_CODE
+void print(const char *text, bool autoScroll, uint32_t len)
+{
+	textBuffer[textCursorY][textCursorX] = cursorCharacter;
+	cursorCounter = 0;
+	while(*text && len)
+	{
+		if(*text < 32)
+		{
+			switch(*text)
+			{
+				case 0:
+					return;
+				case '\n':
+					if(textCursorY == textRows - 1)
+						scroll(1, true);
+					else
+						textCursorY++;
+					textCursorX = 0;
+				break;
+				case '\r':
+				break;
+				default:
+				break;
+			}
+		}
+		else 
+		{
+			if(*text == '^')
+			{
+				if(len == 1) return;
+				text++;
+				switch(*text)
+				{
+					case 0:
+						return;
+					case 'L':	//clear screen
+						for(int y = 0; y < textRows; y++)
+							for(int x = 0; x < textCols; x++)
+								textBuffer[y][x] = 0;
+						textCursorX = 0;
+						textCursorY = 0;
+						text++;
+						continue;
+				}
+			}
+			textBuffer[textCursorY][textCursorX] = *text - 32;
+			textCursorX++;
+			if(textCursorX == textCols)
+			{
+				if(textCursorY == textRows - 1)
+				{
+					if(autoScroll)
+						scroll(1, true);
+				}
+				else
+				{
+					textCursorY++;
+				}
+				textCursorX = 0;
+			}
+		}
+		text++;
+		len--;
+	}
+	textBuffer[textCursorY][textCursorX] = 0x7f - 32;
+}
+
+__HIGH_CODE
+void setCursor(int x, int y)
+{
+	textBuffer[textCursorY][textCursorX] = cursorCharacter;
+	textCursorX = x;
+	textCursorY = y;
+}
+
+//using pragmas to prevent GCC to replace loops by memset that is not in SRAM
 #pragma GCC push_options
 #pragma GCC optimize ("no-tree-loop-distribute-patterns")
 __HIGH_CODE
@@ -124,13 +227,33 @@ void syncLongShort(uint32_t *line)
 }
 
 __HIGH_CODE
+void syncShortLong(uint32_t *line)
+{
+    uint32_t *l = line;
+    for(int i = 0; i < pixelsSyncShort; i++)
+    {
+        l[i] = levelSync;
+    }
+    for(int i = pixelsSyncShort; i < pixelsPerLineHalf; i++)
+    {
+        l[i] = levelBlack;
+    }
+    for(int i = 0; i < pixelsSyncLong; i++)
+    {
+        l[i + pixelsPerLineHalf] = levelSync;
+    }
+    for(int i = pixelsSyncLong; i < pixelsPerLineHalf; i++)
+    {
+        l[i + pixelsPerLineHalf] = levelBlack;
+    }
+}
+
+__HIGH_CODE
 void firstBlank(uint32_t *line)
 {
     uint32_t *l = line;
     for(int i = 0; i < pixelsSync; i++)
         l[i] = levelSync;
-    for(int i = pixelsSync + pixelsBurstOffset; i < pixelsSync + pixelsBurstOffset + pixelsBurst; i++)
-        l[i] = levelGrey;
     for(int i = 0; i < pixelsSyncShort; i++)
         l[i + pixelsPerLineHalf] = levelBlack;
 }
@@ -157,32 +280,58 @@ void TMR_IRQHandler(void) // TMR0
     for(int b = 0; b < 2; b++)
     {
         currentLine++;
-        if(currentLine == linesTotal)
+        if(currentLine == linesTotal + (counter & 1))
         {
             currentLine = 0;
             rleBufferPos = 0;
             rleLength = 0;
             counter++;
+			cursorCounter++;
+			
+			if(cursor)
+			{
+				if((cursorCounter & 31) == 0)
+				{
+					cursorCharacter = textBuffer[textCursorY][textCursorX];
+					textBuffer[textCursorY][textCursorX] = 0x7f - 32;
+				}
+				else
+				if((cursorCounter & 31) == 16)
+				{
+					textBuffer[textCursorY][textCursorX] = cursorCharacter;
+				}
+			}
         }
         uint32_t *line = vram[b ^ 1];
         uint32_t *pixels = &(line[pixelsSync + pixelsFront]);
 
         if(b == 1)
             while(R16_TMR_DMA_NOW < ((uint32_t)(&vram[0][pixelsPerLine - pixelsBack]) & 0xffff));
-        R8_TMR_CTRL_MOD = (R8_TMR_CTRL_MOD & ~16) | (b << 4);
 
-        if(currentLine <= 2 || (currentLine == 6) || (currentLine == 7))
-            syncShortShort(line);
-        else
-        if(currentLine <= 4)
-            syncLongLong(line);
-        else
-        if(currentLine == 5)
-            syncLongShort(line);
-        else
-        if(currentLine < 10)
-            firstBlank(line);
-        else
+		if(counter & 1)
+		{	//second field
+			if(currentLine == 0)
+				syncShortLong(line);
+			else if(currentLine <= 2)
+				syncLongLong(line);
+			else if(currentLine <= 4 || (currentLine > 309))
+	            syncShortShort(line);
+			else if(currentLine < 7)
+				firstBlank(line);
+		}
+		else	
+		{	//first field
+			if(currentLine <= 1)
+				syncLongLong(line);
+			else if(currentLine == 2)
+				syncLongShort(line);
+			else if(currentLine <= 4 || (currentLine == 310) || (currentLine == 311))
+				syncShortShort(line);
+			else
+			if(currentLine < 7)
+				firstBlank(line);
+		}
+
         if(currentLine >= linesBlankFront + linesSync) //on screen
         {
             int renderLine = currentLine - linesBlankFront - linesSync;
@@ -212,7 +361,7 @@ void TMR_IRQHandler(void) // TMR0
                     for(int x = 0; x < 8 * textCols; x++)
                     {
                         int ch = textBuffer[r][x >> 3];
-                        int bit = (x + 0) & 7;
+                        int bit = (-x + 0) & 7;
                         if((font8x8[ch][y] >> bit) & 1)
                             pixels[x] = levelWhite;
                         else

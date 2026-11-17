@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WebSerial Sender</title>
+<style>
+  :root { --bg:#14171c; --fg:#e6e8eb; --card:#1d2128; --bd:#363c46; --acc:#5b8def; --ok:#16a34a; --bad:#dc2626; color-scheme: dark; }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; }
+  body { font: 15px/1.4 system-ui, sans-serif; background: var(--bg); color: var(--fg); display: flex; flex-direction: column; gap: 12px; padding: 14px; }
+  .bar { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; background: var(--card); border: 1px solid var(--bd); border-radius: 10px; padding: 10px 12px; }
+  button { font: inherit; padding: 7px 14px; border-radius: 8px; border: 1px solid var(--bd); background: var(--card); color: var(--fg); cursor: pointer; }
+  button.primary { background: var(--acc); border-color: var(--acc); color: #fff; }
+  button:disabled { opacity: .45; cursor: not-allowed; }
+  input[type=number], select { font: inherit; padding: 6px 8px; border-radius: 8px; border: 1px solid var(--bd); background: var(--card); color: var(--fg); }
+  input[type=number] { width: 90px; }
+  #dot { width: 11px; height: 11px; border-radius: 50%; background: var(--bad); display: inline-block; }
+  #dot.on { background: var(--ok); }
+  #status { font-weight: 600; }
+  textarea { flex: 1; min-height: 160px; width: 100%; resize: none; font: 15px/1.45 ui-monospace, Menlo, Consolas, monospace; padding: 12px; border-radius: 10px; border: 1px solid var(--bd); background: var(--card); color: var(--fg); }
+  textarea:read-only { opacity: .85; }
+  .slider { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 260px; }
+  .slider input { flex: 1; }
+  #delayVal { min-width: 64px; text-align: right; font-variant-numeric: tabular-nums; }
+  progress { width: 100%; height: 6px; }
+  .small { font-size: 12.5px; opacity: .75; }
+</style>
+</head>
+<body>
+
+<div class="bar">
+  <span id="dot"></span><span id="status">Not connected</span>
+  <button id="btnPort" class="primary">Select port…</button>
+  <button id="btnDisc" disabled>Disconnect</button>
+  <label>Baud <input id="baud" type="number" min="300" step="1" value="115200"></label>
+  <button id="btnForget" title="Forget the remembered port">Forget port</button>
+</div>
+
+<div class="bar">
+  <div class="slider">
+    <label for="delay">Delay per character</label>
+    <input id="delay" type="range" min="0" max="100" step="1" value="50">
+    <span id="delayVal">50 ms</span>
+  </div>
+  <label>Line breaks
+    <select id="eol">
+      <option value="lf">LF (10)</option>
+      <option value="cr">CR (13)</option>
+      <option value="crlf">CR+LF</option>
+      <option value="drop">drop</option>
+    </select>
+  </label>
+  <label title="Turns \n \r \t \b \e \a \xHH \\ typed in the text into real control characters">
+    <input id="esc" type="checkbox" checked> Interpret escapes (\n \r \t \xHH …)
+  </label>
+  <button id="btnSend" class="primary" disabled>Send</button>
+  <button id="btnStop" disabled>Stop</button>
+  <button id="btnCls" disabled title="Sends the two bytes ^ and L (0x5E 0x4C)">Clear screen (^L)</button>
+</div>
+
+<textarea id="text" placeholder="Paste or type text here…" spellcheck="false"></textarea>
+<progress id="prog" value="0" max="1"></progress>
+<div class="small" id="info">Control characters (0–31) are sent as-is; characters above 127 are filtered out. With escapes on, \n \r \t \xHH become real bytes.</div>
+
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const el = { dot:$('dot'), status:$('status'), btnPort:$('btnPort'), btnDisc:$('btnDisc'), btnForget:$('btnForget'),
+    baud:$('baud'), esc:$('esc'), delay:$('delay'), delayVal:$('delayVal'), eol:$('eol'), btnSend:$('btnSend'), btnStop:$('btnStop'), btnCls:$('btnCls'),
+    text:$('text'), prog:$('prog'), info:$('info') };
+
+  const store = {
+    get(k, d) { try { const v = localStorage.getItem(k); return v === null ? d : v; } catch { return d; } },
+    set(k, v) { try { localStorage.setItem(k, v); } catch {} },
+    del(k) { try { localStorage.removeItem(k); } catch {} }
+  };
+
+  if (!('serial' in navigator)) {
+    el.status.textContent = 'Web Serial not supported – use Chrome, Edge or Opera (desktop).';
+    el.btnPort.disabled = true;
+  }
+
+  // ---- restore state
+  el.text.value = store.get('ws.text', String.raw`\n\nPRIORITY ONE
+INSURE RETURN OF ORGANISM
+FOR ANALYSIS.
+ALL OTHER CONSIDERATIONS SECONDARY.
+CREW EXPENDABLE.`);
+  el.baud.value = store.get('ws.baud', '115200');
+  el.delay.value = store.get('ws.delay', '50');
+  el.eol.value = store.get('ws.eol2', 'lf');
+  el.esc.checked = store.get('ws.esc', '1') === '1';
+  const showDelay = () => el.delayVal.textContent = el.delay.value + ' ms';
+  showDelay();
+
+  let saveTimer;
+  el.text.addEventListener('input', () => { clearTimeout(saveTimer); saveTimer = setTimeout(() => store.set('ws.text', el.text.value), 200); });
+  el.baud.addEventListener('change', () => store.set('ws.baud', el.baud.value));
+  el.eol.addEventListener('change', () => store.set('ws.eol2', el.eol.value));
+  el.esc.addEventListener('change', () => store.set('ws.esc', el.esc.checked ? '1' : '0'));
+  el.delay.addEventListener('input', () => { showDelay(); store.set('ws.delay', el.delay.value); });
+
+  // ---- connection
+  let port = null, writer = null, sending = false, abort = false;
+
+  function setUi() {
+    const c = !!writer;
+    el.dot.classList.toggle('on', c);
+    el.btnDisc.disabled = !c;
+    el.btnSend.disabled = !c || sending;
+    el.btnStop.disabled = !sending;
+    el.btnCls.disabled = !c || sending;
+    el.btnPort.disabled = c || !('serial' in navigator);
+    el.baud.disabled = c;
+  }
+  function status(t) { el.status.textContent = t; }
+
+  const idOf = p => { const i = p.getInfo(); return i.usbVendorId != null ? i.usbVendorId + ':' + i.usbProductId : ''; };
+
+  async function openPort(p) {
+    const baudRate = parseInt(el.baud.value, 10) || 115200;
+    await p.open({ baudRate });
+    port = p;
+    writer = p.writable.getWriter();
+    store.set('ws.portId', idOf(p));
+    status('Connected @ ' + baudRate + ' baud');
+    setUi();
+  }
+
+  async function closePort() {
+    abort = true;
+    try { if (writer) { await writer.close().catch(() => {}); writer.releaseLock(); } } catch {}
+    try { if (port) await port.close(); } catch {}
+    writer = null; port = null; sending = false;
+    status('Not connected'); setUi();
+  }
+
+  async function selectPort() {
+    try {
+      const p = await navigator.serial.requestPort();
+      await openPort(p);
+    } catch (e) { if (e.name !== 'NotFoundError') status('Error: ' + e.message); }
+  }
+
+  async function autoConnect() {
+    if (!('serial' in navigator) || writer) return;
+    const ports = await navigator.serial.getPorts();
+    if (!ports.length) return;
+    const saved = store.get('ws.portId', null);
+    let p = ports.find(x => idOf(x) === saved) || (saved === null ? null : null);
+    if (!p && ports.length === 1) p = ports[0];
+    if (!p) return;
+    try { status('Reconnecting…'); await openPort(p); }
+    catch (e) { status('Auto-connect failed: ' + e.message); setUi(); }
+  }
+
+  el.btnPort.onclick = selectPort;
+  el.btnDisc.onclick = closePort;
+  el.btnForget.onclick = async () => {
+    await closePort();
+    store.del('ws.portId');
+    try { for (const p of await navigator.serial.getPorts()) await p.forget(); } catch {}
+    status('Port forgotten');
+  };
+
+  if ('serial' in navigator) {
+    navigator.serial.addEventListener('disconnect', e => {
+      if (e.target === port) { writer = null; port = null; abort = true; sending = false; status('Device unplugged'); setUi(); }
+    });
+    navigator.serial.addEventListener('connect', () => autoConnect());
+    autoConnect();
+  }
+
+  // ---- sending
+  function prepare(raw) {
+    const map = { drop: '', cr: '\r', lf: '\n', crlf: '\r\n' };
+    raw = raw.replace(/\r\n|\r|\n/g, map[el.eol.value]);
+    const esc = el.esc.checked;
+    const named = { n: 10, r: 13, t: 9, b: 8, f: 12, v: 11, a: 7, e: 27, '0': 0, '\\': 92 };
+    const bytes = [];
+    let dropped = 0;
+    for (let i = 0; i < raw.length; i++) {
+      const c = raw.codePointAt(i);
+      if (c > 0xffff) i++;
+      if (esc && c === 92 && i + 1 < raw.length) {
+        const nx = raw[i + 1];
+        const hex = raw.substr(i + 2, 2);
+        if (nx === 'x' && /^[0-9a-fA-F]{2}$/.test(hex)) { bytes.push(parseInt(hex, 16)); i += 3; continue; }
+        if (Object.prototype.hasOwnProperty.call(named, nx)) { bytes.push(named[nx]); i++; continue; }
+      }
+      if (c <= 127) bytes.push(c); else dropped++;
+    }
+    return { bytes: Uint8Array.from(bytes), dropped };
+  }
+
+  const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+  // Follow progress inside the textarea (selection + scroll), mapped from sent bytes to source position
+  function follow(frac) {
+    const ta = el.text;
+    ta.scrollTop = frac * (ta.scrollHeight - ta.clientHeight);
+  }
+
+  async function send() {
+    if (!writer || sending) return;
+    const { bytes, dropped } = prepare(el.text.value);
+    if (!bytes.length) { el.info.textContent = 'Nothing to send.'; return; }
+    const delay = parseInt(el.delay.value, 10);
+    sending = true; abort = false; setUi();
+    el.text.readOnly = true;
+    el.prog.max = bytes.length; el.prog.value = 0;
+    el.info.textContent = `Sending ${bytes.length} characters` + (dropped ? ` (${dropped} filtered out)` : '') + '…';
+    try {
+      if (delay === 0) {
+        await writer.write(bytes);
+        el.prog.value = bytes.length; follow(1);
+      } else {
+        const t0 = performance.now();
+        for (let i = 0; i < bytes.length; i++) {
+          if (abort) break;
+          await writer.write(bytes.subarray(i, i + 1));
+          el.prog.value = i + 1;
+          if (i % 4 === 0 || i === bytes.length - 1) follow((i + 1) / bytes.length);
+          // compensate timer drift so the average rate matches the slider
+          const wait = t0 + (i + 1) * delay - performance.now();
+          if (wait > 0) await sleep(wait);
+        }
+      }
+      el.info.textContent = abort ? 'Stopped.' : `Done – ${bytes.length} characters sent.`;
+    } catch (e) {
+      el.info.textContent = 'Send error: ' + e.message;
+    } finally {
+      sending = false; el.text.readOnly = false; setUi();
+    }
+  }
+
+  el.btnSend.onclick = send;
+  el.btnStop.onclick = () => { abort = true; };
+  el.btnCls.onclick = async () => {
+    if (!writer || sending) return;
+    try { await writer.write(Uint8Array.of(0x5E, 0x4C)); el.info.textContent = 'Sent ^L (0x5E 0x4C).'; }
+    catch (e) { el.info.textContent = 'Send error: ' + e.message; }
+  };
+  setUi();
+})();
+</script>
+</body>
+</html>
